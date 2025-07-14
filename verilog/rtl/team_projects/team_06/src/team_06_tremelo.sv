@@ -2,8 +2,7 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     input logic clkdiv, rst,
     input logic [7:0] audio_in,
     input logic enable,
-    ouput logic [7:0] audio_out
-
+    output logic [7:0] audio_out
 );
     logic [7:0] threshold; // the threshold is the maximumn value that our depth can reach
     logic [7:0] curr_depth; //direction can be up and down. It will increment by 1 from 0 to 128
@@ -19,14 +18,14 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
         end
         else begin
             curr_depth <= nxt_depth;
-            curr_direction <= nxt_direction
+            curr_direction <= nxt_direction;
         end
     end
 
     assign audio_out = (audio_in * curr_depth)>>7; //audio_in is 8 bits, and curr_depth is also 8 bits
                                                 // if we multiply together, the reuslt got hella bits, so we shift by 7
                                                 //to reduce number of bits
-    always comb begin
+    always_comb begin
         nxt_direction = curr_direction;
         nxt_depth = curr_depth;
         if(enable) begin

@@ -1,26 +1,26 @@
 module team_06_tremelo_tb;
-    input logic clkdiv, rst;  //put all the port ont this module
-    input logic [7:0] audio_in;
-    input logic enable;
-    output logic [7:0] audio_out;
+    logic clkdiv, rst;  //put all the port ont this module
+    logic [7:0] audio_in;
+    logic enable;
+    logic [7:0] audio_out;
 
 
     //instantiate the DUT
-    tremelo DUT(.clkdiv(clkdiv), .rst(rst), .audio_in(audio_in), .enable(enable), .audio_out(audio_out));
+    team_06_tremelo DUT(.clkdiv(clkdiv), .rst(rst), .audio_in(audio_in), .enable(enable), .audio_out(audio_out));
 
 
     //clock generation
     initial begin
         clkdiv = 0;
-        forever #10 clk = ~clk // every 10 unit, it toggles
+        forever #10 clkdiv = ~clkdiv; // every 10 unit, it toggles
     end
 
     //stimulus begin
     initial begin
 
-        $dumpfile("tremelo.vcd");
-        $dumpvars(0, tremelo_tb);
-        audio_in = 8d'100;
+        $dumpfile("team_06_tremelo.vcd");
+        $dumpvars(0, team_06_tremelo_tb);
+        audio_in = 8'd100;
         rst = 1;
         enable = 0;
 

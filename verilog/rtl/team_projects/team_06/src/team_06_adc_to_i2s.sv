@@ -10,7 +10,7 @@ module team_06_adc_to_i2s
     logic [7:0] out_temp;
     always_ff @(posedge spiclk or posedge rst) begin
         if(rst) begin
-            counter <= ' 0;
+            counter <= '0;
             out_temp <= '0;
             finished <= '0;
             spi_parallel_out <= '0;

@@ -2,8 +2,8 @@ module team_06_clkdivider( // this module is to create a new clock that has lowe
     input clk, rst, //system's clock so that the new clock can be used for tremelo module
     output clkdiv
 );
-    logic [4:0]counter;
-    logic [4:0] coutner_n;
+    logic [24:0] counter;
+    logic [24:0] counter_n;
     logic clkdiv_temp;
     logic clkdiv_temp_n;
     parameter DIV_COUNT = 25_000_000 / 2; // so our counter will ramp up tp this value and

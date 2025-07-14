@@ -1,10 +1,10 @@
 module team_06_mux(
-    input logic selector [1:0], //2-bit selector for choosing audio effect
-    input logic echo_out[7:0], //echo effect output
-    input logic hard_out[7:0], //hard clipping output
-    input logic soft_out[7:0], //soft clipping output
-    input logic dry_audio[7:0], //no effect 
-    output logic final_audio[7:0] //final ouput after selection from mux 
+    input logic [1:0] selector, //2-bit selector for choosing audio effect
+    input logic [7:0] echo_out, //echo effect output
+    input logic [7:0] hard_out, //hard clipping output
+    input logic [7:0] soft_out, //soft clipping output
+    input logic [7:0] dry_audio, //no effect 
+    output logic [7:0] final_audio //final ouput after selection from mux 
 );
 
 //combinational logic to select audio effect based on sel input

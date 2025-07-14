@@ -7,3 +7,9 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_mux.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_hard_clipping.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_soft_clipping.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_tremelo.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_tremelo_tb.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_i2s_to_dac.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_i2s_to_dac.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_clkdivider
+

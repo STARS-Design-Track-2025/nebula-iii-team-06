@@ -7,8 +7,8 @@ module readWrite (
     input logic record,
     input logic busySRAM,
     output logic [31:0] busAudioWrite,
-    output logic [31:0] addressOut,
-    output logic [7:0] audioOutput,
+    output logic [31:0] addressOut, // goes to SRAM
+    output logic [7:0] audioOutput, //past output
     output logic [3:0] select,
     output logic write,
     output logic read

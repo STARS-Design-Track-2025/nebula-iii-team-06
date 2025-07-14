@@ -3,3 +3,7 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_Wrapper.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_readWrite.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_echo_effect.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_mux.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_hard_clipping.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_soft_clipping.sv

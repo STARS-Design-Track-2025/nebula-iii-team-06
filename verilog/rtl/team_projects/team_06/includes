@@ -1,0 +1,5 @@
+# Team 06
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_readWrite.sv

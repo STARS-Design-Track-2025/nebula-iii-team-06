@@ -14,12 +14,12 @@ module team_06_volume_shifter(
         else begin
             if(enable_volume) begin
                 audio_out <= (audio_in * scale)>>4;
-            else begin
+            end else begin
                 audio_out <= '0;
             end
         end
     end
-    end
+    
 endmodule
 
 module volume_lut_log(

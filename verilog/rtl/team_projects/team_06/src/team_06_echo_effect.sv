@@ -7,7 +7,7 @@ module team_06_echo_effect (
   output logic [12:0] offset, //amount of spaces back we go to get the past output
   output logic search, //searching for past output from memory
   output logic [7:0] echo_out, //the echo output
-  output logic [7:0] save_audio //what is being sent to SRAM
+  output logic [7:0] save_audio //what is being sent to the SRAM
 );
 
 //ECHO = (audio_in  + c*past_output)/(1 + C) 

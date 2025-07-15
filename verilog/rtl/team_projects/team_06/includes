@@ -2,15 +2,17 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_WB.v
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_Wrapper.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_readWrite.sv
+
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_adc_to_i2s.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_clkdivider
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_echo_effect.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_mux.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_soft_clipping.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_tremelo.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_tremelo_tb.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_i2s_to_dac.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_clkdivider.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_FSM.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_i2s_to_dac.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_mux.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_readWrite.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_soft_clipping.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_synckey.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_tremelo.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_volume_shifter.sv
 
 

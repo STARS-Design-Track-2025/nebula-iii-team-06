@@ -6,7 +6,7 @@ module team_06_tremelo_tb;
 
 
     //instantiate the DUT
-    team_06_tremelo DUT(.clkdiv(clkdiv), .rst(rst), .audio_in(audio_in), .enable(enable), .audio_out(audio_out));
+    team_06_tremelo DUT(.clkdiv(clkdiv), .rst(rst), .audio_in(audio_in), .en(enable), .audio_out(audio_out));
 
 
     //clock generation

@@ -9,8 +9,6 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_tremelo.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_tremelo_tb.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_i2s_to_dac.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_clkdivider.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_FSM.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_synckey.sv
-
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_i2s_to_dac.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/team_06_clkdivider
 

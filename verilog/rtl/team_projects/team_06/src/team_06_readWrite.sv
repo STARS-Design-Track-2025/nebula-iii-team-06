@@ -1,4 +1,4 @@
-module readWrite (
+module team_06_readWrite (
     input logic clk, rst,
     input logic [31:0] busAudioRead,
     input logic [12:0] offset,

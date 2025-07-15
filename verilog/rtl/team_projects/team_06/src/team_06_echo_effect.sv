@@ -1,36 +1,36 @@
 `default_nettype none
 module team_06_echo_effect (
   input logic clk, rst,
-  input logic [7:0] audio_in,
-  input logic echo_enable,
-  input logic [7:0] past_output,
-  output logic [12:0] offset,
-  output logic search,
-  output logic [7:0] echo_out,
+  input logic [7:0] audio_in, //original audio entering echo module 
+  input logic echo_enable, //when the echo module is enabled it becomes 1
+  input logic [7:0] past_output, //past_output coming from memory
+  output logic [12:0] offset, //
+  output logic search, //searching for past output from memory
+  output logic [7:0] echo_out, //the echo output
   output logic [7:0] save_audio
 );
 
-//ECHO = (current_output  + c*past_output)/(1 + C) 
+//ECHO = (audio_in  + c*past_output)/(1 + C) 
 logic [7:0] current_out;
 
 assign save_audio = audio_in;
 
-always_ff @(posedge clk or posedge rst) begin
+always_ff @(posedge clk or posedge rst) begin //sequential logic 
   if(rst)begin
-    echo_out <= 0; 
+    echo_out <= 0;  //for every reset, we don't want any echo output 
   end else begin
-    echo_out <= current_out;
+    echo_out <= current_out; // every other case except reset, current output becomes echo output
   end
 end
 
-assign offset = 13'd8000;
+assign offset = 13'd8000; //giving the offset a value
 
 always_comb begin
   if(echo_enable == 1)begin
-    search = 1;
-    current_out = (audio_in + past_output) >> 1;
+    search = 1; //when echo_enable is on, we want to start searching the readwrite for past output from SRAM
+    current_out = (audio_in + past_output) >> 1; //the echo formula: we are using C as 1, 
   end else begin
-    current_out = audio_in;
+    current_out = audio_in; //else, 
     search = 0;
   end
 end

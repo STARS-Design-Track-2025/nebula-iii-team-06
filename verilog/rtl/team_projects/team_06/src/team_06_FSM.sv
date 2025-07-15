@@ -1,4 +1,4 @@
-module FSM(
+module team_06_FSM(
     input logic clk,
     input logic rst,
     input logic [7:0]mic_aud,       // Live audio being transmitted

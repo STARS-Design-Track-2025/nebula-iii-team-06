@@ -1,4 +1,4 @@
-module synckey (
+module team_06_synckey (
     input  logic [3:0] pbs,    // 4 pushbuttons
     input  logic clk,          // 25 mHz clock
     input  logic rst,          // Active-high reset

@@ -35,23 +35,15 @@ initial begin
 
 rst = 0;
 echo_enable = 1;
-echo_out = 1;
 audio_in = 1;
-offset = 1;
-search = 1;
 past_output = 1;
-save_audio = 1;
 
 #5
 @(posedge clk);
 rst = 1;
 echo_enable = 0;
-echo_out = 0;
 audio_in = 0;
-offset = 0;
-search = 0;
 past_output = 0;
-save_audio = 0;
 @(posedge clk);
 #5
 rst = 0;

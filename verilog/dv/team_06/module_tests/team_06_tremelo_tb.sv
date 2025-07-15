@@ -29,6 +29,7 @@ module team_06_tremelo_tb;
         enable = 1;
 
         repeat (360) @(posedge clkdiv);
+        $finish;
 
     end
 endmodule

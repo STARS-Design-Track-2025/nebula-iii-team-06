@@ -34,12 +34,12 @@ project_info:
   la_enabled: False
 
 # IMPORTANT: Do NOT manually edit the (external_interface) LA or WB Master signals. 
-# Use the project_info keys above.
+# Use the project_info keys above.     
 # You can check out what those keys do in /scripts/team_configuration.py, but basically they will 
 # adjust this file and the wrapper file to cleanly enable and disable the WB / LA signals.
 # To add registers check out "registers" and "flags" and "ports" below 
 external_interface:
-#   - name: la_data_in
+#   - name: la_data_in       
 #    port: la_data_in
 #    width: 32
 #    direction: input

@@ -1,6 +1,6 @@
 module team_06_soft_clipping(
-    input logic [7:0] audio_in,
-    output logic [7:0] soft_out
+    input logic [7:0] audio_in,  // input logic for transmitted signal
+    output logic [7:0] soft_out  // output logic for the soft clipping
 );
 
 //soft clipping thresholds 

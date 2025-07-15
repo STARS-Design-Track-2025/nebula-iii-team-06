@@ -30,7 +30,7 @@ always #0.5 clk = ~clk;
 
 initial begin
     // Waveform Dumping
-    $dumpfile("waves/team_06_echo_effect.vcd");
+    $dumpfile("team_06_echo_effect.vcd");
     $dumpvars(0, team_06_echo_effect_tb);
 
 rst = 0;
@@ -47,6 +47,9 @@ past_output = 0;
 @(posedge clk);
 #5
 rst = 0;
+echo_enable = 1;
+audio_in = 1;
+past_output = 1;
 @(posedge clk);
 #2;
 $finish;

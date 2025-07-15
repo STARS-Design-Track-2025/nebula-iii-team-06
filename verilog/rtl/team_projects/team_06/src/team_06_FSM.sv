@@ -64,7 +64,7 @@ endcase
 end
 assign state = current_state;
 
-    // Combinational: output logic
+    // Combinational logic for the output of the module
     always_comb begin
         vol_en = 0;
         eff_en = 0;

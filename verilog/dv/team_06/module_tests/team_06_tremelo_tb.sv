@@ -20,7 +20,7 @@ module team_06_tremelo_tb;
 
         $dumpfile("team_06_tremelo.vcd");
         $dumpvars(0, team_06_tremelo_tb);
-        audio_in = 8'd100;
+        audio_in = 8'b11100101;
         rst = 1;
         enable = 0;
 

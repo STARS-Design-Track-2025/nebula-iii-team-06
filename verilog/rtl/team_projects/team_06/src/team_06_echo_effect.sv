@@ -2,7 +2,7 @@
 module team_06_echo_effect (
   input logic clk, rst,
   input logic [7:0] audio_in, //original audio entering echo module 
-  input logic echo_enable, //when the echo module is enabled it becomes 1
+  input logic search_enable, //this triggers  memory search for the past output to make the echo effect
   input logic [7:0] past_output, //past_output coming from memory
   output logic [12:0] offset, //amount of spaces back we go to get the past output
   output logic search, //searching for past output from memory
@@ -25,8 +25,8 @@ end
 assign offset = 13'd8000; //giving the offset a value
 
 always_comb begin
-  if(echo_enable == 1)begin
-    search = 1; //when echo_enable is on, we want to start searching the readwrite for past output from SRAM
+  if(search_enable == 1)begin
+    search = 1; //when search_enable is on, we want to start searching the readwrite for past output from SRAM
     current_out = (audio_in + past_output) >> 1; //the echo formula: we are using C as 1, 
   end else begin
     current_out = audio_in; 

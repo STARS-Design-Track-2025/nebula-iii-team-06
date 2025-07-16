@@ -35,7 +35,7 @@ module team_06_adc_to_i2s
         finished_n = finished;
         spi_parallel_out_n = spi_parallel_out;
         if (curr_i2sclk && !past_i2sclk) begin
-            counter_n = ?counter + 1;
+            counter_n = counter + 1;
             out_temp_n = {out_temp[6:0], adc_serial_in};
             finished_n = (counter == 3'd7); 
             spi_parallel_out_n = (counter == 3'd7) ? {out_temp[6:0], adc_serial_in} : spi_parallel_out;

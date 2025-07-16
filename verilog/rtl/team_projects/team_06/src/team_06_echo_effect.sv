@@ -1,4 +1,4 @@
-`default_nettype none
+// `default_nettype none
 module team_06_echo_effect (
   input logic clk, rst,
   input logic [7:0] audio_in, //original audio entering echo module 
@@ -29,7 +29,8 @@ always_comb begin
     search = 1; //when echo_enable is on, we want to start searching the readwrite for past output from SRAM
     current_out = (audio_in + past_output) >> 1; //the echo formula: we are using C as 1, 
   end else begin
-    current_out = audio_in; 
+    // current_out = audio_in;
+    current_out = 0; 
     search = 0;
   end
 end

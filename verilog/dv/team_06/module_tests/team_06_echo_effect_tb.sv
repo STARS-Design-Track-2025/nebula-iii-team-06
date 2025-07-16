@@ -1,3 +1,7 @@
+/*This is the testbench module
+for our Echo Effect module: creating the echo sound effect.
+
+ */
 `timescale 1ms/10ps
 module team_06_echo_effect_tb;
 
@@ -32,27 +36,43 @@ initial begin
     // Waveform Dumping
     $dumpfile("team_06_echo_effect.vcd");
     $dumpvars(0, team_06_echo_effect_tb);
-
+// When we enable the search for the past input
+// and reset is pulled low while we have audio signal 
 rst = 0;
 echo_enable = 1;
-audio_in = 1;
-past_output = 1;
-
-#5
+audio_in = 68;
+past_output = 50;
 @(posedge clk);
+#5
+
+// When we enable the search for the past input
+// and reset is pulled high 
 rst = 1;
+echo_enable = 1;
+audio_in = 78;
+past_output = 89;
+@(posedge clk);
+#5
+
+// When we disable the search for the past input
+// and reset is pulled high 
+rst = 0;
 echo_enable = 0;
-audio_in = 0;
+audio_in = 75;
 past_output = 0;
 @(posedge clk);
 #5
-rst = 0;
+
+// When we enable the search for the past input
+// and reset is pulled high but with different audio values
+rst = 1;
 echo_enable = 1;
-audio_in = 1;
-past_output = 1;
-@(posedge clk);
+audio_in = 65;
+past_output = 56;
+
 #2;
 $finish;
+
 
 
 

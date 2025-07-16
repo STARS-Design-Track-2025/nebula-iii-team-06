@@ -5,6 +5,7 @@ module team_06_readWrite (
     input logic [7:0] micAudio,
     input logic search,
     input logic record,
+    input logic modeReset,
     input logic busySRAM,
     output logic [31:0] busAudioWrite,
     output logic [31:0] addressOut, // goes to SRAM
@@ -31,7 +32,7 @@ always_comb begin
     if (sram == IDLE) begin
         if (record) begin // record command from audio effects 
         sram_n = WRITE;
-        end else if (search) begin // search command from audio effects
+        end else if (search && goodData) begin // search command from audio effects. While in modeReset, you are unable to read as the data is not good
         sram_n = READ;
         end else begin
         sram_n = IDLE;
@@ -45,21 +46,37 @@ always_comb begin
     end
 end
 
-// POINTER ARITHMETIC 
-logic [12:0] pointer, pointer_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
+// POINTER ARITHMETIC and SRAM cleaning
+logic [12:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
 logic [1:0] pointer2; // pointer2 is used later to find when we have four bytes of data to send to SRAM
+logic goodData, goodData_n; // Whether your data is good
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         pointer <= 0;
+        dataEvaluation <= 0;
+        goodData <= 0;
     end else begin
         pointer <= pointer_n;
+        dataEvaluation <= dataEvaluation_n;
+        goodData <= goodData_n;
     end
 end
 
 assign pointer2 = pointer[1:0]; 
 
 always_comb begin
+
+    dataEvaluation_n = dataEvaluation;
+    goodData_n = goodData;
+
+    if (modeReset) begin // If we reset the mode, we designate the last memory address to clean
+        dataEvaluation_n = pointer;
+        goodData_n = 0;
+    end else if (dataEvaluation == pointer) begin // If we reach the last memory address, we should have clean data next clock cycle
+        goodData_n = 1;
+    end
+
     if (sram == WRITE) begin
         pointer_n = pointer + 1;
     end else begin
@@ -103,11 +120,30 @@ logic [7:0] audioOutput_n; // What the audio effect modules receieve
 logic [31:0] audioSample, audioSample_n; // Most recent audio file (word)
 logic read_n; 
 
+always_ff @ (posedge clk, posedge rst) begin
+    if (rst) begin
+        read <= WAIT; 
+        audioSample <= 0;
+        audioOutput <= 0;
+        audioLocation <= 0;
+    end else begin
+        read <= read_n;
+        audioSample <= audioSample_n;
+        audioLocation <= audioLocation_n;
+        audioOutput <= audioOutput_n;
+    end
+end
+
 always_comb begin
     audioSample_n = audioSample; 
     audioOutput_n = audioOutput;
     audioLocation_n = audioLocation;
-    if (sram == READ) begin
+    if (!goodData) begin  // If we do not have good data, just stop reading and clear everything
+        read_n = WAIT;
+        audioSample_n = 0;
+        audioOutput_n = 0;
+        audioLocation_n = 0; 
+    end else if (sram == READ) begin
         if (audioLocation != address) begin // If the word has changed
             read_n = REQUEST;
         end else begin  // If we have not changed the word we are looking at, no need to read 
@@ -121,20 +157,6 @@ always_comb begin
         audioLocation_n = address;
     end else begin
         read_n = read;
-    end
-end
-
-always_ff @ (posedge clk, posedge rst) begin
-    if (rst) begin
-        read <= WAIT; 
-        audioSample <= 0;
-        audioOutput <= 0;
-        audioLocation <= 0;
-    end else begin
-        read <= read_n;
-        audioSample <= audioSample_n;
-        audioLocation <= audioLocation_n;
-        audioOutput <= audioOutput_n;
     end
 end
 

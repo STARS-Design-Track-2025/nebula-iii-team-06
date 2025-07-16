@@ -15,3 +15,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_synckey.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_tremelo.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_volume_shifter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_edge_detection_i2s.sv

@@ -20,7 +20,7 @@ module team_06_i2sclkdivider(
         counter_n = counter;
         i2sclk_n = i2sclk;
         if(counter == 24) begin
-            counter_n = 0;
+            counter_n = 1;
             i2sclk_n = ~i2sclk;
         end
         else begin

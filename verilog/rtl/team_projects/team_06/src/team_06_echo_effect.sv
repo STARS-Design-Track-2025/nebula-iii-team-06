@@ -2,7 +2,7 @@
 module team_06_echo_effect (
   input logic clk, rst,
   input logic [7:0] audio_in, //original audio entering echo module 
-  input logic echo_enable, //when the echo module is enabled it becomes 1
+  input logic echo_enable, //this triggers  memory search for the past output to make the echo effect
   input logic [7:0] past_output, //past_output coming from memory
   output logic [12:0] offset, //amount of spaces back we go to get the past output
   output logic search, //searching for past output from memory

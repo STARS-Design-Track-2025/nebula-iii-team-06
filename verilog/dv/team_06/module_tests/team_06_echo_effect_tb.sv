@@ -8,7 +8,7 @@ module team_06_echo_effect_tb;
 logic clk;
 logic rst;
 logic [7:0] audio_in;
-logic echo_enable;
+logic search_enable;
 logic [7:0] past_output;
 logic [12:0] offset;
 logic search;
@@ -21,7 +21,7 @@ team_06_echo_effect sahur (
 .clk(clk),
 .rst(rst),
 .audio_in(audio_in),
-.echo_enable(echo_enable),
+.search_enable(search_enable),
 .past_output(past_output),
 .offset(offset),
 .search(search),

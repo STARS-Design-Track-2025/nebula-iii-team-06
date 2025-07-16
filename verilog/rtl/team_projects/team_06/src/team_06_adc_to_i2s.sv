@@ -7,14 +7,14 @@ module team_06_adc_to_i2s
 
 );
     logic i2sclk;
-    logic curr_i2sclk, past_i2sclk;
+    logic past_i2sclk;
     //logic past_i2sclk;
     logic [2:0] counter, counter_n; // counter is used to count how many bits we have right now. it will count from 1 to 8
     logic [7:0] out_temp, out_temp_n, spi, spi_parallel_out_n;
     logic finished_n;
 
     team_06_i2sclkdivider div_clk(.clk(clk), .rst(rst), .i2sclk(i2sclk));
-    team_06_edge_detection_i2s ed(.i2sclk(i2sclk), .curr_i2sclk(curr_i2sclk), .past_i2sclk(past_i2sclk));
+    team_06_edge_detection_i2s ed(.i2sclk(i2sclk), .clk(clk), .rst(rst), .past_i2sclk(past_i2sclk));
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
             counter <= '0;
@@ -34,7 +34,7 @@ module team_06_adc_to_i2s
         out_temp_n = out_temp;
         finished_n = finished;
         spi_parallel_out_n = spi_parallel_out;
-        if (curr_i2sclk && !past_i2sclk) begin
+        if (i2sclk && !past_i2sclk) begin
             counter_n = counter + 1;
             out_temp_n = {out_temp[6:0], adc_serial_in};
             finished_n = (counter == 3'd7); 

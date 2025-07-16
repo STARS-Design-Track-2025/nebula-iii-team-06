@@ -4,8 +4,11 @@ module team_06_adc_to_i2s_tb;
     logic [7:0] spi_parallel_out;// spi_parallel_out will always be 0 unitl it collects all 8 bits
     logic finished;
     logic [7:0] temp;
+    logic i2sclk;
 
     team_06_adc_to_i2s DUT(.clk(clk), .rst(rst), .adc_serial_in(adc_serial_in), .spi_parallel_out(spi_parallel_out), .finished(finished));
+    team_06_i2sclkdivider div_i2sclk(.clk(clk), .rst(rst), .i2sclk(i2sclk));
+
 
     initial begin
         clk = 0;
@@ -19,28 +22,28 @@ module team_06_adc_to_i2s_tb;
         #25;
         
         rst = 0; //sends :10100111
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
-        adc_serial_in = 0; @(posedge clk);
-        adc_serial_in = 1; @(posedge clk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
 
         //rst = 1;
         #15;
@@ -49,7 +52,7 @@ module team_06_adc_to_i2s_tb;
         //another way by using for loop. we have to send msb first
         temp = 8'b11010110;
         for(int i = 7; i >= 0; i--) begin
-            adc_serial_in = temp[i]; @(posedge clk);
+            adc_serial_in = temp[i]; @(posedge i2sclk);
         end
         $finish;
     end

@@ -1,17 +1,17 @@
 module team_06_readWrite (
     input logic clk, rst,
-    input logic [31:0] busAudioRead,
-    input logic [12:0] offset,
-    input logic [7:0] micAudio,
-    input logic search,
-    input logic record,
-    input logic modeReset,
-    input logic busySRAM,
-    output logic [31:0] busAudioWrite,
-    output logic [31:0] addressOut, // goes to SRAM
-    output logic [7:0] audioOutput, //past output
-    output logic [3:0] select,
-    output logic write,
+    input logic [31:0] busAudioRead, // The data that is coming from the SRAM bus (only valid when not busy)
+    input logic [12:0] offset, // How many samples into the past are you going (0 is current, all 1s is the oldest)
+    input logic [7:0] effectAudioIn, // The audio coming in from the audio effect module for storage
+    input logic search, // Audio effects module telling the read write module it is time to read from SRAM
+    input logic record, // Audio effects module telling the read write module it is time to write effectAudioIn to SRAM
+    input logic effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten
+    input logic busySRAM, // This comes from SRAM when it is not done reading or writing
+    output logic [31:0] busAudioWrite, // This is what you want to write to SRAM
+    output logic [31:0] addressOut, // goes to SRAM, where we want to write in memory
+    output logic [7:0] audioOutput, // the audio output that goes to the audio effects module
+    output logic [3:0] select, // goes to SRAM, which bytes we want in the four byte word (we always want all of them for efficency)
+    output logic write, //
     output logic read
 );
 
@@ -50,16 +50,20 @@ end
 logic [12:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
 logic [1:0] pointer2; // pointer2 is used later to find when we have four bytes of data to send to SRAM
 logic goodData, goodData_n; // Whether your data is good
+logic effect_old;
+
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         pointer <= 0;
         dataEvaluation <= 0;
         goodData <= 0;
+        effect_old <= 0;
     end else begin
         pointer <= pointer_n;
         dataEvaluation <= dataEvaluation_n;
         goodData <= goodData_n;
+        effect_old <= effect;
     end
 end
 
@@ -70,7 +74,7 @@ always_comb begin
     dataEvaluation_n = dataEvaluation;
     goodData_n = goodData;
 
-    if (modeReset) begin // If we reset the mode, we designate the last memory address to clean
+    if (effect_old != effect) begin // If we reset the mode, we designate the last memory address to clean
         dataEvaluation_n = pointer;
         goodData_n = 0;
     end else if (dataEvaluation == pointer) begin // If we reach the last memory address, we should have clean data next clock cycle
@@ -180,7 +184,7 @@ always_comb begin
     audioTemp_n = audioTemp;
     busAudioWrite_n = busAudioWrite;
     if (sram == WRITE) begin
-        audioTemp_n[pointer2*8+:8] = micAudio; // add the sample to audioTemp
+        audioTemp_n[pointer2*8+:8] = effectAudioIn; // add the sample to audioTemp
         write_n = WAIT;
         if (pointer2 == 3) begin
             busAudioWrite_n = audioTemp_n; // Important, make sure this is after you update audioTemp_n
@@ -197,3 +201,4 @@ always_comb begin
 end
 
 endmodule
+// My prediction was correcct

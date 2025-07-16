@@ -2,16 +2,17 @@ module team_06_adc_to_i2s
 (
     input logic clk, rst,
     input logic adc_serial_in, //adc sends msb first, so we shift right
-    output logic [7:0] spi_parallel_out,// spi_parallel_out will always be 0 unitl it collects all 8 bits
+    output logic signed  [8:0] spi_parallel_out,// spi_parallel_out will always be 0 unitl it collects all 8 bits
     output logic finished // this is to know if our 8 bit register recieve 8bbits form ADC
 
 );
     logic i2sclk;
     logic past_i2sclk;
     //logic past_i2sclk;
-    logic [2:0] counter, counter_n; // counter is used to count how many bits we have right now. it will count from 1 to 8
-    logic [7:0] out_temp, out_temp_n, spi, spi_parallel_out_n;
+    logic [4:0] counter, counter_n; // counter is used to count how many bits we have right now. it will count from 1 to 8
+    logic [8:0] spi_parallel_out_n;
     logic finished_n;
+    logic [31:0] out_temp, out_temp_n;
 
     team_06_i2sclkdivider div_clk(.clk(clk), .rst(rst), .i2sclk(i2sclk));
     team_06_edge_detection_i2s ed(.i2sclk(i2sclk), .clk(clk), .rst(rst), .past_i2sclk(past_i2sclk));
@@ -36,9 +37,9 @@ module team_06_adc_to_i2s
         spi_parallel_out_n = spi_parallel_out;
         if (i2sclk && !past_i2sclk) begin
             counter_n = counter + 1;
-            out_temp_n = {out_temp[6:0], adc_serial_in};
-            finished_n = (counter == 3'd7); 
-            spi_parallel_out_n = (counter == 3'd7) ? {out_temp[6:0], adc_serial_in} : spi_parallel_out;
+            out_temp_n = {out_temp[30:0], adc_serial_in};
+            finished_n = (counter == 5'd31); 
+            spi_parallel_out_n = (counter == 5'd31) ? out_temp[30:22] : spi_parallel_out;
         end
     end 
 

@@ -39,7 +39,7 @@ initial begin
 // When we enable the search for the past input
 // and reset is pulled low while we have audio signal 
 rst = 0;
-echo_enable = 1;
+search_enable = 1;
 audio_in = 68;
 past_output = 50;
 @(posedge clk);
@@ -48,7 +48,7 @@ past_output = 50;
 // When we enable the search for the past input
 // and reset is pulled high 
 rst = 1;
-echo_enable = 1;
+search_enable = 1;
 audio_in = 78;
 past_output = 89;
 @(posedge clk);
@@ -57,7 +57,7 @@ past_output = 89;
 // When we disable the search for the past input
 // and reset is pulled high 
 rst = 0;
-echo_enable = 0;
+search_enable = 0;
 audio_in = 75;
 past_output = 0;
 @(posedge clk);
@@ -66,7 +66,7 @@ past_output = 0;
 // When we enable the search for the past input
 // and reset is pulled high but with different audio values
 rst = 1;
-echo_enable = 1;
+search_enable = 1;
 audio_in = 65;
 past_output = 56;
 

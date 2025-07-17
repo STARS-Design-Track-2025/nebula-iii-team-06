@@ -1,12 +1,13 @@
 module team_06_adc_to_i2s_tb;
     logic clk, rst;
     logic adc_serial_in; //adc sends msb first, so we shift right
-    logic [7:0] spi_parallel_out;// spi_parallel_out will always be 0 unitl it collects all 8 bits
+    logic [7:0] i2s_parallel_out;// spi_parallel_out will always be 0 unitl it collects all 8 bits
     logic finished;
     logic [7:0] temp;
     logic i2sclk;
+    logic ws;
 
-    team_06_adc_to_i2s DUT(.clk(clk), .rst(rst), .adc_serial_in(adc_serial_in), .spi_parallel_out(spi_parallel_out), .finished(finished));
+    team_06_adc_to_i2s DUT(.clk(clk), .rst(rst), .adc_serial_in(adc_serial_in), .i2s_parallel_out(i2s_parallel_out), .finished(finished), .ws(ws));
     team_06_i2sclkdivider div_i2sclk(.clk(clk), .rst(rst), .i2sclk(i2sclk));
 
 
@@ -22,6 +23,29 @@ module team_06_adc_to_i2s_tb;
         #25;
         
         rst = 0; //sends :10100111
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+
         adc_serial_in = 1; @(negedge i2sclk);
         adc_serial_in = 0; @(negedge i2sclk);
         adc_serial_in = 1; @(negedge i2sclk);

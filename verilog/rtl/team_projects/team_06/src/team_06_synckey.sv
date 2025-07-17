@@ -30,6 +30,12 @@ typedef enum logic [1:0] {
 } ENC_t;
 logic[1:0] current_ENC, previous_ENC; // variables we need for comparing the encoded combinations
 
+// typedef struct packed {
+//     mute;
+//     ptt;
+//     noise_gate;
+//     effect;
+// } pbs_s;
 
 // 2-stage synchronizer for pushbuttons and volume knob
 always_ff @(posedge clk, posedge rst) begin
@@ -39,10 +45,12 @@ always_ff @(posedge clk, posedge rst) begin
         prevV <= 2'b0;
         currV <= 2'b0;
     end else begin
-        prevPBS <= pbs;
-        currPBS <= prevPBS;
-        prevV <= vol;
-        currV <= prevV;
+        currPBS <= pbs;
+        prevPBS <= currPBS;
+        // prevPBS <= pbs;
+        // currPBS <= prevPBS;
+        currV <= vol;
+        prevV <= currV;
     end
 end
 
@@ -52,10 +60,14 @@ end
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         prev_syncPBS <= 4'b0;
+        currPBS <= 4'b0;
+        
     end else begin
-        prev_syncPBS <= currPBS;
+        prev_syncPBS <= prevPBS;
+        next_in <= currPBS;
     end
 end
+
 
 // Edge detector logic for the push buttons: mute, push-to-talk, effects, and mute
 always_comb begin
@@ -64,14 +76,19 @@ effect_en = effect;
 ptt_en = ptt;
 ng_en = noise_gate;
 
-if (next_in[1] & ~prev_syncPBS[1]) begin // rising edge for mute
+if (next_in[1] && ~prev_syncPBS[1]) begin // rising edge for mute
             mute_en = ~mute_en;
-end else if (next_in[2] & ~prev_syncPBS[2]) begin // rising edge for effects
-            effect_en = ~effect_en;
-end else if (next_in[3] & ~prev_syncPBS[3]) begin// rising edge noise gate
+end 
+if (next_in[2] && ~prev_syncPBS[2]) begin // rising edge for effects
+            effect = ~effect;
+end 
+if (next_in[3] && ~prev_syncPBS[3]) begin// rising edge noise gate
             ng_en = ~ng_en;
-end else if (next_in[0]) begin // rising edge for the push-to-talk button
+end
+if (next_in[0]) begin // rising edge for the push-to-talk button
             ptt_en = 1;
+end else begin
+            ptt_en = 0;
 end
 end
 
@@ -120,10 +137,10 @@ end
 // Combinational logic for the increasing or reducing the volume
 always_comb begin
 new_volume = volume;
-if (CW && new_volume < 4'd15) begin
+if (CW && (new_volume < 4'd15)) begin
    new_volume = new_volume + 1; 
 end
-else if(ACW && new_volume > 4'd0) begin
+else if(ACW && (new_volume > 4'd0)) begin
     new_volume = new_volume - 1;
 end
 end

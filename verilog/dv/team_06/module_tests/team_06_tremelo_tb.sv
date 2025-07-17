@@ -28,6 +28,16 @@ module team_06_tremelo_tb;
         rst = 0;
         enable = 1;
 
+        #25;// we set 25 so rst changes in between rising edge and falling edge. this is to prevent race condition
+        audio_in = 8'b11111111;
+        rst = 0;
+        enable = 1;
+
+        #25;// we set 25 so rst changes in between rising edge and falling edge. this is to prevent race condition
+        audio_in = 8'b00000100;
+        rst = 0;
+        enable = 1;
+
         repeat (360) @(posedge clkdiv);
         $finish;
 

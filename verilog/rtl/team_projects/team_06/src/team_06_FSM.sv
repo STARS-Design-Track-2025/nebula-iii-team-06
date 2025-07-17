@@ -11,6 +11,9 @@ module team_06_FSM(
     output logic eff_en,            // Whether the current effect used will be enabled
     output logic vol_en             // Whether volume is enabled or not
 );
+
+// Fix indentation!
+
 typedef enum logic [1:0] { 
     LIST = 2'b00,
     TALK = 2'b01
@@ -26,12 +29,12 @@ assign threshold = 8'd64; // threshold is 64 decibels
 
 // Synchroning the state with the clock
 always_ff @(posedge clk, posedge rst) begin
-    if (rst)
+    if (rst) begin
            current_state <= LIST;
-        else
+    end else begin
             current_state <= next_state;
     end
-
+end
 // Combinational: next state logic
 always_comb begin
 next_state = current_state;
@@ -42,14 +45,14 @@ spk_active = (spk_aud != 0);    // speaker is active logic
  based on the current state and certain conditions (MEALY)*/
 case (current_state)
 LIST: begin
-     if (spk_active) begin
-            next_state = LIST;
+    if (spk_active) begin
+        next_state = LIST;
      end
      
      else if ((ng_en && !ptt_en && check) || ptt_en) begin
             next_state = TALK;
      end 
-            end
+    end
 
 TALK: begin
     if ((!ptt_en && !ng_en) || (ng_en && !ptt_en && !check)) begin

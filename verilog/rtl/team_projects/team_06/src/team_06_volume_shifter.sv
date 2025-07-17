@@ -13,7 +13,7 @@ module team_06_volume_shifter(
         end
         else begin
             if(enable_volume) begin
-                audio_out_16 <= (audio_in * scale)/16'd255;
+                audio_out_16 <= (audio_in * scale)/16'd255; // Think about size
             end else begin
                 audio_out_16 <= '0;
             end

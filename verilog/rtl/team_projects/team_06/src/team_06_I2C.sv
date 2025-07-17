@@ -2,7 +2,64 @@ module team_06_I2C
 (
     input logic clk, rst, effect
 );
+
 /*
+// Clock divider
+logic [8:0] counter; 
+logic [8:0] counter_n;
+logic clkdiv;
+logic clkdiv_n;
+
+
+always_ff @(posedge clk or posedge rst) begin
+    if(rst) begin
+        counter <= 0;
+        clkdiv <= 0;
+    end else begin
+        counter <= counter_n;
+        clkdiv <= clkdiv_n;
+    end 
+end
+
+always_comb begin
+    counter_n = counter + 1;
+    clkdiv_n = clkdiv;
+    if(counter == 9'd511) begin // We divide down to about 24 kHz (just random, can change. This is our pseudo-bitclock)
+        clkdiv_n = ~clkdiv;
+    end
+end
+
+// State machine
+typedef enum logic [2:0] {BEGINS = 0, SEND = 1, ACK = 2, WAIT = 3, ENDS = 4, OFF = 5} state_t;
+logic [2:0] state, state_n;
+logic effect_old;
+
+always_ff @(posedge clk or posedge rst) begin
+    if(rst) begin
+        state <= 0;
+        effect_old <= 0;
+    end else begin
+        state <= state_n;
+        effect_old <= effect;
+    end 
+end
+
+always_comb begin
+    case (state)
+    OFF: begin  
+        if (effect_old != effect) begin
+            state_n = BEGINS;
+        end else begin
+            state_n = OFF;
+        end
+    end
+    WAIT: begin
+        if (ack && complete && count = 1) begin
+            state_n = BEGINS;
+        end else if (complete)
+    endcase
+end
+
 logic [8:0] counter; 
 logic [8:0] counter_n;
 logic clkdiv;

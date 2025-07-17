@@ -12,13 +12,16 @@ module team_06_echo_effect (
 
 //ECHO = (audio_in  + c*past_output)/(1 + C) 
 logic [7:0] current_out; //temporary echo output 
+logic search_n;
 
 assign save_audio = audio_in;//what is being sent to SRAM 
 always_ff @(posedge clk or posedge rst) begin 
   if(rst)begin
-    echo_out <= 0;  
+    echo_out <= 0; 
+    search <= 0; 
   end else begin
     echo_out <= current_out; 
+    search <= search_n;
   end
 end
 
@@ -30,13 +33,13 @@ assign dividerpast = {past_output, 1'b0};
 
 always_comb begin
   if(search_enable == 1)begin
-    search = 1; //when search_enable is on, we want to start searching the readwrite for past output from SRAM
+    search_n = 1; //when search_enable is on, we want to start searching the readwrite for past output from SRAM
     dividercurrent = (dividerin + dividerpast)/2; //the echo formula: we are using C as 1, 
     current_out = dividercurrent[8:1];
   end else begin
     dividercurrent = 0;
     current_out = audio_in; 
-    search = 0;
+    search_n = 0;
   end
 end
 

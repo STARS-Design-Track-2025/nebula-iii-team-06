@@ -83,7 +83,11 @@ audio_in = 254;
 past_output = 255;
 #5
 
-
+rst = 1;
+search_enable = 1;
+audio_in = 12;
+past_output = 255;
+#5
 
 #2;
 $finish;

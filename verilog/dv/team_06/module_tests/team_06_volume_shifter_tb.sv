@@ -15,16 +15,27 @@ module team_06_volume_shifter_tb;
     initial begin
         $dumpfile("team_06_volume_shifter.vcd");
         $dumpvars(0, team_06_volume_shifter_tb);
+        rst = 1;
+        #10
+
         enable_volume = 0;
         volume = 4'd6;
         rst = 0;
         audio_in = 8'd64;
-        #25;
+        #50;
         enable_volume = 1;
-        
-        #10;
+        volume = 4'd6;
+        audio_in = 8'd64;
+        #50;
+        volume = 4'd15;
+        audio_in = 8'd255;
+        #50;
         rst = 0;
         enable_volume = 1;
+        #50;
+        rst = 1;
+        enable_volume = 1;
+        #50
         $finish;
     end
 

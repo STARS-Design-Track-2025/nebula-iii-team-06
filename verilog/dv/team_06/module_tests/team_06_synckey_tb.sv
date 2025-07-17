@@ -64,7 +64,7 @@ initial begin
 
  @(posedge clk);
     #5
-    rst = 1;
+    rst = 0;
     pbs = 4;
     vol = 1;
 

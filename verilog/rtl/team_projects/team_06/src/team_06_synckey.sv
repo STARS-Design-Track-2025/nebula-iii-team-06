@@ -61,7 +61,7 @@ always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         prev_syncPBS <= 4'b0;
         currPBS <= 4'b0;
-        
+        next_in <= 4'b0;
     end else begin
         prev_syncPBS <= prevPBS;
         next_in <= currPBS;

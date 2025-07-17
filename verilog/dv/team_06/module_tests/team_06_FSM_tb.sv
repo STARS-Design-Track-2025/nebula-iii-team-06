@@ -37,16 +37,6 @@ initial begin
     $dumpfile("team_06_FSM.vcd");
     $dumpvars(0, team_06_FSM_tb);
 
-    rst = 1;
-    mic_aud = 0;
-    spk_aud = 0;
-    ng_en = 0;
-    ptt_en = 0;
-    effect = 0;
-    mute = 0;
-
-    #5
-    @(posedge clk);
     rst = 0;
     mic_aud = 60;
     spk_aud = 0;
@@ -108,19 +98,9 @@ initial begin
     @(posedge clk);
     #5
     rst = 0;
-    mic_aud = 80;
-    spk_aud = 0;
-    ng_en = 0;
-    ptt_en = 0;
-    effect = 0;
-    mute = 0;
-
-    @(posedge clk);
-    #5
-    rst = 0;
-    mic_aud = 20;
+    mic_aud = 0;
     spk_aud = 1;
-    ng_en = 1;
+    ng_en = 0;
     ptt_en = 0;
     effect = 0;
     mute = 0;
@@ -134,18 +114,6 @@ initial begin
     ptt_en = 0;
     effect = 0;
     mute = 1;
-    #5
-
-    @(posedge clk);
-    #5
-    rst = 0;
-    mic_aud = 0;
-    spk_aud = 0;
-    ng_en = 0;
-    ptt_en = 0;
-    effect = 0;
-    mute = 0;
-    #5
 
 
     @(posedge clk);
@@ -157,11 +125,10 @@ initial begin
     ptt_en = 0;
     effect = 0;
     mute = 0;
-    #5
 
-    @(posedge clk);
     #5
     rst =0;
+    @(posedge clk);
     #2;
     $finish;
 

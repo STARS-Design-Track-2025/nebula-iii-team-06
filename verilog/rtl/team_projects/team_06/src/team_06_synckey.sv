@@ -47,8 +47,6 @@ always_ff @(posedge clk, posedge rst) begin
     end else begin
         currPBS <= pbs;
         prevPBS <= currPBS;
-        // prevPBS <= pbs;
-        // currPBS <= prevPBS;
         currV <= vol;
         prevV <= currV;
     end
@@ -80,7 +78,7 @@ if (next_in[1] && ~prev_syncPBS[1]) begin // rising edge for mute
             mute_en = ~mute_en;
 end 
 if (next_in[2] && ~prev_syncPBS[2]) begin // rising edge for effects
-            effect = ~effect;
+            effect_en = ~effect;
 end 
 if (next_in[3] && ~prev_syncPBS[3]) begin// rising edge noise gate
             ng_en = ~ng_en;

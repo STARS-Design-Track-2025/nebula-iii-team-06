@@ -53,7 +53,13 @@ audio_in = 78;
 past_output = 89;
 @(posedge clk);
 #5
-
+// When we enable the search for the past input
+// and reset is pulled high but with different audio values
+rst = 1;
+search_enable = 1;
+audio_in = 65;
+past_output = 56;
+#5
 // When we disable the search for the past input
 // and reset is pulled high 
 rst = 0;
@@ -63,12 +69,21 @@ past_output = 0;
 @(posedge clk);
 #5
 
-// When we enable the search for the past input
-// and reset is pulled high but with different audio values
-rst = 1;
+// This test case is to see what happens when we have two maximum values
+rst = 0;
 search_enable = 1;
-audio_in = 65;
-past_output = 56;
+audio_in = 255;
+past_output = 255;
+#5
+
+// This test case is to see what happens when we have even and odd values. You see that we do floor rounding
+rst = 0;
+search_enable = 1;
+audio_in = 254;
+past_output = 255;
+#5
+
+
 
 #2;
 $finish;

@@ -22,13 +22,19 @@ always_ff @(posedge clk or posedge rst) begin
   end
 end
 
+logic [8:0] dividerin, dividerpast, dividercurrent;
+
 assign offset = 13'd8000; //giving the offset a value
+assign dividerin = {audio_in, 1'b0};
+assign dividerpast = {past_output, 1'b0};
 
 always_comb begin
   if(search_enable == 1)begin
     search = 1; //when search_enable is on, we want to start searching the readwrite for past output from SRAM
-    current_out = (audio_in + past_output) >> 1; //the echo formula: we are using C as 1, 
+    dividercurrent = (dividerin + dividerpast)/2; //the echo formula: we are using C as 1, 
+    current_out = dividercurrent[8:1];
   end else begin
+    dividercurrent = 0;
     current_out = audio_in; 
     search = 0;
   end

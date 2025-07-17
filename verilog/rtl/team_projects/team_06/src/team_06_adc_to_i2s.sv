@@ -44,12 +44,13 @@ module team_06_adc_to_i2s
         out_temp_n = out_temp;
         finished_n = finished;
         i2s_parallel_out_n = i2s_parallel_out;
-        if (i2sclk && !past_i2sclk) begin
+        if (!i2sclk && past_i2sclk && counter == 31) begin
+            ws_n = !ws;
+        end else if (i2sclk && !past_i2sclk) begin
             out_temp_n = {out_temp[30:0], adc_serial_in};
             counter_n = counter +1;
             finished_n= (counter == 31);
             if (counter == 31) begin
-                ws_n = !ws;
                 signed_val = out_temp[30];
                 data = out_temp[29:22];
                 temp_signed = {signed_val, data};

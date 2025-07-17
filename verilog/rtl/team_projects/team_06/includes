@@ -17,3 +17,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_volume_shifter.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_edge_detection_i2s.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_I2C.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_reverb.sv

@@ -37,6 +37,16 @@ initial begin
     $dumpfile("team_06_FSM.vcd");
     $dumpvars(0, team_06_FSM_tb);
 
+    rst = 1;
+    mic_aud = 0;
+    spk_aud = 0;
+    ng_en = 0;
+    ptt_en = 0;
+    effect = 0;
+    mute = 0;
+
+    #5
+    @(posedge clk);
     rst = 0;
     mic_aud = 60;
     spk_aud = 0;
@@ -110,7 +120,7 @@ initial begin
     rst = 0;
     mic_aud = 20;
     spk_aud = 1;
-    ng_en = 0;
+    ng_en = 1;
     ptt_en = 0;
     effect = 0;
     mute = 0;

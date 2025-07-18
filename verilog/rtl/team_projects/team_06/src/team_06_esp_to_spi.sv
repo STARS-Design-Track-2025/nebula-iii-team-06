@@ -1,4 +1,4 @@
-module team_06_spi_to_esp
+module team_06_esp_to_spi
 (
     input logic clk, rst,
     input logic esp_serial_in, //adc sends msb first, so we shift right
@@ -36,7 +36,7 @@ module team_06_spi_to_esp
         finished_n = finished;
         out_temp_n = out_temp;
         spi_parallel_out_n =  spi_parallel_out;
-        if (i2sclk && !past_i2sclk) begin
+        if (spiclk && !past_spiclk) begin
            if ( counter == 8) begin
                 spi_parallel_out_n = out_temp;
                 out_temp_n = {out_temp[6:0], esp_serial_in};

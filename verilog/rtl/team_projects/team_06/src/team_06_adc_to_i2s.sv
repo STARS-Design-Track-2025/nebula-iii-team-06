@@ -49,7 +49,7 @@ module team_06_adc_to_i2s
             finished_n = (counter == 31);
             if (counter == 31) begin
                 temp_signed = out_temp[30:23];
-                i2s_parallel_out_n = i2s_parallel_out_n + 8'b11111111;
+                i2s_parallel_out_n = temp_signed + 8'b10000000;   // -128 to 127  + 128 -> 0 to 255
             end
         end
     end 

@@ -45,29 +45,22 @@ module team_06_adc_to_i2s_tb;
         adc_serial_in = 1; @(negedge i2sclk);
         adc_serial_in = 0; @(negedge i2sclk);
         adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
 
+        // Test -1
+        adc_serial_in = 1; @(negedge i2sclk);
+        repeat (39) @(negedge i2sclk)
+
+        // Test -128
         adc_serial_in = 1; @(negedge i2sclk);
         adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
+        repeat (30) @(negedge i2sclk)
+
+        // Test 127
         adc_serial_in = 0; @(negedge i2sclk);
         adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
-        adc_serial_in = 0; @(negedge i2sclk);
-        adc_serial_in = 1; @(negedge i2sclk);
+        repeat (37) @(negedge i2sclk)
 
         //rst = 1;
         #15;

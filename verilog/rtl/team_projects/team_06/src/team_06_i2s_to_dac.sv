@@ -29,7 +29,7 @@ module team_06_i2s_to_dac(
         serial_out_n = serial_out;
         parallel_in_temp_n = parallel_in_temp;
 
-        if (i2sclk && !past_i2sclk) begin 
+        if (!i2sclk && past_i2sclk) begin 
             if (counter == 5'd0) begin
                 parallel_in_temp_n = {parallel_in[14:0], 1'b0}; 
                 serial_out_n = parallel_in[15]; 

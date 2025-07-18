@@ -1,13 +1,13 @@
 module team_06_synckey (
-    input logic [3:0] pbs,    // 4 pushbuttons
-    input logic clk,          // 25 mHz clock
-    input logic rst,          // Active-high reset
-    input logic [1:0]vol,      // volume input for the volume knob
-    output logic [3:0] volume, // volume output logic for the volume shifter module
-    output logic ptt,          // push-to-talk mode enabled
-    output logic noise_gate,   // noise gate mode enabled
-    output logic effect,       // effects enabled
-    output logic mute          // mute button enabled
+   input logic [3:0] pbs,    // 4 pushbuttons
+   input logic clk,          // 25 mHz clock
+   input logic rst,          // Active-high reset
+   input logic [1:0]vol,      // volume input for the volume knob
+   output logic [3:0] volume, // volume output logic for the volume shifter module
+   output logic ptt,          // push-to-talk mode enabled
+   output logic noise_gate,   // noise gate mode enabled
+   output logic effect,       // effects enabled
+   output logic mute          // mute button enabled
 );
 
     logic [3:0] prevPBS, currPBS;  // synchronization signals for push-buttons

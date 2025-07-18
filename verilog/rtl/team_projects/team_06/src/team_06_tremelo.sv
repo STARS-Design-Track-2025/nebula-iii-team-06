@@ -25,7 +25,7 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     always_comb begin
         dividerin = {8'b0, audio_in};
         dividerdepth = {8'b0, curr_depth};
-        dividerout = en ? ((dividerin * dividerdepth )/16'd16) : 0;
+        dividerout = en ? ((dividerin * dividerdepth )/16'd16) : 0; // We need to chage formula for tremelo to account for lack of two's compliment
         audio_out = dividerout[7:0];
     end                                            // if we multiply together, the reuslt got hella bits, so we shift by 7
                                                 //to reduce number of bits

@@ -14,15 +14,15 @@ module team_06_echo_effect (
 logic [7:0] current_out; //temporary echo output 
 logic search_n;
 
-assign save_audio = audio_in;//what is being sent to SRAM
-
 always_ff @(posedge clk or posedge rst) begin 
     if(rst)begin
-        echo_out <= 0; 
+        echo_out <= 8'd0;
         search <= 0; 
+        save_audio <= 8'd0;
     end else begin
         echo_out <= current_out; 
         search <= search_n;
+        save_audio <= audio_in;
     end
 end
 

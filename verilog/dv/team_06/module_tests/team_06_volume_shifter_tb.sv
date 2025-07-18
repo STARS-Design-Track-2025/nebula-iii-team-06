@@ -41,7 +41,7 @@ module team_06_volume_shifter_tb;
         #50;
         rst = 1;
         enable_volume = 1;
-        #50
+        #5000;
         rst = 0;
         enable_volume = 1;
         #50;

@@ -32,6 +32,14 @@ initial begin
 
 audio_in = 0;
 
+#5
+audio_in = 20;
+
+#5
+audio_in = 60;
+
+#5
+audio_in = 90;
 
 #5
 audio_in = 110;

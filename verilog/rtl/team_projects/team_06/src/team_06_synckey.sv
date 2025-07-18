@@ -1,7 +1,7 @@
 module team_06_synckey (
-    input  logic [3:0] pbs,    // 4 pushbuttons
-    input  logic clk,          // 25 mHz clock
-    input  logic rst,          // Active-high reset
+    input logic [3:0] pbs,    // 4 pushbuttons
+    input logic clk,          // 25 mHz clock
+    input logic rst,          // Active-high reset
     input logic [1:0]vol,      // volume input for the volume knob
     output logic [3:0] volume, // volume output logic for the volume shifter module
     output logic ptt,          // push-to-talk mode enabled
@@ -29,13 +29,6 @@ typedef enum logic [1:0] {
     ENC4 = 2'b10
 } ENC_t;
 logic[1:0] current_ENC, previous_ENC; // variables we need for comparing the encoded combinations
-
-// typedef struct packed {
-//     mute;
-//     ptt;
-//     noise_gate;
-//     effect;
-// } pbs_s;
 
 // 2-stage synchronizer for pushbuttons and volume knob
 always_ff @(posedge clk, posedge rst) begin
@@ -69,25 +62,26 @@ end
 
 // Edge detector logic for the push buttons: mute, push-to-talk, effects, and mute
 always_comb begin
-mute_en = mute;
-effect_en = effect;
-ptt_en = ptt;
-ng_en = noise_gate;
 
-if (next_in[1] && ~prev_syncPBS[1]) begin // rising edge for mute
-            mute_en = ~mute_en;
-end 
-if (next_in[2] && ~prev_syncPBS[2]) begin // rising edge for effects
-            effect_en = ~effect;
-end 
-if (next_in[3] && ~prev_syncPBS[3]) begin// rising edge noise gate
-            ng_en = ~ng_en;
-end
-if (next_in[0]) begin // rising edge for the push-to-talk button
-            ptt_en = 1;
-end else begin
-            ptt_en = 0;
-end
+    mute_en = mute;
+    effect_en = effect;
+    ptt_en = ptt;
+    ng_en = noise_gate;
+
+    if (next_in[1] && ~prev_syncPBS[1]) begin // rising edge for mute
+        mute_en = ~mute_en;
+    end 
+    if (next_in[2] && ~prev_syncPBS[2]) begin // rising edge for effects
+        effect_en = ~effect;
+    end 
+    if (next_in[3] && ~prev_syncPBS[3]) begin// rising edge noise gate
+        ng_en = ~ng_en;
+    end
+    if (next_in[0]) begin // rising edge for the push-to-talk button
+        ptt_en = 1;
+    end else begin
+        ptt_en = 0;
+    end
 end
 
 // flip-flop to update the pbs enable state store the output of the push buttons
@@ -114,41 +108,44 @@ always_comb begin
         {ENC1, ENC2}, // 00 → 01
         {ENC2, ENC3}, // 01 → 11
         {ENC3, ENC4}, // 11 → 10
-        {ENC4, ENC1}: begin// 10 → 00
-        CW = 1;
-        ACW = 0;
-        end
+        {ENC4, ENC1}: // 10 → 00 
+            begin
+            CW = 1;
+            ACW = 0;
+            end
         {ENC1, ENC4}, // 00 → 10
         {ENC4, ENC3}, // 10 → 11
         {ENC3, ENC2}, // 11 → 01
-        {ENC2, ENC1}: begin   // 01 → 00
-        ACW = 1;
-        CW = 0;
-        end
-        default:  begin
-         CW = 0;
-         ACW = 0;
-        end
+        {ENC2, ENC1}: // 01 → 00
+            begin   
+            ACW = 1;
+            CW = 0;
+            end
+        default:  
+            begin
+            CW = 0;
+            ACW = 0;
+            end
     endcase
 end
 
 // Combinational logic for the increasing or reducing the volume
 always_comb begin
-new_volume = volume;
-if (CW && (new_volume < 4'd15)) begin
-   new_volume = new_volume + 1; 
-end
-else if(ACW && (new_volume > 4'd0)) begin
-    new_volume = new_volume - 1;
-end
+    new_volume = volume;
+    if (CW && (new_volume < 4'd15)) begin
+        new_volume = new_volume + 1; 
+    end
+    else if(ACW && (new_volume > 4'd0)) begin
+        new_volume = new_volume - 1;
+    end
 end
 
 // flip-flop for updating and storing the volume output of the module
 always_ff @(posedge clk, posedge rst) begin
-if (rst) begin
-volume <= 4'd0;
-end else begin
-volume <= new_volume;
+    if (rst) begin
+        volume <= 4'd0;
+    end else begin
+        volume <= new_volume;
 end
 
 end

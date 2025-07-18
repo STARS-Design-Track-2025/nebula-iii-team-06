@@ -10,17 +10,20 @@ module team_06_synckey (
     output logic mute          // mute button enabled
 );
 
-logic [3:0] prevPBS, currPBS;  // synchronization signals for push-buttons
-logic [1:0] prevV, currV;         // synchronization signals for volume knob
-logic [3:0] prev_syncPBS; // previous synchronized values for push-buttons for the edge detector
-logic [1:0] prev_syncV;   // previous synchronized values for volume knob for the edge detector
-logic [3:0] next_in;       // "next" signal logic for edge detetctor
-logic CW, ACW;          // clockwise and anti-clockwise logic
-logic [3:0] new_volume; // temporary variable for the volmue output
-logic mute_en;      // temporary variable for the mute button
-logic ng_en;        // temporary variable for the noise gate
-logic ptt_en;       // temporary variable for the push-to-talk
-logic effect_en;    // temporary variable for teh effect output
+    logic [3:0] prevPBS, currPBS;  // synchronization signals for push-buttons
+    logic [1:0] prevV, currV;         // synchronization signals for volume knob
+    logic [3:0] prev_syncPBS; // previous synchronized values for push-buttons for the edge detector
+    logic [1:0] prev_syncV;   // previous synchronized values for volume knob for the edge detector
+    logic [3:0] next_in;       // "next" signal logic for edge detetctor
+    logic CW, ACW;          // clockwise and anti-clockwise logic
+    logic [3:0] new_volume; // temporary variable for the volmue output
+    logic mute_en;      // temporary variable for the mute button
+    logic ng_en;        // temporary variable for the noise gate
+    logic ptt_en;       // temporary variable for the push-to-talk
+    logic effect_en;    // temporary variable for teh effect output
+    logic [3:0][15:0] debounce_counters, next_counters; // temporary signals for the counter
+    logic [3:0] debouncedPBS, next_debounced_pbs; // temporary signals for the debouncer
+    logic i;    // control variable signals
 
 typedef enum logic [1:0] {  
     ENC1 = 2'b00,
@@ -45,10 +48,10 @@ always_ff @(posedge clk, posedge rst) begin
         prevV <= 2'b0;
         currV <= 2'b0;
     end else begin
-        currPBS <= pbs;
-        prevPBS <= currPBS;
-        currV <= vol;
-        prevV <= currV;
+        prevPBS <= pbs;
+        currPBS <= prevPBS;
+        prevV <= vol;
+        currV <= prevV;
     end
 end
 
@@ -58,17 +61,17 @@ end
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         prev_syncPBS <= 4'b0;
-        currPBS <= 4'b0;
-        next_in <= 4'b0;
     end else begin
-        prev_syncPBS <= prevPBS;
-        next_in <= currPBS;
+        prev_syncPBS <= currPBS;
     end
 end
 
-
 // Edge detector logic for the push buttons: mute, push-to-talk, effects, and mute
 always_comb begin
+mute_en = mute;
+effect_en = effect;
+ptt_en = ptt;
+ng_en = noise_gate;
 mute_en = mute;
 effect_en = effect;
 ptt_en = ptt;
@@ -90,23 +93,23 @@ end else begin
 end
 end
 
-// flip-flop to update the pbs enable state store the output of the push buttons
-always_ff @(posedge clk, posedge rst) begin
-    if (rst) begin
-        mute <= 0;
-        effect <= 0;
-        noise_gate <= 0;
-        ptt <= 0;
-    end else begin
-        mute <= mute_en;
-        effect <= effect_en;
-        noise_gate <= ng_en;
-        ptt <= ptt_en;
+    // flip-flop to update the pbs enable state store the output of the push buttons
+    always_ff @(posedge clk, posedge rst) begin
+        if (rst) begin
+            mute <= 0;
+            effect <= 0;
+            noise_gate <= 0;
+            ptt <= 0;
+        end else begin
+            mute <= mute_en;
+            effect <= effect_en;
+            noise_gate <= ng_en;
+            ptt <= ptt_en;
+        end
     end
-end
 
-assign current_ENC = currV;
-assign previous_ENC = prevV;
+    assign current_ENC = currV;
+    assign previous_ENC = prevV;
 
 // Encoder, monitoring the direction of the changing of each of these bits 
 always_comb begin
@@ -151,6 +154,5 @@ end else begin
 volume <= new_volume;
 end
 
-end
-
+    end
 endmodule

@@ -20,7 +20,7 @@ module team_06_adc_to_i2s_tb;
         $dumpvars(0, team_06_adc_to_i2s_tb);
         adc_serial_in = 0;
         rst = 1;
-        @(negedge i2sclk);
+        #25;
         
         rst = 0; //sends :10100111
         adc_serial_in = 1; @(negedge i2sclk);
@@ -45,29 +45,34 @@ module team_06_adc_to_i2s_tb;
         adc_serial_in = 1; @(negedge i2sclk);
         adc_serial_in = 0; @(negedge i2sclk);
         adc_serial_in = 1; @(negedge i2sclk);
+
         adc_serial_in = 1; @(negedge i2sclk);
         adc_serial_in = 0; @(negedge i2sclk);
-
-        // Test -1
-        adc_serial_in = 1; @(negedge i2sclk);
-        repeat (39) @(negedge i2sclk);
-
-        // Test -128
         adc_serial_in = 1; @(negedge i2sclk);
         adc_serial_in = 0; @(negedge i2sclk);
-        repeat (30) @(negedge i2sclk);
-
-        // Test 127
         adc_serial_in = 0; @(negedge i2sclk);
         adc_serial_in = 1; @(negedge i2sclk);
-        repeat (37) @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
+        adc_serial_in = 0; @(negedge i2sclk);
+        adc_serial_in = 1; @(negedge i2sclk);
 
         //rst = 1;
-        #25000
-        rst = 1;
-        #25000
+        #15;
         rst = 0;
-        #25000
+
         //another way by using for loop. we have to send msb first
         temp = 8'b11010110;
         for(int i = 7; i >= 0; i--) begin

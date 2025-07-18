@@ -15,6 +15,7 @@ module team_06_clkdivider( // this module is to create a new clock that has lowe
         if(rst) begin
             counter <= 0;
             clkdiv_temp <= 0;
+
         end else begin
             counter <= counter_n;
             clkdiv_temp <= clkdiv_temp_n;

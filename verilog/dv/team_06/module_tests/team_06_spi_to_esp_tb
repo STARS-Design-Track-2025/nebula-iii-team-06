@@ -35,7 +35,7 @@ module team_06_spi_to_esp_tb;
        rst = 1;
 
 
-       //normal operatopm
+       //normal operatoion
        #40;
        rst = 0;
        #10000000;

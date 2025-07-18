@@ -10,6 +10,8 @@ module team_06_echo_effect (
   output logic [7:0] save_audio //what is being sent to the SRAM
 );
 
+// Testing
+
 //ECHO = (audio_in  + c*past_input)/(1 + C) 
 logic [7:0] current_out; //temporary echo output 
 logic search_n;

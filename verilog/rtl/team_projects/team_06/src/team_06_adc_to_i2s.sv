@@ -54,7 +54,7 @@ module team_06_adc_to_i2s
                 signed_val = out_temp[30];
                 data = out_temp[29:22];
                 temp_signed = {signed_val, data};
-                temp_unsigned = (temp_signed == 9'b100000000)? 011111111 : (signed_val == 0)? temp_signed : ~temp_signed + 9'd1;;
+                temp_unsigned = (temp_signed == 9'b10000000) ? 011111111 : ( (signed_val == 0) ? temp_signed : ~temp_signed + 9'd1 ) ;
                 i2s_parallel_out_n = (temp_unsigned > 10'd255) ? 8'd255: temp_unsigned[7:0];
             end
 

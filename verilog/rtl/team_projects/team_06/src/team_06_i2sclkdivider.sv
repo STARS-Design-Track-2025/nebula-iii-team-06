@@ -2,6 +2,7 @@ module team_06_i2sclkdivider(
     input logic clk, rst,
     output logic i2sclk
 );
+
     logic [4:0] counter;
     logic i2sclk_n;
     logic [4:0] counter_n;
@@ -22,8 +23,7 @@ module team_06_i2sclkdivider(
         if(counter == 24) begin
             counter_n = 1;
             i2sclk_n = ~i2sclk;
-        end
-        else begin
+        end else begin
             counter_n = counter + 1;
         end
     end

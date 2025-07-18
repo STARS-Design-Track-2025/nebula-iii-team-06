@@ -33,9 +33,18 @@ module team_06_volume_shifter_tb;
         rst = 0;
         enable_volume = 1;
         #50;
+        rst = 0;
+        enable_volume = 0;
+        #50;
+        rst = 0;
+        enable_volume = 1;
+        #50;
         rst = 1;
         enable_volume = 1;
         #50
+        rst = 0;
+        enable_volume = 1;
+        #50;
         $finish;
     end
 

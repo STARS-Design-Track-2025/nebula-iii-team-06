@@ -40,7 +40,7 @@ always_comb begin
         current_out = dividercurrent[8:1];
     end else begin
         dividercurrent = 0;
-        current_out = audio_in; 
+        current_out = 0; 
         search_n = 0;
     end
 end

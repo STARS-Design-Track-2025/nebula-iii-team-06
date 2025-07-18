@@ -4,12 +4,11 @@ module team_06_adc_to_i2s
     input logic adc_serial_in, //adc sends msb first, so we shift right
     output logic signed  [8:0] i2s_parallel_out,// i2s_parallel_out will always be 0 unitl it collects all 8 bits
     output logic finished, // this is to know if our 8 bit register recieve 8bbits form ADC
-    output logic ws
-
+    output logic ws // Indicates we are changing the word (set of data)
 );
+
     logic i2sclk;
     logic past_i2sclk;
-    //logic past_i2sclk;
     logic [4:0] counter, counter_n; // counter is used to count how many bits we have right now. it will count from 1 to 8
     logic [8:0] i2s_parallel_out_n;
     logic finished_n;
@@ -22,6 +21,7 @@ module team_06_adc_to_i2s
 
     team_06_i2sclkdivider div_clk(.clk(clk), .rst(rst), .i2sclk(i2sclk));
     team_06_edge_detection_i2s ed(.i2sclk(i2sclk), .clk(clk), .rst(rst), .past_i2sclk(past_i2sclk));
+
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
             counter <= '0;
@@ -57,8 +57,6 @@ module team_06_adc_to_i2s
                 temp_unsigned = (temp_signed == 9'b10000000) ? 011111111 : ( (signed_val == 0) ? temp_signed : ~temp_signed + 9'd1 ) ;
                 i2s_parallel_out_n = (temp_unsigned > 10'd255) ? 8'd255: temp_unsigned[7:0];
             end
-
         end
     end 
-
 endmodule

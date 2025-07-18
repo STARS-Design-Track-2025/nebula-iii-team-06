@@ -2,7 +2,7 @@ module team_06_adc_to_i2s
 (
     input logic clk, rst,
     input logic adc_serial_in, //adc sends msb first, so we shift right
-    output logic signed  [8:0] i2s_parallel_out,// i2s_parallel_out will always be 0 unitl it collects all 8 bits
+    output logic [7:0] i2s_parallel_out,// i2s_parallel_out will always be 0 unitl it collects all 8 bits
     output logic finished, // this is to know if our 8 bit register recieve 8bbits form ADC
     output logic ws
 

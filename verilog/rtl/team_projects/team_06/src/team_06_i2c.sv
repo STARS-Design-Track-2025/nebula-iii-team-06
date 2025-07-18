@@ -10,7 +10,7 @@ module team_06_i2c
 
     logic [8:0] counter, counter_n;
     logic clkdiv, clkdiv_temp;
-    logic [1:0] effect_store, effect_n;
+    logic [1:0] effect_store;
     
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
@@ -20,7 +20,7 @@ module team_06_i2c
         end else begin
             counter <= counter_n;
             clkdiv <= clkdiv_temp;
-            effect_store <= effect_n;
+            effect_store <= effect;
         end 
     end
 
@@ -36,7 +36,6 @@ module team_06_i2c
 
     logic [2:0] state, state_n;
     logic ack, ack_n, complete, sda_o_n, scl_n, oeb_n;
-    logic count, count_n;
 
     typedef enum logic [2:0] {BEGINS = 0, SEND = 1, ACK = 2, WAIT = 3, ENDS = 4, OFF = 5} state_I2C;
 
@@ -62,7 +61,6 @@ module team_06_i2c
         begin 
             if (effect != effect_store) begin // If the effect has changed, we start a transmission
                 state_n = BEGINS;
-                count_n = 1'd1;
             end else begin
                 state_n = OFF;
             end 
@@ -109,26 +107,32 @@ module team_06_i2c
     end
 
     always_comb begin
-        sda_o_n = 0;
-        scl_n = 0;
-        endCounter_n= 0;
-        beginCounter_n = 0;
-        sendCounter_n = 0;
-        ackCounter_n = 0;
-        waitCounter_n = 0;
+        sda_o_n = sda_o;
+        scl_n = scl;
+        endCounter_n = endCounter;
+        beginCounter_n = beginCounter;
+        sendCounter_n = sendCounter;
+        ackCounter_n = ackCounter;
+        waitCounter_n = waitCounter;
         transmissionCount_n = transmissionCount;
         complete = 0;
         oeb_n = 0;
         ack_n = ack;
 
         if (clkdiv && !clkdiv_temp) begin
+            endCounter_n = 0;
+            beginCounter_n = 0;
+            sendCounter_n = 0;
+            ackCounter_n = 0;
+            waitCounter_n = 0;
+
             case (state)
-            OFF: 
+            OFF: // If we are off, we keep our output high
             begin 
                 sda_o_n = 1;
                 scl_n = 1;
             end
-            BEGINS: 
+            BEGINS: // If we need to begin, we must lower SDA then SCL
             begin
                 beginCounter_n = beginCounter + 1;
                 if (beginCounter == 0) begin // Lower SDA 
@@ -142,12 +146,13 @@ module team_06_i2c
                     complete = 1;
                 end
             end
-            SEND:
+            SEND: // If we need to send, we need 8 cycles where we change the data, turn clock on, then turn clock off
             begin
                 sendCounter_n = sendCounter + 1;
                 if (sendCounter[1:0] == 0) begin        // First, update the data
                     sda_o_n = lcdData[sendCounter[3:1]];
-                end else if (sendCounter[1:0] == 3) begin // Finally, turn clock off
+                    scl_n = 0;
+                end else if (sendCounter[1:0] == 3) begin // At the end, turn clock off
                     scl_n = 0;
                     sda_o_n = sda_o;
                 end else begin  // In the middle, clock is on
@@ -158,30 +163,24 @@ module team_06_i2c
                     complete = 1;
                 end
             end
-            ACK:
+            ACK: // During acknolwedge, we do not output anything on sda and allow slave to input data
             begin
-                if (sda_i == 1) begin
+                if (sda_i == 1) begin // If we ever recieve a signal from slave, ack should be on
                     ack_n = 1;
                 end
                 ackCounter_n = ackCounter + 1; 
-                if (ackCounter <= 1) begin // For first half, tell the peripheral to write
-                    oeb_n = 1;
+                sda_o_n = 1; // This should be disabled by the IO
+                oeb_n = 1; // Enables slave output
+                if (ackCounter == 0 || ackCounter == 3) begin // Start and end by telling the peripheral to write, no clock
                     scl_n = 0;
-                    sda_o_n = 1;
-                end else if (ackCounter == 2) begin // Then, clock on
+                end else  begin // In the middle, clock is on
                     scl_n = 1;
-                    sda_o_n = 1;
-                    oeb_n = 1; 
-                end else begin // Then, clock off (after ack, we will stop requesting)
-                    scl_n = 0;
-                    sda_o_n = 1;
-                    oeb_n = 1;
                 end
                 if (sendCounter == 3) begin // After 1 (1x4) transmissions, complete
                     complete = 1;
                 end
             end
-            WAIT:
+            WAIT: // For wait, we remember what the state of ack is and count the number of transmissions. We keep sc low and data high
             begin
                 ack_n = ack;
                 waitCounter_n = waitCounter + 1;
@@ -214,4 +213,4 @@ module team_06_i2c
     end
 
 
-endmodule;
+endmodule

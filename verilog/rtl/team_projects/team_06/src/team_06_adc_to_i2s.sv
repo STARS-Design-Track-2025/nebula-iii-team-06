@@ -40,6 +40,7 @@ module team_06_adc_to_i2s
         counter_n = counter;
         out_temp_n = out_temp;
         finished_n = finished;
+        temp_signed = 0;
         i2s_parallel_out_n = i2s_parallel_out;
         if (!i2sclk && past_i2sclk && counter == 31) begin
             ws_n = !ws;

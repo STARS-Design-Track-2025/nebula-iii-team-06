@@ -1,9 +1,9 @@
 module team_06_i2c
 (
-    input logic clk, rst, sda_i,
-    input logic [1:0] effect,
-    input logic [7:0] lcdData,
-    output logic sda_o, scl, oeb
+    input logic clk, rst, sda_i, // sda_i is what we recieve from the display (ack signal)
+    input logic [1:0] effect, // Which effect we want to dispaly 
+    input logic [7:0] lcdData, // What data you want to send to the LCD
+    output logic sda_o, scl, oeb  //sda_o is data, scl is the clock line, and oeb is whether we are sending or recieving on the sda
 );
 
     // CLOCK DIVIDER
@@ -86,8 +86,8 @@ module team_06_i2c
     end
 
     // Counters
-    logic beginCounter, beginCounter_n, endCounter, endCounter_n, transmissionCount, transmissionCount_n;
-    logic [1:0] ackCounter, ackCounter_n, waitCounter, waitCounter_n;
+    logic beginCounter, beginCounter_n, transmissionCount, transmissionCount_n;
+    logic [1:0] ackCounter, ackCounter_n, waitCounter, waitCounter_n, endCounter, endCounter_n;
     logic [5:0] sendCounter, sendCounter_n;
 
     always_ff @(posedge clk, posedge rst) begin
@@ -97,12 +97,14 @@ module team_06_i2c
             ackCounter <= 0;
             transmissionCount <= 0;
             waitCounter <= 0;
+            endCounter <= 0;
         end else begin
             beginCounter <= beginCounter_n;
             sendCounter <= sendCounter_n;
             ackCounter <= ackCounter_n;
             transmissionCount <= transmissionCount_n;
             waitCounter <= waitCounter_n;
+            endCounter <= endCounter_n;
         end
     end
 
@@ -120,11 +122,11 @@ module team_06_i2c
         ack_n = ack;
 
         if (clkdiv && !clkdiv_temp) begin
-            endCounter_n = 0;
-            beginCounter_n = 0;
-            sendCounter_n = 0;
-            ackCounter_n = 0;
-            waitCounter_n = 0;
+            // endCounter_n = 0;
+            // beginCounter_n = 0;
+            // sendCounter_n = 0;
+            // ackCounter_n = 0;
+            // waitCounter_n = 0;
 
             case (state)
             OFF: // If we are off, we keep our output high
@@ -194,14 +196,18 @@ module team_06_i2c
             ENDS:
             begin
                 endCounter_n = endCounter + 1;
-                if (endCounter == 0) begin // Raise SCL
+                if (endCounter == 0 || endCounter == 1) begin// Lower SDA
+                    sda_o_n = 0;
+                    scl_n = 0;
+                end
+                if (endCounter == 2) begin // Raise SCL
                     sda_o_n = 0; 
                     scl_n = 1;
-                end else if (endCounter == 1) begin // Then SDA
+                end else if (endCounter == 3) begin // Then SDA
                     sda_o_n = 1;
                     scl_n = 1;
                 end
-                if (endCounter == 1) begin // After one transmission (1x2), complete
+                if (endCounter == 3) begin // After one transmission (1x2), complete
                     complete = 1;
                 end 
             end

@@ -5,21 +5,29 @@ module team_06_volume_shifter(
     input logic enable_volume,
     output logic [7:0] audio_out
 );
+
     logic [7:0] scale;
+    logic [15:0] audio_out_16, audio_out_16_n;
+
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
-            audio_out <= '0;
+            audio_out_16 <= '0;
         end
         else begin
-            if(enable_volume) begin
-                audio_out <= (audio_in * scale)>>4;
-            end else begin
-                audio_out <= '0;
-            end
+            audio_out_16 <= audio_out_16_n;
         end
     end
     
-        always_comb begin
+    always_comb begin
+        if(enable_volume) begin
+            audio_out_16_n <= (audio_in * scale)/16'd255;
+        end else begin
+            audio_out_16_n <= '0;
+        end
+        audio_out = audio_out_16[7:0];
+    end
+
+    always_comb begin
         case (volume)
             4'd0:  scale = 8'd0;
             4'd1:  scale = 8'd1;

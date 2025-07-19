@@ -1,12 +1,13 @@
 `default_nettype none
 module team_06_echo_effect (
-  input logic clk, rst,
+  input logic clk, rst, finished,
   input logic [7:0] audio_in, //original audio entering echo module 
-  input logic search_enable, //this triggers  memory search for the past output to make the echo effect\
-  input logic reverb_enable,
+  input logic search_enable, //thismeans
+  input logic reverb_enable, 
   input logic [7:0] past_output, //past_output coming from memory
   output logic [12:0] offset, //amount of spaces back we go to get the past output
   output logic search, //searching for past output from memory
+  output logic record, // 
   output logic [7:0] echo_out, //the echo output
   output logic [7:0] save_audio //what is being sent to the SRAM
 );
@@ -55,6 +56,16 @@ always_comb begin
         current_out = 0; 
         search_n = 0;
     end
+end
+
+always_comb begin
+  if (finished) begin
+      record = 1;
+      search = 0;
+  end else begin
+      record = 0;
+      search = 1;
+  end
 end
 
 endmodule

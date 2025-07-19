@@ -9,6 +9,7 @@ logic clk;
 logic rst;
 logic [7:0] audio_in;
 logic search_enable;
+logic reverb_enable;
 logic [7:0] past_output;
 logic [12:0] offset;
 logic search;
@@ -22,6 +23,7 @@ team_06_echo_effect sahur (
 .rst(rst),
 .audio_in(audio_in),
 .search_enable(search_enable),
+.reverb_enable(reverb_enable),
 .past_output(past_output),
 .offset(offset),
 .search(search),
@@ -40,6 +42,7 @@ initial begin
 // and reset is pulled low while we have audio signal 
 rst = 0;
 search_enable = 1;
+reverb_enable = 0;
 audio_in = 68;
 past_output = 50;
 @(posedge clk);
@@ -79,6 +82,22 @@ past_output = 255;
 // This test case is to see what happens when we have even and odd values. You see that we do floor rounding
 rst = 0;
 search_enable = 1;
+audio_in = 254;
+past_output = 255;
+#5
+
+// This test case is to see what happens if we switch to reverb_enable
+rst = 0;
+search_enable = 0;
+reverb_enable = 1;
+audio_in = 254;
+past_output = 255;
+#5
+
+// This test case demonstrates that when both search and reverb are on, we do not go to memory
+rst = 0;
+search_enable = 1;
+reverb_enable = 1;
 audio_in = 254;
 past_output = 255;
 #5

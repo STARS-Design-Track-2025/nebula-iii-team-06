@@ -29,9 +29,9 @@ always_ff @(posedge clk or posedge rst) begin
 end
 
 always_comb begin
-  if (search_enable) begin
+  if (search_enable && !reverb_enable) begin
     save_audio_n = audio_in;
-  end else if (reverb_enable) begin
+  end else if (!search_enable && reverb_enable) begin
     save_audio_n = echo_out;
   end else begin
     save_audio_n = 0;
@@ -46,7 +46,7 @@ always_comb begin
 end 
 
 always_comb begin
-    if(search_enable == 1)begin
+    if(search_enable || reverb_enable)begin
         search_n = 1; //when search_enable is on, we want to start searching the readwrite for past output from SRAM
         dividercurrent = (dividerin + dividerpast)/2; //the echo formula: we are using C as 1, 
         current_out = dividercurrent[8:1];

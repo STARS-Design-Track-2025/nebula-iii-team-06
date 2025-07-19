@@ -1,38 +1,33 @@
 `default_nettype none
-module team_06_echo_effect (
-  input logic clk, rst, finished,
+module team_06_echo_and_reverb (
+  input logic clk, rst, 
   input logic [7:0] audio_in, //original audio entering echo module 
-  input logic search_enable, //thismeans
-  input logic reverb_enable, 
+  input logic echo_en, //thismeans
+  input logic reverb_en, 
   input logic [7:0] past_output, //past_output coming from memory
   output logic [12:0] offset, //amount of spaces back we go to get the past output
-  output logic search, //searching for past output from memory
-  output logic record, // 
   output logic [7:0] echo_out, //the echo output
   output logic [7:0] save_audio //what is being sent to the SRAM
 );
 
 //ECHO = (audio_in  + c*past_input)/(1 + C) 
 logic [7:0] current_out; //temporary echo output 
-logic search_n;
 logic [7:0] save_audio_n;
 
 always_ff @(posedge clk or posedge rst) begin 
     if(rst)begin
         echo_out <= 8'd0;
-        search <= 0; 
         save_audio <= 8'd0;
     end else begin
         echo_out <= current_out; 
-        search <= search_n;
         save_audio <= audio_in;
     end
 end
 
 always_comb begin
-  if (search_enable && !reverb_enable) begin
+  if (echo_en && !reverb_en) begin
     save_audio_n = audio_in;
-  end else if (!search_enable && reverb_enable) begin
+  end else if (!echo_en && reverb_en) begin
     save_audio_n = echo_out;
   end else begin
     save_audio_n = 0;
@@ -47,25 +42,12 @@ always_comb begin
 end 
 
 always_comb begin
-    if(search_enable || reverb_enable)begin
-        search_n = 1; //when search_enable is on, we want to start searching the readwrite for past output from SRAM
+    if(echo_en || reverb_en)begin
         dividercurrent = (dividerin + dividerpast)/2; //the echo formula: we are using C as 1, 
         current_out = dividercurrent[8:1];
     end else begin
         dividercurrent = 0;
         current_out = 0; 
-        search_n = 0;
     end
 end
-
-always_comb begin
-  if (finished) begin
-      record = 1;
-      search = 0;
-  end else begin
-      record = 0;
-      search = 1;
-  end
-end
-
 endmodule

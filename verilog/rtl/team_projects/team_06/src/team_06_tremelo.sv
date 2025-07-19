@@ -4,6 +4,8 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     input logic en,
     output logic [7:0] audio_out
 );
+
+/*
     logic [7:0] curr_depth; //direction can be up and down. It will increment by 1 from 0 to 128
     logic [7:0] nxt_depth;//and decrement by 1 from 128 to 0.
     
@@ -25,6 +27,14 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     always_comb begin
         dividerin = {8'b0, audio_in};
         dividerdepth = {8'b0, curr_depth};
+        if (en) begin
+            if (dividerin >= 128) begin
+                dividerout = (dividerin * dividerdepth )/16'd16
+            end else begin
+                dividerout = ((128 - dividerin) * dividerdepth )/16'd16
+            end
+        e
+
         dividerout = en ? ((dividerin * dividerdepth )/16'd16) : 0; // We need to chage formula for tremelo to account for lack of two's compliment
         audio_out = dividerout[7:0];
     end                                            // if we multiply together, the reuslt got hella bits, so we shift by 7
@@ -50,4 +60,5 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
 
         end
     end
+*/
 endmodule

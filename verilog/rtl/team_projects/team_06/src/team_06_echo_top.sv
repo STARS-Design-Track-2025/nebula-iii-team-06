@@ -23,18 +23,20 @@ module team_06_echo_top (
     logic record;                 // Record signal for writing to SRAM
     logic effect;                 // Effect mode signal
 
-    // Instantiate echo_effect module
+
+    // Add logic for finished, search, and record
+
+    //Instantiate echo_effect module
     team_06_echo_effect echo (
         .clk(clk), //system's clock
         .rst(rst), // system's reset
-        .echo_en(echo_en), //enable signal
         .audio_in(audio_in), // sample coming in
+        .echo_en(echo_en), //enable signal
+        .reverb_en(!echo_en), //enable signal
         .past_output(past_output), //we get this from SRAM thru Read write module
         .offset(offset),// the offset is released to SRAM
-        .search(search), // "hey READ WRITE go search for me"
         .echo_out(echo_out), // final output
         .save_audio(save_audio) ,// this is sent to SRAM to be stored for future use
-        .record(record)// tell the READ WRITE module to start recoring samples into SRAM
     );
 
     // Instantiate readWrite module
@@ -57,13 +59,8 @@ module team_06_echo_top (
     );
 
     assign record = 1'b1;           // Always record audio_in to SRAM
-    assign effect = 1'b1;           // Fixed effect mode (no mode changes specified)
-    assign select = 4'b1111;        // Enable all bytes for SRAM access
 
     // SRAM interface stubs (to be connected to actual SRAM module)
-    assign busAudioRead = 32'h0;    // Placeholder: connect to actual SRAM read data
-    assign busySRAM = 1'b0;         // Placeholder: connect to actual SRAM busy signal
-
-
+    assign busAudioRead = 32'hDEADBEEF;    // Placeholder: connect to actual SRAM read data
 */
 endmodule

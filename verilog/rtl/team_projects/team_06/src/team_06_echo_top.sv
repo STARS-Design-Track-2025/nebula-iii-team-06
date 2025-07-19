@@ -1,0 +1,69 @@
+module team_06_echo_top (
+    input logic clk,            // System clock
+    input logic rst,            // System reset
+    input logic echo_en,        // Enable echo effect
+    input logic [7:0] audio_in, // Input audio sample
+    output logic [7:0] echo_out // Output audio with echo effect
+);
+/*
+    // Internal signals for SRAM interface
+    logic [31:0] busAudioRead;    // Data read from SRAM
+    logic [31:0] busAudioWrite;   // Data to write to SRAM
+    logic [31:0] addressOut;      // SRAM address
+    logic [3:0] select;           // SRAM byte select
+    logic write;                  // SRAM write enable
+    logic read;                   // SRAM read enable
+    logic busySRAM;               // SRAM busy signal
+
+    // Internal signals for module interconnection
+    logic [12:0] offset;          // Offset for past audio sample
+    logic search;                 // Search signal for readWrite module
+    logic [7:0] past_output;      // Past audio sample from SRAM
+    logic [7:0] save_audio;       // Audio to save to SRAM
+    logic record;                 // Record signal for writing to SRAM
+    logic effect;                 // Effect mode signal
+
+    // Instantiate echo_effect module
+    team_06_echo_effect echo (
+        .clk(clk), //system's clock
+        .rst(rst), // system's reset
+        .echo_en(echo_en), //enable signal
+        .audio_in(audio_in), // sample coming in
+        .past_output(past_output), //we get this from SRAM thru Read write module
+        .offset(offset),// the offset is released to SRAM
+        .search(search), // "hey READ WRITE go search for me"
+        .echo_out(echo_out), // final output
+        .save_audio(save_audio) ,// this is sent to SRAM to be stored for future use
+        .record(record)// tell the READ WRITE module to start recoring samples into SRAM
+    );
+
+    // Instantiate readWrite module
+    team_06_readWrite readWrite (
+        .clk(clk), // system' clock
+        .rst(rst), // system's reset
+        .busAudioRead(busAudioRead), // this is from SRAM
+        .offset(offset), // this is from team_06_echo_effect module
+        .effectAudioIn(save_audio), // sample coming in
+        .search(search), // this is from team_06_echo_effect module
+        .record(record), //receives the record signal from  team_06_echo_effect module
+        .effect(effect), // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten
+        .busySRAM(busySRAM), // This comes from SRAM when it is not done reading or writing
+        .busAudioWrite(busAudioWrite), // This is what you want to write to SRAM
+        .addressOut(addressOut), // goes to SRAM, where we want to write in memory
+        .audioOutput(past_output), // the audio output that goes to the audio effects module
+        .select(select), // goes to SRAM, which bytes we want in the four byte word (we always want all of them for efficency)
+        .write(write),
+        .read(read)
+    );
+
+    assign record = 1'b1;           // Always record audio_in to SRAM
+    assign effect = 1'b1;           // Fixed effect mode (no mode changes specified)
+    assign select = 4'b1111;        // Enable all bytes for SRAM access
+
+    // SRAM interface stubs (to be connected to actual SRAM module)
+    assign busAudioRead = 32'h0;    // Placeholder: connect to actual SRAM read data
+    assign busySRAM = 1'b0;         // Placeholder: connect to actual SRAM busy signal
+
+
+*/
+endmodule

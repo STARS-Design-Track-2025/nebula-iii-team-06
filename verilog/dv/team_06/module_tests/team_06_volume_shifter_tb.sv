@@ -3,7 +3,7 @@ module team_06_volume_shifter_tb;
     logic [7:0] audio_in;
     logic [3:0] volume;
     logic enable_volume;
-    logic [15:0] audio_out;
+    logic [7:0] audio_out;
     team_06_volume_shifter DUT(.clk(clk), .rst(rst), .audio_in(audio_in), .volume(volume), .enable_volume(enable_volume), .audio_out(audio_out));
 
     //clock generation
@@ -41,7 +41,7 @@ module team_06_volume_shifter_tb;
         #50;
         rst = 1;
         enable_volume = 1;
-        #5000;
+        #50;
         rst = 0;
         enable_volume = 1;
         #50;

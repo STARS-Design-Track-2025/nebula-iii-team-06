@@ -63,7 +63,7 @@ module team_06_adc_to_i2s_tb;
         repeat (37) @(negedge i2sclk);
 
         //rst = 1;
-        #25000
+      #250000
         rst = 1;
         #25000
         rst = 0;

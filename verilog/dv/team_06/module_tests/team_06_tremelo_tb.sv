@@ -37,19 +37,29 @@ module team_06_tremelo_tb;
         audio_in = 8'b00000100;
         rst = 0;
         enable = 1;
-
         repeat (360) @(posedge clkdiv);
         rst = 1;
         enable = 1;
         repeat (360) @(posedge clkdiv);
+        audio_in = 8'b01111111;
         rst = 0;
         enable = 1;
         repeat (360) @(posedge clkdiv);
+        audio_in = 8'b000000000;
         rst = 0;
         enable = 0;
         repeat (360) @(posedge clkdiv);
+        audio_in = 8'b10000000;
         rst = 0;
-        enable = 1;      
+        enable = 1;  
+        repeat (360) @(posedge clkdiv);
+        audio_in = 8'b000000000;
+        rst = 0;
+        enable = 1;
+        repeat (360) @(posedge clkdiv);
+        audio_in = 8'b10000000;
+        rst = 0;
+        enable = 1;    
         $finish;
 
     end

@@ -60,7 +60,7 @@ initial begin
     effect = 2;
     lcdData = 39;
 
-    repeat(1024*64) @(posedge clk);
+    repeat(1024*160) @(posedge clk);
     #50
     rst = 1;
     sda_i = 1;

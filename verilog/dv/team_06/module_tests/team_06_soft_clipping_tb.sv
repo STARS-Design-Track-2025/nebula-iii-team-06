@@ -15,11 +15,13 @@ module team_06_soft_clipping_tb;
 
 logic [7:0] audio_in;
 logic [7:0] soft_out;
+logic soft_clip_en;
 
 // Instantiation of the soft clipping
 team_06_soft_clipping sahur (
 .audio_in(audio_in),
-.soft_out(soft_out)
+.soft_out(soft_out),
+.soft_clip_en(soft_clip_en)
 );
 
 
@@ -28,7 +30,7 @@ initial begin
    $dumpfile("team_06_soft_clipping.vcd");
    $dumpvars(0, team_06_soft_clipping_tb);
 
-
+soft_clip_en = 1;
 
 audio_in = 0;
 
@@ -58,6 +60,14 @@ audio_in = 220;
 #5
 
 audio_in = 255;
+
+#5
+
+soft_clip_en = 0;
+
+#5
+
+soft_clip_en = 1;
 
 #2;
 $finish;

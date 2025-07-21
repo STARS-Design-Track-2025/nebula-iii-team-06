@@ -143,7 +143,7 @@ module team_06_i2c
                 beginCounter_n = beginCounter + 1;
                 if (beginCounter == 0) begin // Lower SDA 
                     sda_o_n = 0; 
-                    scl_n = 1;
+                    scl_n = scl;
                 end else if (beginCounter == 1) begin // Then SCL
                     sda_o_n = 0;
                     scl_n = 0;
@@ -175,7 +175,7 @@ module team_06_i2c
                     ack_n = 1;
                 end
                 ackCounter_n = ackCounter + 1; 
-                sda_o_n = 1; // This should be disabled by the IO
+                sda_o_n = 0; // This should be disabled by the IO
                 oeb_n = 1; // Enables slave output
                 if (ackCounter == 0 || ackCounter >= 3) begin // Start and end by telling the peripheral to write, no clock
                     scl_n = 0;

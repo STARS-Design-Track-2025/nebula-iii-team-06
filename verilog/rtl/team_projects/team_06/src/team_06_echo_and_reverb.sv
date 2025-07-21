@@ -42,7 +42,7 @@ always_comb begin
 end 
 
 always_comb begin
-    if(echo_en || reverb_en)begin
+    if( (echo_en && !reverb_en) || (!echo_en && reverb_en) )begin
         dividercurrent = (dividerin + dividerpast)/2; //the echo formula: we are using C as 1, 
         current_out = dividercurrent[8:1];
     end else begin

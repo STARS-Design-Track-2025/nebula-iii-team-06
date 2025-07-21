@@ -18,19 +18,20 @@ module team_06_i2s_to_dac_tb;
 
         //power-on reset
         rst = 1;
-        parallel_in = 16'b1101100111010011; @(negedge i2sclk);
-      #15;
+        parallel_in = 16'b1101100111010011; //@(negedge i2sclk);
+        #400;
 
+       //normal operatopm
+        rst = 0;
+      #10000000;
+        
         
         //mid operation reset
-        rst = 0;
-        parallel_in = 16'b1101100111010011; 
-        #20;
         rst = 1;
-
-        //normal operatopm
-        #40;
+        parallel_in = 16'b1001100110110011; //@(negedge i2sclk);
+        #1000;
         rst = 0;
+        parallel_in = 16'b1111100110111111;
         #10000000;
         $finish;
 

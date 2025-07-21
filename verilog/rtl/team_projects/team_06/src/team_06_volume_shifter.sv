@@ -1,13 +1,13 @@
 module team_06_volume_shifter(
     input logic clk, rst,
     input logic [7:0] audio_in,
-    input logic [3:0] volume,
-    input logic enable_volume,
+    input logic [3:0] volume, //coming from synckey
+    input logic enable_volume, //coming from FSM 
     output logic [7:0] audio_out
 );
 
     logic [7:0] scale;
-    logic [15:0] audio_out_16, audio_out_16_n;
+    logic [15:0] audio_out_16, audio_out_16_n; // 16 bit audio temp (just so that we don't lose data during division)
 
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
@@ -20,14 +20,14 @@ module team_06_volume_shifter(
     
     always_comb begin
         if(enable_volume) begin
-            audio_out_16_n <= (audio_in * scale)/16'd255;
+            audio_out_16_n = (audio_in * scale)/16'd255; // Effecttively, this means that audio out is 8 bits, just 16 to prevent data loss
         end else begin
-            audio_out_16_n <= '0;
+            audio_out_16_n = '0;
         end
         audio_out = audio_out_16[7:0];
     end
 
-    always_comb begin
+    always_comb begin  // Logarithmic volume control
         case (volume)
             4'd0:  scale = 8'd0;
             4'd1:  scale = 8'd1;

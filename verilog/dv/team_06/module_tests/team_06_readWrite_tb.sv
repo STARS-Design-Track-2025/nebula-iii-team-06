@@ -55,15 +55,19 @@ endtask
 
 //RESET
 rst = 1;
+record = 0;
+search = 1;
+busAudioRead = 32'h12345678; // Invalid state
 effect = 0;
+busySRAM = 0; // Right?
+offset = 100; // Some constant
+effectAudioIn = 0; 
 @(posedge clk);
 rst = 0;
 @(posedge clk);
 
 //WRITE 4 BYTES 
 effectAudioIn = 8'hA1;
-record = 1;
-search = 0;
 effect = 1;
 for (int i = 0; i < 4; i++) begin
     simulate_sram_busy(1); // simulate SRAM busy for 1 cycle

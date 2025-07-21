@@ -20,6 +20,8 @@ module team_06_readWrite (
 typedef enum logic [1:0] {IDLE, READ, WRITE, BUSY} state_SRAM;
 state_SRAM sram, sram_n;
 
+assign select = 4'b1111;
+
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         sram <= IDLE;
@@ -57,7 +59,7 @@ always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         pointer <= 0;
         dataEvaluation <= 0;
-        goodData <= 0;
+        goodData <= 1;
         effect_old <= 0;
     end else begin
         pointer <= pointer_n;
@@ -90,7 +92,7 @@ end
 
 // ADDRESS CALCULATION
 
-logic [10:0] address, address_n; // The address represents a word. 0 is 0x33000000, 1 is 0x33000004, ect.
+logic [10:0] address, address_n; // The address represents a word. 0 is 0x33000000, 1 is 0x33000001, ect.
 logic [12:0] inter; // just some intermediate variable for bit addressing
 
 always_ff @(posedge clk, posedge rst) begin
@@ -108,10 +110,10 @@ always_comb begin
     end else if (sram == BUSY) begin
         address_n = address;
     end else begin
-        inter = pointer + offset;
+        inter = pointer - offset;
         address_n = inter[12:2]; // This is so that you are not selecting bits zero through 3, which are all given by SRAM if you request 4
     end
-    addressOut = 32'h33000000 + {19'b0, address, 2'b0}; // The global address space begins at 33000000 in hex
+    addressOut = 32'h33000000 + {21'b0, address}; // The global address space begins at 33000000 in hex
 end
 
 // READER - What reads from memory 

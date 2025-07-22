@@ -1,5 +1,5 @@
 `timescale 1ms/10ps
-module team_06_vs_to_sync_tb;
+module team_06_sync_to_volume_shifter_tb;
 
 logic clk;
 logic rst;
@@ -10,7 +10,7 @@ logic [7:0] audio_in;
 logic [7:0] audio_out;
 
 //Instantiation of team_06_vs_to_sync module
-team_06_vs_to_sync tolu (
+team_06_sync_to_volume_shifter tolu (
     .clk(clk),
     .rst(rst),
     .pbs(pbs),
@@ -42,8 +42,8 @@ always #0.5 clk = ~clk;
 // Test sequence
 initial begin
     // Waveform Dumping
-    $dumpfile("team_06_vs_to_sync.vcd");
-    $dumpvars(0, team_06_vs_to_sync_tb);
+    $dumpfile("team_06_sync_to_volume_shifter.vcd");
+    $dumpvars(0, team_06_sync_to_volume_shifter_tb);
 
     // ➤ Test 0: Reset (done)
     @(posedge clk);

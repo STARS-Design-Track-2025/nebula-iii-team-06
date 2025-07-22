@@ -42,7 +42,7 @@ module team_06_i2c
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
             state <= OFF;
-            sda_o <= 1;
+            sda_o <= 0;
             scl <= 1;
             oeb <= 0;
             ack <= 0;
@@ -65,17 +65,16 @@ module team_06_i2c
                     state_n = OFF;
                 end 
             end
-            WAIT: 
+            ACK: 
             begin
-                if (ack && complete && transmissionCount != 1) begin // If we have recieved an ack from the slave and 
+                if (ack && complete && transmissionCount != 2) begin // If we have recieved an ack from the slave and 
                                                                                   //we are done and we have not transmitted enough times
                     state_n = BEGINS;
                 end else if (complete) begin
                     state_n = ENDS;
                 end else 
-                    state_n = WAIT;
+                    state_n = ACK;
             end
-
             default:
             begin
                 if (complete) begin
@@ -88,9 +87,9 @@ module team_06_i2c
     end
 
     // Counters
-    logic beginCounter, beginCounter_n, transmissionCount, transmissionCount_n;
-    logic [1:0] waitCounter, waitCounter_n, endCounter, endCounter_n;
-    logic [5:0] sendCounter, sendCounter_n;
+    logic [1:0] transmissionCount, transmissionCount_n;
+    logic [1:0] waitCounter, waitCounter_n, endCounter, endCounter_n, beginCounter, beginCounter_n;
+    logic [4:0] sendCounter, sendCounter_n;
     logic [2:0] ackCounter, ackCounter_n;
 
     always_ff @(posedge clk, posedge rst) begin
@@ -134,21 +133,27 @@ module team_06_i2c
             case (state)
             OFF: // If we are off, we keep our output high
             begin 
-                sda_o_n = 1;
+                sda_o_n = sda_o;
                 scl_n = 1;
             end
             BEGINS: // If we need to begin, we must lower SDA then SCL
             begin
                 ack_n = 0;
                 beginCounter_n = beginCounter + 1;
-                if (beginCounter == 0) begin // Lower SDA 
-                    sda_o_n = 0; 
+                if (beginCounter == 0) begin // Raise SCL
+                    sda_o_n = 1;
                     scl_n = scl;
-                end else if (beginCounter == 1) begin // Then SCL
+                end else if (beginCounter == 1) begin // Raise SDA
+                    sda_o_n = 1;
+                    scl_n = 1;
+                end else if (beginCounter == 2) begin // Lower SDA 
+                    sda_o_n = 0; 
+                    scl_n = 1;
+                end else if (beginCounter == 3) begin // Then SCL
                     sda_o_n = 0;
                     scl_n = 0;
                 end
-                if (beginCounter == 1) begin // After one transmission (1x2), complete
+                if (beginCounter == 3) begin // After one transmission (1x2), complete
                     complete = 1;
                 end
             end
@@ -156,7 +161,7 @@ module team_06_i2c
             begin
                 sendCounter_n = sendCounter + 1;
                 if (sendCounter[1:0] == 0) begin        // First, update the data
-                    sda_o_n = lcdData[sendCounter[4:2]];
+                    sda_o_n = lcdData[7-sendCounter[4:2]];
                     scl_n = 0;
                 end else if (sendCounter[1:0] == 3) begin // At the end, turn clock off
                     scl_n = 0;
@@ -167,6 +172,7 @@ module team_06_i2c
                 end
                 if (sendCounter == 31) begin // After 8 (8x4) transmissions, complete
                     complete = 1;
+                    transmissionCount_n = transmissionCount + 1;
                 end
             end
             ACK: // During acknolwedge, we do not output anything on sda and allow slave to input data
@@ -188,21 +194,10 @@ module team_06_i2c
                     oeb_n = 0;
                 end
             end
-            WAIT: // For wait, we remember what the state of ack is and count the number of transmissions. We keep sc low and data high
-            begin
-                ack_n = ack;
-                waitCounter_n = waitCounter + 1;
-                scl_n = 0;
-                sda_o_n = 1;
-                if (waitCounter == 3) begin // After one transmission (1x4), complete
-                    complete = 1;
-                    transmissionCount_n = transmissionCount + 1;
-                end 
-            end
             ENDS:
             begin
                 endCounter_n = endCounter + 1;
-                if (endCounter == 0 || endCounter == 1) begin// Lower SDA
+                if (endCounter <= 1) begin// Lower SDA
                     sda_o_n = 0;
                     scl_n = 0;
                 end
@@ -215,10 +210,13 @@ module team_06_i2c
                 end
                 if (endCounter == 3) begin // After one transmission (1x2), complete
                     complete = 1;
+                    transmissionCount_n = 0;
                 end 
             end
             default: 
             begin
+                sda_o_n = sda_o;
+                scl_n = scl;
             end
             endcase
         end

@@ -44,21 +44,21 @@ initial begin
     rst = 0;
     sda_i = 1;
     effect = 0;
-    lcdData = 67;
+    lcdData = 0;
 
-    repeat(1024) @(posedge clk);
+    repeat(1024*160) @(posedge clk);
     #50
     rst = 0;
     sda_i = 0;
     effect = 1;
     lcdData = 34;
 
-    repeat(1024) @(posedge clk);
+    repeat(1024*160) @(posedge clk);
     #50
     rst = 0;
     sda_i = 1;
     effect = 2;
-    lcdData = 39;
+    lcdData = 255;
 
     repeat(1024*160) @(posedge clk);
     #50
@@ -72,10 +72,10 @@ initial begin
     rst = 0;
     sda_i = 1;
     effect = 3;
-    lcdData = 74;
+    lcdData = 128;
 
     #50
-    repeat(1024) @(posedge clk);
+    repeat(1024*160) @(posedge clk);
     #50
     rst = 0;
     #20

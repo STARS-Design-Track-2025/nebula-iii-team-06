@@ -20,3 +20,7 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_synckey.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_tremelo.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_volume_shifter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_vs_to_sync.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_audio_effect.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_tremelo_clkdiv.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_sram_sim.sv

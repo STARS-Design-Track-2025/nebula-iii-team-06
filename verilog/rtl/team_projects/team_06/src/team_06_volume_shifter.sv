@@ -1,8 +1,8 @@
 module team_06_volume_shifter(
     input logic clk, rst,
     input logic [7:0] audio_in,
-    input logic [3:0] volume,
-    input logic enable_volume,
+    input logic [3:0] volume, //coming from synckey
+    input logic enable_volume, //coming from FSM 
     output logic [7:0] audio_out
 );
 
@@ -32,7 +32,7 @@ module team_06_volume_shifter(
         audio_out = audio_out_16[7:0];
     end
 
-    always_comb begin
+    always_comb begin  // Logarithmic volume control
         case (volume)
             4'd0:  scale = 8'd0;
             4'd1:  scale = 8'd1;

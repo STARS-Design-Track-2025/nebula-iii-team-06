@@ -1,95 +1,181 @@
-module team_06_FSM(
-    input logic clk,
-    input logic rst,
-    input logic [7:0]mic_aud,       // Live audio being transmitted
-    input logic [7:0] spk_aud,      // Live audio being listened to
-    input logic ng_en,              // Noise gate enabale
-    input logic  ptt_en,            //Push-to-talk enable
-    input logic effect,             // Effect being used
-    input logic mute,               // Mute enabled
-    output logic [1:0]state,        // State we are currently in
-    output logic eff_en,            // Whether the current effect used will be enabled
-    output logic vol_en             // Whether volume is enabled or not
+module team_06_FSM (
+   input logic clk,
+   input logic rst,
+   input logic [7:0] mic_aud,       // Live audio being transmitted
+   input logic [7:0] spk_aud,      // Live audio being listened to
+   input logic ng_en,              // Noise gate enabale
+   input logic ptt_en,            //Push-to-talk enable
+   input logic effect,             // Effect being used
+   input logic mute,               // Mute enabled
+   output logic [1:0] state,        // State we are currently in
+   output logic eff_en,            // Whether the current effect used will be enabled
+   output logic vol_en,             // Whether volume is enabled or not
+   output logic [2:0] current_effect // output logic for the current effect we're on
 );
-typedef enum logic [1:0] { 
-    LIST = 2'b00,
-    TALK = 2'b01
- } state_t;
 
-logic[1:0] current_state, next_state;   // Variables for controlling the state case-satatements
-logic [7:0] threshold;                  // Threshold for which the mic_audio should pass in noise gate
-logic check;                // check logic for if we're above the threshold or not
-logic eff_en_temp;          // effect enable temporaryvariable
-logic spk_active;           // logic for if speaker is active
+   typedef enum logic [1:0] {
+       LIST = 2'b00,
+       TALK = 2'b01
+   } state_t;
 
-assign threshold = 8'd64; // threshold is 64 decibels
+   typedef enum logic [2:0] {
+       NORMAL = 3'b000,
+       ECHO = 3'b001,
+       TREMOLO = 3'b010,
+       REVERB = 3'b011,
+       SOFT = 3'b100,
+       TRUNGTRUNGTRUNGSAHUR = 3'b101,
+       SENOSENOCAPPUICHINO = 3'b110
+   } current_effect_t;
 
-// Synchroning the state with the clock
-always_ff @(posedge clk, posedge rst) begin
-    if (rst)
+   logic[1:0] current_state, next_state;   // Variables for controlling the state case-satatements
+   logic [7:0] threshold;                  // Threshold for which the mic_audio should pass in noise gate
+   logic check;                // check logic for if we're above the threshold or not
+   logic eff_en_temp;          // effect enable temporary variable
+   logic spk_active;           // logic for if speaker is active
+   logic [2:0] curr_eff, next_eff;
+   logic effect_button_prev, effect_button_prev2;
+   logic effect_button_rising;
+
+   assign threshold = 8'd64; // threshold is 64 decibels
+
+   // Synchroning the state with the clock
+   always_ff @(posedge clk, posedge rst) begin
+       if (rst) begin
            current_state <= LIST;
-        else
-            current_state <= next_state;
-    end
+       end else begin
+           current_state <= next_state;
+       end
+   end
 
-// Combinational: next state logic
-always_comb begin
-next_state = current_state;
-check = (mic_aud >= threshold);  // Is the mic signal above threshold?
-spk_active = (spk_aud != 0);    // speaker is active logic
+   // Combinational: next state logic
+   always_comb begin
+       next_state = current_state;
+       check = (mic_aud >= threshold);  // Is the mic signal above threshold?
+       spk_active = (spk_aud != 0);    // speaker is active logic
 
- /* Case statements for switching between states
- based on the current state and certain conditions (MEALY)*/
-case (current_state)
-LIST: begin
-     if (spk_active) begin
-            next_state = LIST;
-     end
-     
-     else if ((ng_en && !ptt_en && check) || ptt_en) begin
-            next_state = TALK;
-     end 
-            end
+   /* Case statements for switching between states
+   based on the current state and certain conditions (MEALY)*/
+       case (current_state)
+       LIST: begin
+           if (spk_active) begin
+               next_state = LIST;
+           end else if ((ng_en && !ptt_en && check) || ptt_en) begin
+               next_state = TALK;
+           end
+           end
+       TALK: begin
+           if ((!ptt_en && !ng_en) || (ng_en && !ptt_en && !check)) begin
+               next_state = LIST;
+           end else if (spk_active) begin
+               next_state = LIST;
+           end
+           end
+       default: next_state = LIST;
+       endcase
+   end
 
-TALK: begin
-    if ((!ptt_en && !ng_en) || (ng_en && !ptt_en && !check)) begin
-             next_state = LIST;
-    end else if (spk_active) begin
-            next_state = LIST;
-    end
-            end
+   assign state = current_state;
 
-default: next_state = LIST;
-endcase
-end
-assign state = current_state;
+   // Combinational logic for the output of the module
+   always_comb begin
+       vol_en = 0;
+       eff_en = 0;
 
-    // Combinational logic for the output of the module
-    always_comb begin
-        vol_en = 0;
-        eff_en = 0;
+       case (current_state)
+           LIST: begin
+               if (!mute) begin
+                   vol_en = 1;
+               end
+               else begin
+                   vol_en = 0;
+                   eff_en = 0;
+               end
+           end
+           TALK: begin
+               vol_en = 0;
+               if (effect) begin
+                   eff_en = 1;
+               end else begin
+                   eff_en = 0;
+               end
+           end
+           default: begin
+               vol_en = 0;
+               eff_en = 0;
+               end
+       endcase
+   end
 
-        case (current_state)
-            LIST: begin
-                if (!mute)
-                    vol_en = 1;
-                else
-                    vol_en = 0;
-                eff_en = 0;
-            end
+   // Detect rising edge of effect_button
+   always_ff @(posedge clk or posedge rst) begin
+       if (rst) begin
+           effect_button_prev <= 0;
+           effect_button_prev2 <= 0;
+       end else begin
+           effect_button_prev <= effect;
+           effect_button_prev2 <= effect_button_prev;
+       end
+   end
 
-            TALK: begin
-                vol_en = 0;
-                if (effect)
-                    eff_en = 1;
-                else
-                    eff_en = 0;
-            end
+   // Update current_effect on each rising edge
+   always_ff @(posedge clk or posedge rst) begin
+       if (rst) begin
+           curr_eff <= NORMAL;
+       end else begin
+           curr_eff <= next_eff;
+       end
+   end
 
-            default: begin
-                vol_en = 0;
-                eff_en = 0;
-            end
-        endcase
-    end
+   always_comb begin
+       next_eff = curr_eff;
+       effect_button_rising = (effect_button_prev && !effect_button_prev2);
+
+       case (curr_eff)
+       NORMAL: begin
+           if (effect_button_rising) begin
+               next_eff = ECHO;
+           end else begin
+               next_eff = NORMAL;
+           end
+       end
+
+       ECHO: begin
+           if (effect_button_rising) begin
+               next_eff = TREMOLO;
+           end else begin
+               next_eff = ECHO;
+           end
+       end
+      
+       TREMOLO: begin
+           if (effect_button_rising) begin
+               next_eff = REVERB;
+           end else begin
+               next_eff = TREMOLO;
+           end
+       end
+
+       REVERB: begin
+           if (effect_button_rising) begin
+               next_eff = SOFT;
+           end else begin
+               next_eff = REVERB;
+           end
+       end
+
+       SOFT: begin
+           if (effect_button_rising) begin
+               next_eff = NORMAL;
+           end else begin
+               next_eff = SOFT;
+           end
+       end
+
+       default: next_eff = NORMAL;
+       endcase
+   end
+
+   assign current_effect = curr_eff;
+
 endmodule

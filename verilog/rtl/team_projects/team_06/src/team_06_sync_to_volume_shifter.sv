@@ -1,4 +1,4 @@
-module team_06_vs_to_sync (
+module team_06_sync_to_volume_shifter (
    input logic [3:0] pbs,    // 4 pushbuttons
    input logic clk,          // 25 mHz clock
    input logic rst,          // Active-high reset

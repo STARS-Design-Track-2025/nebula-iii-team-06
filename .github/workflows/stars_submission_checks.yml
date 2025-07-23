@@ -17,6 +17,7 @@ jobs:
         fetch-depth: 0  # Fetch the full history
 
     - name: Confirm only changes in allowed files
+      continue-on-error: true
       run: |
         
         # When merging teams' files together, common editing of files causes issues.
@@ -136,6 +137,7 @@ jobs:
 
         if [ "$DISALLOWED_FILE_CHANGE_FOUND" = true ]; then
             echo "Push includes blocked files. Failing the workflow."
+            echo "ANY_FAILED=1" >> $GITHUB_ENV
             exit 1
         else
             echo "No blocked files were changed."
@@ -155,7 +157,18 @@ jobs:
       run: python ./.github/scripts/test_environment.py
 
     - name: Check New Files
-      run: python .github/scripts/check_new_files.py
+      continue-on-error: true
+      run: python ./.github/scripts/check_new_files.py || echo "ANY_FAILED=1" >> $GITHUB_ENV
 
     - name: Module Naming Check
-      run: python ./.github/scripts/module_naming_test.py
+      continue-on-error: true
+      run: python ./.github/scripts/module_naming_test.py || echo "ANY_FAILED=1" >> $GITHUB_ENV
+
+    - name: Final check for any failure
+      run: |
+        if [ "$ANY_FAILED" -eq "1" ]; then
+          echo "❌ One or more checks failed."
+          exit 1
+        else
+          echo "✅ All checks succeeded."
+        fi

@@ -28,6 +28,7 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     always_comb begin
         dividerin = {8'b0, audio_in};
         dividerdepth = {8'b0, curr_depth};
+        dividerout = 0;
         if(clkdiv && !past_clkdiv) begin
             if (en) begin
                 if (dividerin >= 128) begin
@@ -35,8 +36,6 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
                 end else begin
                     dividerout = (dividerin) + (2 * (127 - dividerin) * dividerdepth)/16'd16;
                 end
-            end else begin
-                dividerout = 0;
             end
         end
         audio_out = dividerout[7:0];

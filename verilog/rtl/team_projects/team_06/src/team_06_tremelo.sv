@@ -1,17 +1,19 @@
 module team_06_tremelo( //so tremelo works by combing the audio input with a triangle waves
-    input logic clkdiv, rst,
+    input logic clk, rst,
     input logic [7:0] audio_in,
     input logic en,
     output logic [7:0] audio_out
 );
-
+    logic clkdiv, past_clkdiv;
     logic [7:0] curr_depth; //direction can be up and down. It will increment by 1 from 0 to 128
     logic [7:0] nxt_depth;//and decrement by 1 from 128 to 0.
     
     logic curr_direction; //as I said, it can either go up and down, so we need direction
     logic nxt_direction; 
+    team_06_tremelo_clkdiv lebron(.clk(clk), .rst(rst), .clkdiv(clkdiv));
+    team_06_edge_detection_i2s james(.i2sclk(clkdiv), .clk(clk), .rst(rst), .past_i2sclk(past_clkdiv));
     
-    always_ff @(posedge clkdiv, posedge rst) begin
+    always_ff @(posedge clk, posedge rst) begin
         if(rst) begin
             curr_depth <= '0;
             curr_direction <= 1;
@@ -26,14 +28,16 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     always_comb begin
         dividerin = {8'b0, audio_in};
         dividerdepth = {8'b0, curr_depth};
-        if (en) begin
-            if (dividerin >= 128) begin
-                dividerout = (255 - dividerin) + (2 * (dividerin - 128) * dividerdepth)/16'd16;
+        if(clkdiv && !past_clkdiv) begin
+            if (en) begin
+                if (dividerin >= 128) begin
+                    dividerout = (255 - dividerin) + (2 * (dividerin - 128) * dividerdepth)/16'd16;
+                end else begin
+                    dividerout = (dividerin) + (2 * (127 - dividerin) * dividerdepth)/16'd16;
+                end
             end else begin
-                dividerout = (dividerin) + (2 * (127 - dividerin) * dividerdepth)/16'd16;
+                dividerout = 0;
             end
-        end else begin
-            dividerout = 0;
         end
         audio_out = dividerout[7:0];
     end                                            
@@ -41,22 +45,24 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     always_comb begin
         nxt_direction = curr_direction;
         nxt_depth = curr_depth;
-        if(en) begin
-            if(curr_depth <16 && curr_direction == 1) begin
-                nxt_depth = curr_depth +1; 
-            end
-            else if (curr_depth == 16) begin
-                nxt_direction = 0;
-                nxt_depth = curr_depth - 1;
-            end
-            else if(curr_depth > 0 && curr_direction ==0) begin
-                nxt_depth = curr_depth - 1;
-            end
-            else if(curr_depth == 0) begin
-                nxt_direction = 1;
-                nxt_depth = curr_depth +1;
-            end
+        if(clkdiv && !past_clkdiv) begin
+            if(en) begin
+                if(curr_depth <16 && curr_direction == 1) begin
+                    nxt_depth = curr_depth +1; 
+                end
+                else if (curr_depth == 16) begin
+                    nxt_direction = 0;
+                    nxt_depth = curr_depth - 1;
+                end
+                else if(curr_depth > 0 && curr_direction ==0) begin
+                    nxt_depth = curr_depth - 1;
+                end
+                else if(curr_depth == 0) begin
+                    nxt_direction = 1;
+                    nxt_depth = curr_depth +1;
+                end
 
+            end
         end
     end
 endmodule

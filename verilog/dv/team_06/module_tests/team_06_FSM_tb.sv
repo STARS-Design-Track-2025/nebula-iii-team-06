@@ -105,11 +105,29 @@ initial begin
     effect = 1;
     mute = 0;
 
+
+
+
+
+//just added
     @(posedge clk);
     #5
     rst = 0;
-    mic_aud = 80;
+    mic_aud = 50;
     spk_aud = 0;
+    ng_en = 1;
+    ptt_en = 1;
+    effect = 1;
+    mute = 0;
+
+
+
+
+    @(posedge clk);
+    #5
+    rst = 0;
+    mic_aud = 0;
+    spk_aud = 57;
     ng_en = 0;
     ptt_en = 0;
     effect = 0;

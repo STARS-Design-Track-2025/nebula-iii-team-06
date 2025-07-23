@@ -1,18 +1,18 @@
 module team_06_tremelo_tb;
-    logic clkdiv, rst;  //put all the port ont this module
+    logic clk, rst;  //put all the port ont this module
     logic [7:0] audio_in;
     logic enable;
     logic [7:0] audio_out;
 
 
     //instantiate the DUT
-    team_06_tremelo DUT(.clkdiv(clkdiv), .rst(rst), .audio_in(audio_in), .en(enable), .audio_out(audio_out));
+    team_06_tremelo DUT(.clk(clk), .rst(rst), .audio_in(audio_in), .en(enable), .audio_out(audio_out));
 
 
     //clock generation
     initial begin
-        clkdiv = 0;
-        forever #10 clkdiv = ~clkdiv; // every 10 unit, it toggles
+        clk = 0;
+        forever #10 clk = ~clk; // every 10 unit, it toggles
     end
 
     //stimulus begin

@@ -45,6 +45,11 @@ module team_06_volume_shifter_tb;
         rst = 0;
         enable_volume = 1;
         #50;
+        rst = 0;
+        enable_volume = 1;
+        volume = 4'd8;
+        audio_in = 8'd0;
+        #50;
         $finish;
     end
 

@@ -23,9 +23,9 @@ module team_06_volume_shifter(
 
         if(enable_volume) begin
             if (audio_in >= 128)
-                audio_out_16_n = 128 + (audio_in_16 - 16'd128) * scale;
+                audio_out_16_n = 128 + ( (audio_in_16 - 16'd128) * scale ) / 255;
             else 
-               audio_out_16_n = 127 - (16'd128 - audio_in_16) * scale;
+               audio_out_16_n = 127 - ( (16'd127 - audio_in_16) * scale ) / 255;
         end else begin
             audio_out_16_n = 16'd127;
         end

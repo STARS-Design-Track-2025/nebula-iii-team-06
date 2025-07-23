@@ -17,25 +17,29 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
         if(rst) begin
             curr_depth <= '0;
             curr_direction <= 1;
+            dividerout <= 127;
         end
         else begin
             curr_depth <= nxt_depth;
             curr_direction <= nxt_direction;
+            dividerout <= dividerout_n;
         end
     end
 
-    logic [15:0] dividerin, dividerdepth, dividerout;
+    logic [15:0] dividerin, dividerdepth, dividerout, dividerout_n;
     always_comb begin
         dividerin = {8'b0, audio_in};
         dividerdepth = {8'b0, curr_depth};
-        dividerout = 0;
+        dividerout_n = dividerout;
         if(clkdiv && !past_clkdiv) begin
             if (en) begin
                 if (dividerin >= 128) begin
-                    dividerout = (255 - dividerin) + (2 * (dividerin - 128) * dividerdepth)/16'd16;
+                    dividerout_n = (255 - dividerin) + (2 * (dividerin - 128) * dividerdepth)/16'd16;
                 end else begin
-                    dividerout = (dividerin) + (2 * (127 - dividerin) * dividerdepth)/16'd16;
+                    dividerout_n = (dividerin) + (2 * (127 - dividerin) * dividerdepth)/16'd16;
                 end
+            end else begin
+                dividerout_n = 0;
             end
         end
         audio_out = dividerout[7:0];

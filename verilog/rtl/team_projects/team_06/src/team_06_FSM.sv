@@ -15,26 +15,20 @@ module team_06_FSM (
    output logic noise_gate_tog
 );
 
-
    typedef enum logic [1:0] {
        LIST = 2'b00,
        TALK = 2'b01
    } state_t;
-
 
    typedef enum logic  {
        MUTE = 1,
        MUTE_OFF = 0
    } mute_t;
 
-
    typedef enum logic  {
        NOISE = 1,
        NOISE_OFF = 0
    } noise_t;
-
-
-
 
    typedef enum logic [2:0] {
        NORMAL = 3'b000,
@@ -46,7 +40,6 @@ module team_06_FSM (
        SENOSENOCAPPUICHINO = 3'b110
    } current_effect_t;
 
-
    logic[1:0] current_state, next_state;   // Variables for controlling the state case-satatements
    logic [7:0] threshold;                  // Threshold for which the mic_audio should pass in noise gate
    logic check;                // check logic for if we're above the threshold or not
@@ -56,9 +49,7 @@ module team_06_FSM (
    logic effect_button_prev, effect_button_prev2;
    logic effect_button_rising;
 
-
    assign threshold = 8'd64; // threshold is 64 decibels
-
 
    // Synchroning the state with the clock
    always_ff @(posedge clk, posedge rst) begin
@@ -69,13 +60,11 @@ module team_06_FSM (
        end
    end
 
-
    // Combinational: next state logic
    always_comb begin
        next_state = current_state;
        check = ((mic_aud == threshold) || ((mic_aud > threshold)));  // Is the mic signal above threshold?
        spk_active = (spk_aud != 0);    // speaker is active logic
-
 
    /* Case statements for switching between states
    based on the current state and certain conditions (MEALY)*/
@@ -88,7 +77,6 @@ module team_06_FSM (
            end
            end
 
-
        TALK: begin
            if ((!ptt_en && !noise_gate_tog) || (noise_gate_tog && !ptt_en && !check)) begin
                next_state = LIST;
@@ -98,21 +86,16 @@ module team_06_FSM (
                next_state = TALK;
            end
            end
-
-
        default: next_state = LIST;
        endcase
    end
 
-
    assign state = current_state;
-
 
    // Combinational logic for the output of the module
    always_comb begin
        vol_en = 0;
        eff_en = 0;
-
 
        case (current_state)
            LIST: begin
@@ -132,17 +115,12 @@ module team_06_FSM (
                    eff_en = 0;
                end
            end
-
-
            default: begin
                vol_en = 0;
                eff_en = 0;
                end
        endcase
    end
-
-
-
 
    // Detect rising edge of effect_button
    always_ff @(posedge clk or posedge rst) begin
@@ -155,7 +133,6 @@ module team_06_FSM (
        end
    end
 
-
    // Update current_effect on each rising edge
    always_ff @(posedge clk or posedge rst) begin
        if (rst) begin
@@ -165,11 +142,9 @@ module team_06_FSM (
        end
    end
 
-
    always_comb begin
        next_eff = curr_eff;
        effect_button_rising = (effect_button_prev && !effect_button_prev2);
-
 
        case (curr_eff)
        NORMAL: begin
@@ -179,8 +154,6 @@ module team_06_FSM (
                next_eff = NORMAL;
            end
        end
-
-
        ECHO: begin
            if (effect_button_rising) begin
                next_eff = TREMOLO;
@@ -188,7 +161,6 @@ module team_06_FSM (
                next_eff = ECHO;
            end
        end
-      
        TREMOLO: begin
            if (effect_button_rising) begin
                next_eff = REVERB;
@@ -196,8 +168,6 @@ module team_06_FSM (
                next_eff = TREMOLO;
            end
        end
-
-
        REVERB: begin
            if (effect_button_rising) begin
                next_eff = SOFT;
@@ -205,8 +175,6 @@ module team_06_FSM (
                next_eff = REVERB;
            end
        end
-
-
        SOFT: begin
            if (effect_button_rising) begin
                next_eff = NORMAL;
@@ -214,12 +182,9 @@ module team_06_FSM (
                next_eff = SOFT;
            end
        end
-
-
        default: next_eff = NORMAL;
        endcase
    end
-
 
    assign current_effect = curr_eff;
 // KKKKKKKKKKKKKKKKKKKKKKKAAAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIIIIIIIIIIIOOOOOOOOOOOOOOOOOKKKKKKKKKKKKKKKKKKEEEEEEEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNNNNNNNNN
@@ -236,7 +201,6 @@ module team_06_FSM (
        end
    end
 
-
    always_ff @(posedge clk, posedge rst) begin
        if (rst) begin
            mute_state <= MUTE_OFF;
@@ -246,12 +210,9 @@ module team_06_FSM (
        end
    end
 
-
    always_comb begin
        next_mute_state = mute_state;
        mute_button_rising = (mute_prev & !mute_prev2);
-
-
        case(mute_state)
        MUTE_OFF: begin
            if(mute_button_rising)begin
@@ -260,8 +221,6 @@ module team_06_FSM (
                next_mute_state = MUTE_OFF;
            end
        end
-
-
        MUTE: begin
            if(mute_button_rising)begin
                next_mute_state = MUTE_OFF;
@@ -270,15 +229,11 @@ module team_06_FSM (
            end
        end
        default: next_mute_state = MUTE_OFF;
-
-
        endcase
    end
    assign mute_tog = mute_state;
 
-
 // SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-
 
    logic noise_prev, noise_prev2;
    logic noise_state, next_noise_state, noise_button_rising;
@@ -293,7 +248,6 @@ module team_06_FSM (
        end
    end
 
-
    always_ff @(posedge clk, posedge rst) begin
        if (rst) begin
            noise_state <= NOISE_OFF;
@@ -303,12 +257,9 @@ module team_06_FSM (
        end
    end
 
-
    always_comb begin
        next_noise_state = noise_state;
        noise_button_rising = (noise_prev & !noise_prev2);
-
-
        case(noise_state)
        MUTE_OFF: begin
            if(noise_button_rising)begin
@@ -317,8 +268,6 @@ module team_06_FSM (
                next_noise_state = NOISE_OFF;
            end
        end
-
-
        MUTE: begin
            if(noise_button_rising)begin
                next_noise_state = NOISE_OFF;
@@ -327,10 +276,7 @@ module team_06_FSM (
            end
        end
        default: next_noise_state = NOISE_OFF;
-
-
        endcase
-      
    end
    assign noise_gate_tog = noise_state;
 endmodule

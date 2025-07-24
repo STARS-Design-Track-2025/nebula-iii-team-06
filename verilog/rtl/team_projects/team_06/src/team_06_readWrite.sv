@@ -1,18 +1,18 @@
 module team_06_readWrite (
-    input logic clk, rst,
+    input logic clk, rst,  //CJIP
     input logic [31:0] busAudioRead, // The data that is coming from the SRAM bus (only valid when not busy)
-    input logic [12:0] offset, // How many samples into the past are you going (0 is current, all 1s is the oldest)
-    input logic [7:0] effectAudioIn, // The audio coming in from the audio effect module for storage
-    input logic search, // Audio effects module telling the read write module it is time to read from SRAM
-    input logic record, // Audio effects module telling the read write module it is time to write effectAudioIn to SRAM
-    input logic effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten
-    input logic busySRAM, // This comes from SRAM when it is not done reading or writing
-    output logic [31:0] busAudioWrite, // This is what you want to write to SRAM
-    output logic [31:0] addressOut, // goes to SRAM, where we want to write in memory
-    output logic [7:0] audioOutput, // the audio output that goes to the audio effects module
-    output logic [3:0] select, // goes to SRAM, which bytes we want in the four byte word (we always want all of them for efficency)
-    output logic write, //
-    output logic readEdge
+    input logic [12:0] offset, // How many samples into the past are you going (0 is current, all 1s is the oldest)    //CJIP
+    input logic [7:0] effectAudioIn, // The audio coming in from the audio effect module for storage in SRAM //CJIP
+    input logic search, // Audio effects module telling the read write module it is time to read from SRAM //CJIP
+    input logic record, // Audio effects module telling the read write module it is time to write effectAudioIn to SRAM //CJIP
+    input logic effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten //CJIP
+    input logic busySRAM, // This comes from SRAM when it is not done reading or writing 
+    output logic [31:0] busAudioWrite, // This is what you want to write to SRAM //CJIP
+    output logic [31:0] addressOut, // goes to SRAM, where we want to write in memory //CJIP
+    output logic [7:0] audioOutput, // the audio output from read write that goes to the audio effects module  //CJIP
+    output logic [3:0] select, // goes to SRAM, which bytes we want in the four byte word (we always want all of them for efficency) //CJIP
+    output logic write, //CJIP
+    output logic readEdge //CJIP
 );
 
 // SRAM STATE MACHINE - IDLE is when you are not reading or writing, READ/WRITE is when you begin reading/writing, and BUSY is when you are waiting for SRAM

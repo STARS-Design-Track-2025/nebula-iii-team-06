@@ -85,26 +85,21 @@ module team_06_audio_effect(
             3'b001: begin
                 tremelo_en = 1;
                 out_temp = tremelo_out;
-                search = 0;
-                record = 0;
-            end
+                search = 0;            end
             3'b010: begin
                 echo_en = 1;
                 out_temp = echo_reverb_out;
                 search = 1;
-                record = 1;
             end
             3'b011: begin
                 soft_clip_en = 1;
                 out_temp = soft_out;
                 search = 0;
-                record = 0;
             end
             3'b100: begin 
                 reverb_en = 1; 
                 out_temp = echo_reverb_out; 
                 search = 1;
-                record = 1;
             end
             default: out_temp = audio_in; 
         endcase

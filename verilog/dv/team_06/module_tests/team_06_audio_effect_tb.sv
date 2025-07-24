@@ -104,9 +104,16 @@ initial begin
     forever #10 clk = ~clk;
 end
 
+task toggleFinished ();
+    finished = 1;
+    repeat(4) @(posedge clk);
+    finished = 0;
+    repeat(4) @(posedge clk);
+endtask
+
 initial begin
     $dumpfile("team_06_audio_effect.vcd");
-    $dumpfile(0, team_06_audio_effect_tb);
+    $dumpvars(0, team_06_audio_effect_tb);
 
     audio_in = 8'd64;
     finished = 1;
@@ -117,20 +124,18 @@ initial begin
     #300;
     //normal operation
     rst = 0;
-    #1000;
+    #100000;
     sel = 3'b001;
-    #1000;
+    #100000;
     sel = 3'b010;
-    #1000;
+    #100000;
     sel = 3'b011;
-    #1000;
+    #100000;
     sel = 3'b100;
-    #1000;
-    finished = 0;
-    #1000;
-    finished = 1;
-    #100;
-
+    
+    #10000000;
+    repeat (1000) toggleFinished;
+    #100
     //reset
     rst = 1;
     $finish;

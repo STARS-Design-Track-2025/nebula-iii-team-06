@@ -5,7 +5,8 @@ module team_06_readWrite (
     input logic [7:0] effectAudioIn, // The audio coming in from the audio effect module for storage in SRAM //CJIP
     input logic search, // Audio effects module telling the read write module it is time to read from SRAM //CJIP
     input logic record, // Audio effects module telling the read write module it is time to write effectAudioIn to SRAM //CJIP
-    input logic [2:0] effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten    input logic busySRAM, // This comes from SRAM when it is not done reading or writing 
+    input logic [2:0] effect,
+    input logic busySRAM, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten    input logic busySRAM, // This comes from SRAM when it is not done reading or writing 
     output logic [31:0] busAudioWrite, // This is what you want to write to SRAM //CJIP
     output logic [31:0] addressOut, // goes to SRAM, where we want to write in memory //CJIP
     output logic [7:0] audioOutput, // the audio output from read write that goes to the audio effects module  //CJIP
@@ -62,7 +63,7 @@ always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         pointer <= 0;
         dataEvaluation <= 0;
-        goodData <= 1;
+        goodData <= 0;
         effect_old <= 0;
     end else begin
         pointer <= pointer_n;
@@ -82,7 +83,7 @@ always_comb begin
     if (effect_old != effect) begin // If we reset the mode, we designate the last memory address to clean
         dataEvaluation_n = pointer;
         goodData_n = 0;
-    end else if (dataEvaluation == pointer) begin // If we reach the last memory address, we should have clean data next clock cycle
+    end else if (dataEvaluation - 1 == pointer) begin // If we reach the last memory address, we should have clean data next clock cycle
         goodData_n = 1;
     end
 

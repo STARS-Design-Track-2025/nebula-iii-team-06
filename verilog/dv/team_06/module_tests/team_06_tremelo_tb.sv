@@ -1,18 +1,18 @@
 module team_06_tremelo_tb;
-    logic clkdiv, rst;  //put all the port ont this module
+    logic clk, rst;  //put all the port ont this module
     logic [7:0] audio_in;
     logic enable;
     logic [7:0] audio_out;
 
 
     //instantiate the DUT
-    team_06_tremelo DUT(.clkdiv(clkdiv), .rst(rst), .audio_in(audio_in), .en(enable), .audio_out(audio_out));
+    team_06_tremelo DUT(.clk(clk), .rst(rst), .audio_in(audio_in), .en(enable), .audio_out(audio_out));
 
 
     //clock generation
     initial begin
-        clkdiv = 0;
-        forever #10 clkdiv = ~clkdiv; // every 10 unit, it toggles
+        clk = 0;
+        forever #10 clk = ~clk; // every 10 unit, it toggles
     end
 
     //stimulus begin
@@ -33,30 +33,30 @@ module team_06_tremelo_tb;
         rst = 0;
         enable = 1;
 
-        repeat (360) @(posedge clkdiv);
+        repeat (360) @(posedge clk);
         audio_in = 8'b00000100;
         rst = 0;
         enable = 1;
-        repeat (360) @(posedge clkdiv);
+        repeat (360) @(posedge clk);
         rst = 1;
         enable = 1;
-        repeat (360) @(posedge clkdiv);
+        repeat (360) @(posedge clk);
         audio_in = 8'b01111111;
         rst = 0;
         enable = 1;
-        repeat (360) @(posedge clkdiv);
+        repeat (360) @(posedge clk);
         audio_in = 8'b000000000;
         rst = 0;
         enable = 0;
-        repeat (360) @(posedge clkdiv);
+        repeat (360) @(posedge clk);
         audio_in = 8'b10000000;
         rst = 0;
         enable = 1;  
-        repeat (360) @(posedge clkdiv);
+        repeat (360) @(posedge clk);
         audio_in = 8'b000000000;
         rst = 0;
         enable = 1;
-        repeat (360) @(posedge clkdiv);
+        repeat (360) @(posedge clk);
         audio_in = 8'b10000000;
         rst = 0;
         enable = 1;    

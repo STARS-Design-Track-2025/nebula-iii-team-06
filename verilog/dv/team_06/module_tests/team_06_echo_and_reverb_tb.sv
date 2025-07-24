@@ -26,7 +26,7 @@ team_06_echo_and_reverb sahur (
 .reverb_en(reverb_en),
 .past_output(past_output),
 .offset(offset),
-.echo_out(echo_out),
+.out(echo_out),
 .save_audio(save_audio)
 );
 

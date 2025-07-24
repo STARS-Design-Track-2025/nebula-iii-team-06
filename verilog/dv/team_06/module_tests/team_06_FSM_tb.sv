@@ -1,7 +1,6 @@
 `timescale 1ms/10ps
 module team_06_FSM_tb;
 
-
 logic clk;
 logic rst;
 logic [7:0] mic_aud;
@@ -16,9 +15,6 @@ logic vol_en;
 logic [2:0]current_effect;
 logic mute_tog;
 logic noise_gate_tog;
-
-
-
 
 // Instantiation of the FSM module
 team_06_FSM trung_trung (
@@ -38,18 +34,14 @@ team_06_FSM trung_trung (
 .noise_gate_tog(noise_gate_tog)
 );
 
-
 initial clk = 0;
 always #0.5 clk = ~clk;
-
 
 initial begin
    // Waveform Dumping
    $dumpfile("team_06_FSM.vcd");
    $dumpvars(0, team_06_FSM_tb);
   
-
-
    rst = 1;
    #1
    @(posedge clk);
@@ -61,7 +53,6 @@ initial begin
    effect = 0;
    mute = 0;
 
-
    #5
    @(posedge clk);
    rst = 0;
@@ -71,7 +62,6 @@ initial begin
    ptt_en = 1;
    effect = 1;
    mute = 0;
-
 
    #5
    @(posedge clk);
@@ -83,7 +73,6 @@ initial begin
    effect = 0;
    mute = 0;
 
-
    @(posedge clk);
    #5
    rst = 1;
@@ -93,7 +82,6 @@ initial begin
    ptt_en = 0;
    effect = 0;
    mute = 0;
-
 
    #5
    @(posedge clk);
@@ -115,7 +103,6 @@ initial begin
    effect = 0;
    mute = 0;
 
-
    @(posedge clk);
    #5
    rst = 0;
@@ -125,7 +112,6 @@ initial begin
    ptt_en = 0;
    effect = 1;
    mute = 0;
-
 
    @(posedge clk);
    #5
@@ -137,7 +123,6 @@ initial begin
    effect = 0;
    mute = 0;
 
-
    @(posedge clk);
    #5
    rst = 0;
@@ -148,7 +133,6 @@ initial begin
    effect = 0;
    mute = 0;
 
-
    @(posedge clk);
    #5
    rst = 0;
@@ -159,7 +143,6 @@ initial begin
    effect = 0;
    mute = 1;
    #5
-
 
    @(posedge clk);
    #5
@@ -172,7 +155,6 @@ initial begin
    mute = 0;
    #5
 
-
    @(posedge clk);
    #5
    rst = 0;
@@ -183,7 +165,6 @@ initial begin
    effect = 0;
    mute = 1;
    #5
-
 
    @(posedge clk);
    #5
@@ -196,13 +177,11 @@ initial begin
    mute = 0;
    #5
 
-
    @(posedge clk);
    #5
    rst = 0;
    #2;
    $finish;
-
 
 // rst = 0;
 // echo_enable = 1;

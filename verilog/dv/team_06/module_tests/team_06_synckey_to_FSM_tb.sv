@@ -1,8 +1,6 @@
 `timescale 1ms/10ps
 
-
 module team_06_synckey_to_FSM_tb;
-
 
    logic clk, rst;
    logic [3:0] pbs;
@@ -12,7 +10,6 @@ module team_06_synckey_to_FSM_tb;
    logic [1:0] state;
    logic eff_en, vol_en, mute_toggle, noise_gate_toggle;
    logic [2:0] current_effect;
-
 
    // Instantiate combined module
    team_06_synckey_to_FSM fotnait (
@@ -29,31 +26,9 @@ module team_06_synckey_to_FSM_tb;
        .mute_tog(mute_toggle),
        .noise_gate_tog(noise_gate_toggle)
    );
-   // team_06_FSM trung_trung (
-   // .clk(clk),
-   // .rst(rst),
-   // .mic_aud(mic_aud),
-   // .spk_aud(spk_aud),
-   // .ng_en(ng_en),
-   // .ptt_en(ptt_en),
-   // .effect(effect),
-   // .mute(mute),
-   // .state(state),
-   // .eff_en(eff_en),
-   // .vol_en(vol_en),
-   // .current_effect(current_effect),
-   // .mute_tog(mute_toggle),
-   // .noise_gate_tog(noise_gate_toggle)
-   // );
-
-
-
-
-
 
    initial clk = 0;
    always #0.5 clk = ~clk;
-
 
    // Stimulus
    initial begin
@@ -67,13 +42,11 @@ module team_06_synckey_to_FSM_tb;
        mic_aud = 8'd0;
        spk_aud = 8'd0;
 
-
        #5
        @(posedge clk);
        rst = 0;
        #5
        @(posedge clk);
-
 
        // Push-to-talk and Noise Gate buttons off at the same time "0100"
        pbs[3] = 0;     // Noise Gate
@@ -120,7 +93,6 @@ module team_06_synckey_to_FSM_tb;
        #5;
        @(posedge clk);
 
-
        // Noise gate enabled, then over-ridden by the push-to-talk button
        // with our microphone audio being at the threshold when we disable the push-to-talk with an effect enabled
        pbs[3] = 1;     // Noise Gate
@@ -165,7 +137,6 @@ module team_06_synckey_to_FSM_tb;
        #10;
        @(posedge clk);
 
-
        rst = 1; // MID-OPERATION reset
        pbs[3] = 1;     // Noise Gate
        pbs[2] = 1;     // Effect
@@ -177,7 +148,6 @@ module team_06_synckey_to_FSM_tb;
        @(posedge clk);
        rst = 0;
        #5
-
 
        @(posedge clk);
       // Push-to-talk button with nothing else being pressed "0001"
@@ -192,7 +162,6 @@ module team_06_synckey_to_FSM_tb;
        pbs[0] = 0;
        #10;
        @(posedge clk);
-
 
        // All the buttons active at the same time
        pbs[3] = 1;     // Noise Gate

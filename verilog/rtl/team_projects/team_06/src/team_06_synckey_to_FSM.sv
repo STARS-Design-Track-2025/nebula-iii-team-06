@@ -13,7 +13,6 @@ module team_06_synckey_to_FSM(
    output logic noise_gate_tog
 );
 
-
    logic ptt;
    logic mute;
    logic effect;
@@ -21,7 +20,6 @@ module team_06_synckey_to_FSM(
    logic [2:0]currnt_effect;
    logic mute_toggle;
    logic noise_gate_toggle;
-
 
    team_06_synckey TEO (
        .pbs(pbs),
@@ -33,7 +31,6 @@ module team_06_synckey_to_FSM(
        .effect(effect),
        .mute(mute)
    );
-
 
    team_06_FSM JKB (
        .clk(clk),
@@ -51,6 +48,5 @@ module team_06_synckey_to_FSM(
        .mute_tog(mute_tog),
        .noise_gate_tog(noise_gate_tog)
    );
-
 
 endmodule

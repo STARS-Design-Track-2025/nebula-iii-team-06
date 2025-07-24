@@ -23,4 +23,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_sync_to_volume_shifter.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_audio_effect.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_tremelo_clkdiv.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_sram_sim.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_spi_to_volume_shifter_to_i2s_to_DAC.sv

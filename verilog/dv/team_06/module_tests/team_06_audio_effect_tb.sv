@@ -66,42 +66,5 @@ module tb_team_06_audio_effect;
         rst = 0;
         #200;
 
-        // Generate 1 kHz sine wave for non-SRAM effects (48 kHz sampling rate)
-        fork
-            forever begin
-                for (int i = 0; i < 360; i = i + 7.5) begin // 360/7.5 = 48 steps per 1 kHz cycle
-                    audio_in = 128 + $rtoi(64 * $sin(2 * 3.14159 * i / 360));
-                    #20833; // 20.83 µs per sample (48 kHz)
-                end
-            end
-        join_none
-
-        // Test no effect
-        sel = 3'b000;
-        #50000; // 50 ms
-
-        // Test tremolo (50 Hz)
-        sel = 3'b001;
-        #50000; // 50 ms (2.5 cycles at 50 Hz)
-
-        // Test echo with random samples
-        sel = 3'b010;
-        repeat (24000) begin // 500 ms at 48 kHz
-            audio_in = $urandom_range(0, 255); // Random 8-bit value
-            #2083; // 20.83 µs per sample
-        end
-
-        // Test soft clipping
-        sel = 3'b011;
-        #50000; // 50 ms
-
-        // Test reverb with random samples
-        sel = 3'b100;
-        repeat (2400) begin // 500 ms at 48 kHz
-            audio_in = $urandom_range(0, 255); // Random 8-bit value
-            #2083; // 20.83 µs per sample
-        end
-
-        $finish;
     end
 endmodule

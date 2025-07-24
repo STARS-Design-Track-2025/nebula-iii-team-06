@@ -3,18 +3,22 @@ module team_06_volume_shifter(
     input logic [7:0] audio_in,
     input logic [3:0] volume, //coming from synckey
     input logic enable_volume, //coming from FSM 
-    output logic [7:0] audio_out
+    output logic [7:0] audio_out,
+    output logic en
 );
 
     logic [7:0] scale;
     logic [15:0] audio_in_16, audio_out_16, audio_out_16_n;
+    logic en_n;
 
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
             audio_out_16 <= '0;
+            en<=0;
         end
         else begin
             audio_out_16 <= audio_out_16_n;
+            en <= en_n;
         end
     end
     
@@ -26,8 +30,10 @@ module team_06_volume_shifter(
                 audio_out_16_n = 128 + ( (audio_in_16 - 16'd128) * scale ) / 255;
             else 
                audio_out_16_n = 127 - ( (16'd127 - audio_in_16) * scale ) / 255;
+               en_n = 1;
         end else begin
-            audio_out_16_n = 16'd127;
+            audio_out_16_n = 16'd0;
+            en_n = 0;
         end
         audio_out = audio_out_16[7:0];
     end

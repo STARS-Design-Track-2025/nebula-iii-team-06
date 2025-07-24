@@ -16,7 +16,16 @@ module team_06_readWrite_tb;
     logic [7:0] audioOutput;
     logic [3:0] select;
     logic write;
-    logic read;
+    logic readEdge;
+
+    logic [31:0] wdati;
+    logic wack;
+    logic [31:0] wadr;
+    logic [31:0] wdato;
+    logic [3:0] wsel;
+    logic wwe;
+    logic wstb;
+    logic wcyc;
 
 
 team_06_readWrite sahur (
@@ -34,20 +43,50 @@ team_06_readWrite sahur (
 .audioOutput(audioOutput),
 .select(select),
 .write(write),
-.read(read)
+.readEdge(readEdge)
     );
+
+wishbone_manager starbucks(
+    // User design
+    .nRST(!rst),
+    .CLK(clk),
+    .CPU_DAT_I(busAudioWrite),
+    .ADR_I(addressOut),
+    .SEL_I(select), // all 1s 
+    .WRITE_I(write),
+    .READ_I(readEdge),
+    .CPU_DAT_O(busAudioRead),
+    .BUSY_O(busySRAM),
+    // Wishbone interconnect inputs
+    .DAT_I(wdati),
+    .ACK_I(wack),
+    // Wishbone interconnect outputs
+    .ADR_O(wadr),
+    .DAT_O(wdato),
+    .SEL_O(wsel),
+    .WE_O(wwe),
+    .STB_O(wstb),
+    .CYC_O(wcyc)
+);
+
+sram_WB_Wrapper tsaocca(
+    .wb_rst_i(rst),
+    .wb_clk_i(clk),
+    .wbs_stb_i(wstb),
+    .wbs_cyc_i(wcyc),
+    .wbs_we_i(wwe),
+    .wbs_sel_i(wsel),
+    .wbs_dat_i(wdato),
+    .wbs_adr_i(wadr),
+    .wbs_ack_o(wack),
+    .wbs_dat_o(wdati)
+);
+
+
 // Clock generation
 initial clk = 0;
 always #0.5 clk = ~clk;
 
-// Task to simulate busySRAM behavior
-task automatic simulate_sram_busy(int cycles);
-    for (int i = 0; i < cycles; i++) begin
-       busySRAM = 1;
-@(posedge clk);
-    end
-    busySRAM = 0;
-endtask
 
  initial begin
  $dumpfile("team_06_readWrite.vcd");
@@ -55,31 +94,46 @@ endtask
 
 //RESET
 rst = 1;
-record = 0;
-search = 1;
-busAudioRead = 32'h12345678; // Invalid state
+record = 1;
+search = 0;
 effect = 0;
-busySRAM = 0; // Right?
-offset = 100; // Some constant
+offset = 0; // Some constant
 effectAudioIn = 0; 
 @(posedge clk);
 rst = 0;
+effectAudioIn = 8'b11111111;
 @(posedge clk);
+record = 0;
+@(posedge clk);
+record = 1;
+@(posedge clk);
+record = 0;
+@(posedge clk);
+record = 1;
+@(posedge clk);
+record = 0;
+@(posedge clk);
+record = 1;
+repeat (10) @(posedge clk);
+offset = 1;
+record = 0;
+search = 1;
+repeat (15) @(posedge clk);
+effectAudioIn = 8'hAB;
+record = 1;
+search = 1;
+repeat (15) @(posedge clk);
+/*
 
-//WRITE 4 BYTES 
+//readEdge 4 BYTES 
 effectAudioIn = 8'hA1;
 effect = 1;
-for (int i = 0; i < 4; i++) begin
-    simulate_sram_busy(1); // simulate SRAM busy for 1 cycle
-    @(posedge clk);
-end
 record = 0;
 
-// To see if we read back with clean data
+// To see if we readEdge back with clean data
 offset = 0;
 search = 1;
-simulate_sram_busy(1); // simulate a read delay
-busAudioRead = {8'hDE, 8'hAD, 8'hBE, 8'hEF}; // Fake SRAM word
+// {8'hDE, 8'hAD, 8'hBE, 8'hEF}; // Fake SRAM word
 @(posedge clk);
 search = 0;
 
@@ -92,7 +146,7 @@ effect = 1;
 record = 1;
 for (int i = 0; i < 8; i++) begin
     effectAudioIn = effectAudioIn + 1;
-    simulate_sram_busy(1);
+    // Hehe
     @(posedge clk);
 end
 record = 0;
@@ -100,28 +154,27 @@ record = 0;
 // MULTIPLE OFFSETS
 offset = 0;
 search = 1; 
-simulate_sram_busy(1); 
-busAudioRead = 32'h44332211;
+// Hehe 
+// Trung wuz here32'h44332211;
  @(posedge clk);
 offset = 1;
 search = 1; 
-simulate_sram_busy(1);
-busAudioRead = 32'h88776655;
+// Hehe
+// Trung wuz here32'h88776655;
  @(posedge clk);
 offset = 2;
 rst = 1;
 search = 1; 
-simulate_sram_busy(1); 
-busAudioRead = 32'hCCCCBBAA;
+// Hehe 
+// Trung wuz here32'hCCCCBBAA;
  @(posedge clk);
 
-// ENSURE NO WRITE/READ DURING busySRAM
-busySRAM = 1;
+// ENSURE NO WRITE/readEdge DURING busySRAM
 record = 1;
 effectAudioIn = 8'h55;
 @(posedge clk); // nothing should write during this
-busySRAM = 0;
 record = 0;
+*/
 
 #5;
 $finish;

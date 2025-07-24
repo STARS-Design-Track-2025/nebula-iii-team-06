@@ -37,7 +37,7 @@ always_comb begin
     if (sram == IDLE) begin
         if (record) begin // record command from audio effects 
         sram_n = WRITE;
-        end else if (search && goodData) begin // search command from audio effects. While in modeReset, you are unable to read as the data is not good
+        end else if (search && goodData && (audioLocation != address)) begin // search command from audio effects. While in modeReset, you are unable to read as the data is not good
         sram_n = READ;
         end else begin
         sram_n = IDLE;
@@ -134,7 +134,7 @@ always_ff @ (posedge clk, posedge rst) begin
         read <= WAIT; 
         audioSample <= 0;
         audioOutput <= 0;
-        audioLocation <= 0;
+        audioLocation <= 11'b0;
         readOld <= 0;
         sramOld <= 0;
         readDone <= 0;
@@ -161,13 +161,7 @@ always_comb begin
         audioOutput_n = 0;
         audioLocation_n = 0; 
     end else if (sram == READ) begin
-        if (audioLocation != address) begin // If the word has changed
-            read_n = REQUEST;
-        end else begin  // If we have not changed the word we are looking at, no need to read 
-                        // from memory as it is stored in a register! Good for consecutive audio samples in memory.
-            read_n = WAIT;
-            readDone_n = 1;
-        end
+        read_n = REQUEST;
     end else if (read == REQUEST && busySRAM == 0 && sramOld == 1) begin // If we are done with our request, update the output
         read_n = WAIT;
         audioSample_n = busAudioRead;

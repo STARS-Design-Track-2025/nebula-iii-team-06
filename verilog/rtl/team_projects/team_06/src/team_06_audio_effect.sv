@@ -45,7 +45,7 @@ module team_06_audio_effect(
         .reverb_en(reverb_en), //enable signal
         .past_output(past_output), //we get this from SRAM thru Read write module
         .offset(offset),// the offset is released to SRAM
-        .out(echo_reverb_out), // final output
+        .echo_reverb_out(echo_reverb_out), // final output
         .save_audio(save_audio)
     );
 

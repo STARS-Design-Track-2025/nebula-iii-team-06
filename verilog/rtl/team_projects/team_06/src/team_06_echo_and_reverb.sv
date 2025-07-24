@@ -27,7 +27,7 @@ always_comb begin
   if (echo_en && !reverb_en) begin
     save_audio_n = audio_in;
   end else if (!echo_en && reverb_en) begin
-    save_audio_n = out;
+    save_audio_n = current_out;
   end else begin
     save_audio_n = 0;
   end

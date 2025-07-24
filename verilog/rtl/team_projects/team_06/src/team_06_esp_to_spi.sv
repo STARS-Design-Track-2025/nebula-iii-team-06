@@ -40,7 +40,7 @@ module team_06_esp_to_spi
        finished_n = finished;
        out_temp_n = out_temp;
        spi_parallel_out_n =  spi_parallel_out;
-       if (spiclk && !past_spiclk) begin
+       if (!spiclk && past_spiclk) begin
           if ( counter == 8) begin
                spi_parallel_out_n = out_temp;
                out_temp_n = {out_temp[6:0], esp_serial_in};

@@ -14,6 +14,7 @@ module team_06_readWrite (
     output logic readEdge //CJIP
 );
 
+// Hi
 // SRAM STATE MACHINE - IDLE is when you are not reading or writing, READ/WRITE is when you begin reading/writing, and BUSY is when you are waiting for SRAM
 
 typedef enum logic [1:0] {IDLE, READ, WRITE, BUSY} state_SRAM;

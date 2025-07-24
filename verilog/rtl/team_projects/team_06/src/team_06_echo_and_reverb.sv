@@ -5,7 +5,7 @@ module team_06_echo_and_reverb (
   input logic reverb_en, 
   input logic [7:0] past_output, //past_output coming from memory
   output logic [12:0] offset, //amount of spaces back we go to get the past output
-  output logic [7:0] out, //the echo output
+  output logic [7:0] echo_reverb_out, //the echo output
   output logic [7:0] save_audio //what is being sent to the SRAM
 );
 
@@ -15,10 +15,10 @@ logic [7:0] save_audio_n;
 
 always_ff @(posedge clk or posedge rst) begin 
     if(rst)begin
-        out <= 8'd0;
+        echo_reverb_out <= 8'd0;
         save_audio <= 8'd0;
     end else begin
-        out <= current_out; 
+        echo_reverb_out <= current_out; 
         save_audio <= audio_in;
     end
 end
@@ -27,7 +27,7 @@ always_comb begin
   if (echo_en && !reverb_en) begin
     save_audio_n = audio_in;
   end else if (!echo_en && reverb_en) begin
-    save_audio_n = out;
+    save_audio_n = current_out;
   end else begin
     save_audio_n = 0;
   end

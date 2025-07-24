@@ -5,8 +5,7 @@ module team_06_readWrite (
     input logic [7:0] effectAudioIn, // The audio coming in from the audio effect module for storage in SRAM //CJIP
     input logic search, // Audio effects module telling the read write module it is time to read from SRAM //CJIP
     input logic record, // Audio effects module telling the read write module it is time to write effectAudioIn to SRAM //CJIP
-    input logic effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten //CJIP
-    input logic busySRAM, // This comes from SRAM when it is not done reading or writing 
+    input logic [2:0] effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten    input logic busySRAM, // This comes from SRAM when it is not done reading or writing 
     output logic [31:0] busAudioWrite, // This is what you want to write to SRAM //CJIP
     output logic [31:0] addressOut, // goes to SRAM, where we want to write in memory //CJIP
     output logic [7:0] audioOutput, // the audio output from read write that goes to the audio effects module  //CJIP
@@ -37,7 +36,7 @@ always_comb begin
     if (sram == IDLE) begin
         if (record) begin // record command from audio effects 
         sram_n = WRITE;
-        end else if (search && goodData) begin // search command from audio effects. While in modeReset, you are unable to read as the data is not good
+        end else if (search && goodData && (audioLocation != address)) begin // search command from audio effects. While in modeReset, you are unable to read as the data is not good
         sram_n = READ;
         end else begin
         sram_n = IDLE;
@@ -55,7 +54,7 @@ end
 logic [12:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
 logic [1:0] pointer2; // pointer2 is used later to find when we have four bytes of data to send to SRAM
 logic goodData, goodData_n; // Whether your data is good
-logic effect_old;
+logic [2:0] effect_old;
 
 
 always_ff @(posedge clk, posedge rst) begin
@@ -134,7 +133,7 @@ always_ff @ (posedge clk, posedge rst) begin
         read <= WAIT; 
         audioSample <= 0;
         audioOutput <= 0;
-        audioLocation <= 0;
+        audioLocation <= 11'b0;
         readOld <= 0;
         sramOld <= 0;
         readDone <= 0;
@@ -161,13 +160,7 @@ always_comb begin
         audioOutput_n = 0;
         audioLocation_n = 0; 
     end else if (sram == READ) begin
-        if (audioLocation != address) begin // If the word has changed
-            read_n = REQUEST;
-        end else begin  // If we have not changed the word we are looking at, no need to read 
-                        // from memory as it is stored in a register! Good for consecutive audio samples in memory.
-            read_n = WAIT;
-            readDone_n = 1;
-        end
+        read_n = REQUEST;
     end else if (read == REQUEST && busySRAM == 0 && sramOld == 1) begin // If we are done with our request, update the output
         read_n = WAIT;
         audioSample_n = busAudioRead;

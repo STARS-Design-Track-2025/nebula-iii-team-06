@@ -1,6 +1,7 @@
 module team_06_audio_effect(
     input logic clk, rst,
     input logic [7:0] audio_in,
+    input finished,
     input logic [2:0] sel,
     output logic [7:0] audio_out
 );
@@ -10,7 +11,7 @@ module team_06_audio_effect(
     logic tremelo_en;
     logic [7:0] tremelo_out;
     team_06_tremelo_clkdiv clkdivider(.clk(clk), .rst(rst), .clkdiv(clkdiv));
-    team_06_tremelo tremelo(.audio_in(audio_in), .clkdiv(clkdiv), .rst(rst), .en(tremelo_en), .audio_out(tremelo_out));
+    team_06_tremelo tremelo(.audio_in(audio_in), .clk(clk), .rst(rst), .en(tremelo_en), .audio_out(tremelo_out));
 
     //soft clipping ports
     logic soft_clip_en;
@@ -20,7 +21,6 @@ module team_06_audio_effect(
     //echo & reverb ports
     logic echo_en;
     logic reverb_en;
-    logic finished;
     logic [7:0] out;
    logic [31:0] busAudioRead;    // Data read from SRAM
     logic [31:0] busAudioWrite;   // Data to write to SRAM
@@ -50,8 +50,7 @@ module team_06_audio_effect(
         .past_output(past_output), //we get this from SRAM thru Read write module
         .offset(offset),// the offset is released to SRAM
         .out(out), // final output
-        .save_audio(save_audio),
-        .finished(finished) // this is sent to SRAM to be stored for future use
+        .save_audio(save_audio)
     );
 
     // Instantiate readWrite module

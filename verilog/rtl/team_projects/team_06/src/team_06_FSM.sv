@@ -73,7 +73,7 @@ module team_06_FSM (
    // Combinational: next state logic
    always_comb begin
        next_state = current_state;
-       check = (mic_aud >= threshold);  // Is the mic signal above threshold?
+       check = ((mic_aud == threshold) || ((mic_aud > threshold)));  // Is the mic signal above threshold?
        spk_active = (spk_aud != 0);    // speaker is active logic
 
 
@@ -83,17 +83,19 @@ module team_06_FSM (
        LIST: begin
            if (spk_active) begin
                next_state = LIST;
-           end else if ((ng_en && !ptt_en && check) || ptt_en) begin
+           end else if ((noise_gate_tog && !ptt_en && check) || ptt_en) begin
                next_state = TALK;
            end
            end
 
 
        TALK: begin
-           if ((!ptt_en && !ng_en) || (ng_en && !ptt_en && !check)) begin
+           if ((!ptt_en && !noise_gate_tog) || (noise_gate_tog && !ptt_en && !check)) begin
                next_state = LIST;
            end else if (spk_active) begin
                next_state = LIST;
+           end else if ((ptt_en) || (noise_gate_tog && !ptt_en && check)) begin
+               next_state = TALK;
            end
            end
 
@@ -114,7 +116,7 @@ module team_06_FSM (
 
        case (current_state)
            LIST: begin
-               if (!mute) begin
+               if (!mute && !rst) begin
                    vol_en = 1;
                end
                else begin
@@ -124,7 +126,7 @@ module team_06_FSM (
            end
            TALK: begin
                vol_en = 0;
-               if (effect) begin
+               if (((current_effect != 0) && ptt_en) || ((current_effect != 0) && ng_en && !ptt_en && check)) begin
                    eff_en = 1;
                end else begin
                    eff_en = 0;
@@ -220,8 +222,7 @@ module team_06_FSM (
 
 
    assign current_effect = curr_eff;
-
-
+// KKKKKKKKKKKKKKKKKKKKKKKAAAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIIIIIIIIIIIOOOOOOOOOOOOOOOOOKKKKKKKKKKKKKKKKKKEEEEEEEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNNNNNNNNN
    logic mute_prev, mute_prev2;
    logic mute_state, next_mute_state, mute_button_rising;
    always_ff @(posedge clk, posedge rst) begin
@@ -272,12 +273,11 @@ module team_06_FSM (
 
 
        endcase
-       assign mute_tog = mute_state;
    end
+   assign mute_tog = mute_state;
 
 
-
-
+// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 
    logic noise_prev, noise_prev2;
@@ -330,6 +330,7 @@ module team_06_FSM (
 
 
        endcase
-       assign noise_gate_tog = noise_state;
+      
    end
+   assign noise_gate_tog = noise_state;
 endmodule

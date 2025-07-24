@@ -614,6 +614,20 @@ sv2v_%:
 	echo "\nConversion complete!\n"
 
 
+# Lint a module
+.PHONY: vlint-%
+# Example targets: make vlint-team_00 (for top level module), make vlint-team_00-t00_flex_counter (for submodule)
+vlint-%:
+	@export USER_PROJECT_VERILOG=$(UPRJ_ROOT)/verilog &&\
+	export TEAM_DIR=$$USER_PROJECT_VERILOG/rtl/team_projects/$(firstword $(subst -, ,$*)) &&\
+	export SRC_DIR=$$TEAM_DIR/src &&\
+	if [ "$(firstword $(subst -, ,$*))" = "$(lastword $(subst -, ,$*))" ]; then \
+		verilator --lint-only --timing -Wall -Wno-EOFNEWLINE -y $$SRC_DIR $$TEAM_DIR/$(lastword $(subst -, ,$*)).sv; \
+	else \
+		verilator --lint-only --timing -Wall -Wno-EOFNEWLINE -y $$SRC_DIR $$SRC_DIR/$(lastword $(subst -, ,$*)).sv; \
+	fi
+
+
 # Assemble RISC-V assembly (.asm) file into a list of instructions in a C header file
 # Useful for CPU teams so they can load RISC-V instructions into RAM
 assemble_%:

@@ -622,9 +622,15 @@ vlint-%:
 	export TEAM_DIR=$$USER_PROJECT_VERILOG/rtl/team_projects/$(firstword $(subst -, ,$*)) &&\
 	export SRC_DIR=$$TEAM_DIR/src &&\
 	if [ "$(firstword $(subst -, ,$*))" = "$(lastword $(subst -, ,$*))" ]; then \
-		verilator --lint-only --timing -Wall -Wno-EOFNEWLINE -y $$SRC_DIR $$TEAM_DIR/$(lastword $(subst -, ,$*)).sv; \
+		verilator --lint-only --timing -Wall -Wno-EOFNEWLINE -Wno-TIMESCALEMOD -y $$SRC_DIR \
+		-y $$USER_PROJECT_VERILOG/rtl/wishbone_manager \
+		-y $$USER_PROJECT_VERILOG/rtl/sram \
+		$$TEAM_DIR/$(lastword $(subst -, ,$*)).sv; \
 	else \
-		verilator --lint-only --timing -Wall -Wno-EOFNEWLINE -y $$SRC_DIR $$SRC_DIR/$(lastword $(subst -, ,$*)).sv; \
+		verilator --lint-only --timing -Wall -Wno-EOFNEWLINE -Wno-TIMESCALEMOD -y $$SRC_DIR \
+		-y $$USER_PROJECT_VERILOG/rtl/wishbone_manager \
+		-y $$USER_PROJECT_VERILOG/rtl/sram \
+		$$SRC_DIR/$(lastword $(subst -, ,$*)).sv; \
 	fi
 
 

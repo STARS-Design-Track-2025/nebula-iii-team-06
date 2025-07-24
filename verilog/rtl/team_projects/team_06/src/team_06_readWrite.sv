@@ -5,7 +5,7 @@ module team_06_readWrite (
     input logic [7:0] effectAudioIn, // The audio coming in from the audio effect module for storage
     input logic search, // Audio effects module telling the read write module it is time to read from SRAM
     input logic record, // Audio effects module telling the read write module it is time to write effectAudioIn to SRAM
-    input logic effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten
+    input logic [2:0] effect, // This is needed so that when the effect changes, we stop reading from SRAM and wait till it has all been overwritten
     input logic busySRAM, // This comes from SRAM when it is not done reading or writing
     output logic [31:0] busAudioWrite, // This is what you want to write to SRAM
     output logic [31:0] addressOut, // goes to SRAM, where we want to write in memory
@@ -55,7 +55,7 @@ end
 logic [12:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
 logic [1:0] pointer2; // pointer2 is used later to find when we have four bytes of data to send to SRAM
 logic goodData, goodData_n; // Whether your data is good
-logic effect_old;
+logic [2:0] effect_old;
 
 
 always_ff @(posedge clk, posedge rst) begin

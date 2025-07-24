@@ -9,7 +9,7 @@ module team_06_readWrite_tb;
     logic [7:0] effectAudioIn;
     logic search;
     logic record;
-    logic effect;
+    logic [2:0] effect;
     logic busySRAM;
     logic [31:0] busAudioWrite;
     logic [31:0] addressOut;

@@ -43,15 +43,15 @@ initial begin
    $dumpvars(0, team_06_FSM_tb);
   
    rst = 1;
-   #1
-   @(posedge clk);
-   rst = 0;
    mic_aud = 0;
    spk_aud = 0;
    ng_en = 0;
    ptt_en = 0;
    effect = 0;
    mute = 0;
+   #1
+   @(posedge clk);
+   rst = 0;
 
    #5
    @(posedge clk);
@@ -106,7 +106,7 @@ initial begin
    @(posedge clk);
    #5
    rst = 0;
-   mic_aud = 80;
+   mic_aud = 180;
    spk_aud = 0;
    ng_en = 1;
    ptt_en = 0;
@@ -128,8 +128,48 @@ initial begin
     effect = 1;
     mute = 0;
 
+//just added
+    @(posedge clk);
+    #5
+    rst = 0;
+    mic_aud = 128;
+    spk_aud = 0;
+    ng_en = 1;
+    ptt_en = 1;
+    effect = 1;
+    mute = 0;
 
+//just added
+    @(posedge clk);
+    #5
+    rst = 0;
+    mic_aud = 140;
+    spk_aud = 0;
+    ng_en = 1;
+    ptt_en = 1;
+    effect = 1;
+    mute = 0;
 
+    //just added
+    @(posedge clk);
+    #5
+    rst = 0;
+    mic_aud = 200;
+    spk_aud = 0;
+    ng_en = 1;
+    ptt_en = 1;
+    effect = 1;
+    mute = 0;
+
+   @(posedge clk);
+    #5
+    rst = 0;
+    mic_aud = 110;
+    spk_aud = 0;
+    ng_en = 1;
+    ptt_en = 1;
+    effect = 1;
+    mute = 0;
 
     @(posedge clk);
     #5

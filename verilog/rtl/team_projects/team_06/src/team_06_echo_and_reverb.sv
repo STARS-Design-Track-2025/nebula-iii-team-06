@@ -15,8 +15,8 @@ logic [7:0] save_audio_n;
 
 always_ff @(posedge clk or posedge rst) begin 
     if(rst)begin
-        echo_reverb_out <= 8'd0;
-        save_audio <= 8'd0;
+        echo_reverb_out <= 8'd128;
+        save_audio <= 8'd128;
     end else begin
         echo_reverb_out <= current_out; 
         save_audio <= audio_in;
@@ -46,7 +46,7 @@ always_comb begin
         current_out = dividercurrent[8:1];
     end else begin
         dividercurrent = 0;
-        current_out = 0; 
+        current_out = 128; 
     end
 end
 endmodule

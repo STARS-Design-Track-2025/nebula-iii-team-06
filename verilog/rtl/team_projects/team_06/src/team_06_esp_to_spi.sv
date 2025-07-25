@@ -25,7 +25,7 @@ module team_06_esp_to_spi
            counter <= 0;
            out_temp <= 0;
            finished <= 0;
-           spi_parallel_out <= 0;
+           spi_parallel_out <= 8'd128;
           
        end else begin
            counter <= counter_n;

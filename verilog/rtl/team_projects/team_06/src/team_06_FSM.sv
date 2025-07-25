@@ -63,7 +63,11 @@ module team_06_FSM (
    // Combinational: next state logic
    always_comb begin
        next_state = current_state;
-       check = ((mic_aud == threshold) || ((mic_aud > threshold)));  // Is the mic signal above threshold?
+       if (mic_aud >= 128) begin
+           check = (mic_aud >= threshold + 128);
+       end else begin
+           check  = (mic_aud <= 128 - threshold);
+       end
        spk_active = (spk_aud != 0);    // speaker is active logic
 
    /* Case statements for switching between states

@@ -7,7 +7,7 @@ module team_06_FSM (
    input logic ptt_en,            //Push-to-talk enable
    input logic effect,             // Effect being used
    input logic mute,               // Mute enabled
-   output logic [1:0] state,        // State we are currently in
+   output logic state,        // State we are currently in
    output logic eff_en,            // Whether the current effect used will be enabled
    output logic vol_en,             // Whether volume is enabled or not
    output logic [2:0] current_effect, // output logic for the current effect we're on
@@ -15,9 +15,9 @@ module team_06_FSM (
    output logic noise_gate_tog
 );
 
-   typedef enum logic [1:0] {
-       LIST = 2'b00,
-       TALK = 2'b01
+   typedef enum logic {
+       LIST = 1'b0,
+       TALK = 1'b1
    } state_t;
 
    typedef enum logic  {
@@ -40,7 +40,7 @@ module team_06_FSM (
        SENOSENOCAPPUICHINO = 3'b110
    } current_effect_t;
 
-   logic[1:0] current_state, next_state;   // Variables for controlling the state case-satatements
+   logic current_state, next_state;   // Variables for controlling the state case-satatements
    logic [7:0] threshold;                  // Threshold for which the mic_audio should pass in noise gate
    logic check;                // check logic for if we're above the threshold or not
    logic eff_en_temp;          // effect enable temporary variable

@@ -57,7 +57,7 @@ module team_06_spi_to_volume_shifter_to_i2s_to_DAC_tb;
         esp_serial_in = 0;@(negedge clkdiv);
         esp_serial_in = 1;@(negedge clkdiv);
         esp_serial_in = 1;@(negedge clkdiv);
-        #100000000;
+        #100;
         
         $finish;
 

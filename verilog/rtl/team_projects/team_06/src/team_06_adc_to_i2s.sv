@@ -24,7 +24,7 @@ module team_06_adc_to_i2s
             counter <= '0;
             out_temp <= '0;
             finished <= '0;
-            i2s_parallel_out <= '0;
+            i2s_parallel_out <= 8'd128;
             ws <= 0;
         end else begin
             counter <= counter_n;

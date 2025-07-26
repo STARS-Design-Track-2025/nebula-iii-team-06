@@ -1,4 +1,4 @@
-`timescale 1ms/10ps
+`timescale 1ns/10ps
 module team_06_i2c_tb;
 
 logic clk;
@@ -23,7 +23,7 @@ team_06_i2c ben_tolu (
 );
 
 initial clk = 0;
-always #0.5 clk = ~clk;
+always #12.5 clk = ~clk;
 
 initial begin
     // Waveform Dumping

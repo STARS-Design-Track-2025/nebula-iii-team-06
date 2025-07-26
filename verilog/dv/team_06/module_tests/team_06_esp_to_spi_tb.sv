@@ -1,4 +1,4 @@
-`timescale 1ms/10ps
+`timescale 1us/10ps
 module team_06_esp_to_spi_tb;
 
 logic clk;
@@ -19,7 +19,7 @@ team_06_esp_to_spi trung (
 );
 
 initial clk = 0;
-always #0.5 clk = ~clk;
+always #10 clk = ~clk;
 
 initial begin
    //waveform dumping
@@ -34,27 +34,27 @@ initial begin
    esp_serial_in = 1;
 
    repeat(2) @(posedge clk);
-   #500
+   #10000
    rst = 1;
    esp_serial_in = 1;
 
    @(posedge clk);
-   #500
+   #10000
    rst = 0;
    esp_serial_in = 1;
 
    repeat(5) @(posedge clk);
-   #500
+   #10000
    rst = 0;
    esp_serial_in = 0;
 
    repeat(5) @(posedge clk);
-   #500
+   #10000
    rst = 0;
    esp_serial_in = 0;
 
    repeat (5) @(posedge clk);
-   #500
+   #10000
    rst = 1;
    esp_serial_in = 1;
 

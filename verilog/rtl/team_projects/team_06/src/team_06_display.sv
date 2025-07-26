@@ -1,173 +1,101 @@
-// module team_06_display (
-//     input  logic        clk,
-//     input  logic        rst,
-//     input  logic [1:0]  state,
-//     input  logic [2:0]  current_effect,
-//     input logic ack,
-//     output logic [11:0]  lcdOut,
-//     // output logic        valid
-// );
+module team_06_displayFSM (
+    input logic clk,
+    input logic rst,
+    input logic talkieState, // Is the walkie talkie in listen or talk state?
+    input logic [2:0] current_effect, // What audio effect is the walkie talkie on?
+    input logic [2:0] i2cState, // What state is the i2c in (off, begins, send, ack, wait, ends)
+    input logic commsError, // This is a flag that goes high when we do not get an ack from the display
+    input logic ready, // This is a flag that goes high when we are ready for new data
+    output logic [5:0] lcdOut, // This is the current command for the i2c to send
+    output logic trans // This is telling the i2c when to begin transmitting
+);
 
-//     logic [3:0] counter, counter_n;
-//     logic lcdData;
+    logic [191:0] lcdData; // This is a group of 16 pairs of 6 bit commands (R/W, RS, DB 7-4)
+    logic [35:0] lcdData1; // This is always in the command and tells the screen to basically reset
+    logic resetLogic, trans_n; // resetLogic checks if we just reset
+    logic [2:0] desiredLCDstate, desiredLCDstate_n, currentLCDstate, currentLCDstate_n; // Current updates when we succesfully update the LCD, desired updates when we are not transmitting
+    logic [4:0] counter, counter_n; // What part of our 16 pairs of 6 bit commands are we in?
+    logic [5:0] lcdOut_n;
 
-//     always_ff @(posedge clk, posedge rst) begin
-//         if (rst) begin
-//             x <= 1;
-//             counter <= 0;
-//         end else begin
-//             x <= 0;
-//             counter <= counter_n;
-//         end
-//     end
+    // This is a modification of the typedef from FSM to include listen and an empty state
+    typedef enum logic [2:0] {
+       NORMAL = 3'b000,
+       ECHO = 3'b001,
+       TREMOLO = 3'b010,
+       REVERB = 3'b011,
+       SOFT = 3'b100,
+       NONE = 3'b110,
+       LISTEN = 3'b111
+   } current_effect_t;
 
-//     always_comb begin
-//         counter_n = ack ? counter + 1 : counter;
-//         lcdOut = lcdData[12*counter+:12];
-//     end
+    typedef enum logic {
+       LIST = 1'b0,
+       TALK = 1'b1
+   } state_t;
 
-//     always_comb begin 
+    // See I2C for description
+    typedef enum logic [2:0] {BEGINS = 3'b0, SEND = 3'b1, ACK = 3'd2, WAIT = 3'd3, ENDS = 3'd4, OFF = 3'd5, ERROR = 3'd6} state_I2C;
 
-//         if (x) begin
-//             lcdData = {}
-//         end
-//         case(state)
-//             ECHO: lcdData = {12'b100101100111, 12'b100100100011, 12'b100100101000, 12'b100100101111}; //ECHO
-//             REVERB: lcdData = {12'b100101100010, 12'b100101100111, 12'b100101100110, 12'b100101100111, 12'b100101100010, 12'b100100100010}; //REVERB
-//             SOFT_CLIPPING: lcdData = { 12'b100101100011, 12'b100100101111, 12'b100100100110, 12'b100101100100, 12'b100101101111, 12'b100100100011, 12'b100100101100, 12'b100100101001, 12'b1001010000, 12'b1001010000, 12'b100100101001, 12'b100100101110, 12'b100100100111}; //SOFT_CLIPPING 
-//             TREMELO: lcdData = {12'b100101100100, 12'b100101100010, 12'b100101100111, 12'b100100101101, 12'b100101100111, 12'b100100101100, 12'b100100101111}; //TREMELO
-//             LISTENING: lcdData = {12'b100100101100, 12'b100100101001, 12'b100101100011, 12'b100101100100, 12'b100101100111, 12'b100100101110, 12'b100100101001, 12'b100100101110, 12'b100100100111}; //LISTENING
-//             NORMAL: lcdData = { 12'b100100101110, 12'b100100101111, 12'b100101100010, 12'b100100101101, 12'b100100100001, 12'b100100101100 }; //NORMAL 
-//         endcase
-//     end
+    always_ff @(posedge clk, posedge rst) begin
+        if (rst) begin
+            resetLogic <= 1; 
+            desiredLCDstate <= NONE;
+            currentLCDstate <= NONE;
+            trans <= 0;
+            counter <= 0;
+            lcdOut <= 0;
+        end else begin
+            resetLogic <= 0;
+            desiredLCDstate <= desiredLCDstate_n;
+            currentLCDstate <= currentLCDstate_n;
+            trans <= trans_n;
+            counter <= counter_n;
+            lcdOut <= lcdOut_n;
+        end
+    end
 
-//     // CLEAR_DISPLAY: lcdData = {12'b000000000001}; 
-//     // RETURN_HOME: lcdData = {12'b000000000010 };
-//     // FOUR_BIT_2_LINE: lcdData = {12'b000010001000};
-//     // DISPLAY_ON: lcdData = {12'b000000001110};
-//     // ENTRY_MODE: lcdData = {12'b000000000110};
+    always_comb begin
+        counter_n = counter;
+        trans_n = trans;
+        currentLCDstate_n = currentLCDstate;
+        desiredLCDstate_n = desiredLCDstate;
+        lcdOut_n = lcdOut;
+        if (!trans && desiredLCDstate != currentLCDstate && i2cState == OFF) begin // If we are not transmitting and the i2c is ready and we want a new LCD state
+            counter_n = 0;
+            lcdOut_n = lcdData[191-:6]; // This takes bits 191 to 179, inclusive
+            trans_n = 1; // transmit
+        end else if (trans) begin // If we are currently transmitting
+            if (ready) begin // We change the data if the i2c is ready for another transmission
+                counter_n = counter + 1;
+                lcdOut_n = lcdData[(191-6*counter)-:6]; // This takes 6 bits, with the MSB bit being 191 - 6 * counter
+                if (counter == 31|| lcdOut_n == 0) begin // If our communication is over or we have met an empty communication, end transmission
+                    trans_n = 0;
+                    currentLCDstate_n = desiredLCDstate;  // We suceeded, so update our current state to our desired state
+                end
+            end else if (commsError) begin // If we were unable to successfully transmit, our current state remains the same
+                trans_n = 0;
+                currentLCDstate_n = currentLCDstate;
+            end 
+        end else begin // If we are not transmitting
+            desiredLCDstate_n = (talkieState == LIST) ? LISTEN : current_effect; // We need to convert our talkiestate and effect into just one state machine
+        end
+    end
 
-// //edge detector
-// // always_ff @(posedge clk, posedge rst) begin
-// //     if(rst) begin
-// //         CLEAR_DISPLAY =0;
-// //         RETURN_HOME = 0;
-// //         current_effect = 0;
-// //     end else if (rising_edge) begin
-// //         CLEAR_DISPLAY = 1;
-// //         RETURN_HOME = 1;
-// //         current_effect 1;
-
-// //     end
-// // end
-
-// endmodule
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// //     logic [7:0] line_buffer [0:31]; // 2 lines x 16 chars
-// //     logic [5:0] index;
-
-// //     logic [1:0] prev_state;
-// //     logic [2:0] prev_effect;
-// //     logic update_needed;
-
-// //     // Detect change in state/effect
-// //     always_ff @(posedge clk or posedge rst) begin
-// //         if (rst) begin
-// //             prev_state <= 0;
-// //             prev_effect <= 0;
-// //             update_needed <= 1;
-// //         end else begin
-// //             if (state != prev_state || current_effect != prev_effect) begin
-// //                 update_needed <= 1;
-// //                 prev_state <= state;
-// //                 prev_effect <= current_effect;
-// //             end else begin
-// //                 update_needed <= 0;
-// //             end
-// //         end
-// //     end
-
-// //     // Build the lines when update is needed
-// //     always_ff @(posedge clk or posedge rst) begin
-// //         if (rst) begin
-// //             index <= 0;
-// //         end else if (update_needed) begin
-// //             string line1, line2;
-
-// //             case (state)
-// //                 2'b00: line1 = "LISTENING       ";
-// //                 2'b01: line1 = "TALKING         ";
-// //                 default: line1 = "UNKNOWN         ";
-// //             endcase
-
-// //             if (state == 2'b01) begin
-// //                 case (current_effect)
-// //                     3'b001: line2 = "ECHO            ";
-// //                     3'b010: line2 = "TREMOLO         ";
-// //                     3'b011: line2 = "REVERB          ";
-// //                     3'b100: line2 = "CLIP            ";
-// //                     default: line2 = "NORMAL          ";
-// //                 endcase
-// //             end else begin
-// //                 line2 = "                "; // blank
-// //             end
-
-// //             // Fill buffer
-// //             integer i;
-// //             for (i = 0; i < 16; i++) begin
-// //                 line_buffer[i]     = line1[i*8 +: 8];
-// //                 line_buffer[i+16]  = line2[i*8 +: 8];
-// //             end
-// //             index <= 0;
-// //         end
-// //     end
-
-// //     // Output on `next`
-// //     always_ff @(posedge clk or posedge rst) begin
-// //         if (rst) begin
-// //             lcdData <= 8'h20;
-// //             valid <= 0;
-// //         end else if (next && index < 32) begin
-// //             lcdData <= line_buffer[index];
-// //             valid <= 1;
-// //             index <= index + 1;
-// //         end else begin
-// //             valid <= 0;
-// //         end
-// //     end
-
-// // endmodule
+    always_comb begin 
+        lcdData1 = {12'b000000000001, 12'b000000000110, 12'b000000000010}; // CLEAR_DISPLAY, ENTRY_MODE, RETURN_HOME
+        if (resetLogic) begin
+            lcdData = {12'b000010000000, 12'b000010001000, 12'b000000001110, lcdData1, 120'b0}; // FUNCTION_SET, FOUR_BIT_2_LINE, DISPLAY_ON
+        end else begin
+            case(desiredLCDstate)
+                ECHO: lcdData = {lcdData1, 12'b100101100111, 12'b100100100011, 12'b100100101000, 12'b100100101111, 108'b0}; //ECHO
+                REVERB: lcdData = {lcdData1, 12'b100101100010, 12'b100101100111, 12'b100101100110, 12'b100101100111, 12'b100101100010, 12'b100100100010, 84'b0}; //REVERB
+                SOFT: lcdData = {lcdData1, 12'b100101100011, 12'b100100101111, 12'b100100100110, 12'b100101100100, 12'b100101101111, 12'b100100100011, 12'b100100101100, 12'b100100101001, 12'b1001010000, 12'b1001010000, 12'b100100101001, 12'b100100101110, 12'b100100100111}; 
+                //SOFT_CLIPPING 
+                TREMOLO: lcdData = {lcdData1, 12'b100101100100, 12'b100101100010, 12'b100101100111, 12'b100100101101, 12'b100101100111, 12'b100100101100, 12'b100100101111, 72'b0}; //TREMELO
+                NORMAL: lcdData = {lcdData1, 12'b100100101110, 12'b100100101111, 12'b100101100010, 12'b100100101101, 12'b100100100001, 12'b100100101100, 84'b0}; //NORMAL 
+                LISTEN: lcdData = {lcdData1, 12'b100100101100, 12'b100100101001, 12'b100101100011, 12'b100101100100, 12'b100101100111, 12'b100100101110, 12'b100100101001, 12'b100100101110, 12'b100100100111, 48'b0}; //LISTENING
+                default: lcdData = 192'b0;
+            endcase
+        end
+    end
+endmodule

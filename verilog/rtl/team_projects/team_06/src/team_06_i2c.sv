@@ -1,26 +1,26 @@
 module team_06_i2c
 (
     input logic clk, rst, sda_i, // sda_i is what we recieve from the display (ack signal)
-    input logic [1:0] effect, // Which effect we want to dispaly 
-    input logic [7:0] lcdData, // What data you want to send to the LCD
-    output logic sda_o, scl, oeb  //sda_o is data, scl is the clock line, and oeb is whether we are sending or recieving on the sda
+    input logic trans, // This is telling the i2c when to begin transmitting
+    input logic [5:0] lcdData, // What data you want to send to the LCD
+    output logic sda_o, scl, oeb,  //sda_o is data, scl is the clock line, and oeb is whether we are sending or recieving on the sda
+    output logic [2:0] state, // So that the display FSM can check when you are ready for a new transmission
+    output logic commsError,  // This tells the display FSM that we have not succeeded in getting an ack
+    output logic ready // This tells the display FSM that we are prepared for more data
 );
 
     // CLOCK DIVIDER
 
     logic [8:0] counter, counter_n;
     logic clkdiv, clkdiv_temp;
-    logic [1:0] effect_store;
     
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
             counter <= 0;
             clkdiv <= 0;
-            effect_store <= 0;
         end else begin
             counter <= counter_n;
             clkdiv <= clkdiv_temp;
-            effect_store <= effect;
         end 
     end
 
@@ -34,10 +34,10 @@ module team_06_i2c
 
     // STATE MACHINE
 
-    logic [2:0] state, state_n;
-    logic ack, ack_n, sda_o_n, scl_n, oeb_n, complete;
+    logic [2:0] state_n;
+    logic ack, ack_n, sda_o_n, scl_n, oeb_n, complete, commsError_n, ready_n;
 
-    typedef enum logic [2:0] {BEGINS = 3'b0, SEND = 3'b1, ACK = 3'd2, WAIT = 3'd3, ENDS = 3'd4, OFF = 3'd5, ERROR = 3'd6} state_I2C;
+    typedef enum logic [2:0] {BEGINS = 3'b0, SEND = 3'b1, ACK = 3'd2, ENDS = 3'd3, OFF = 3'd4, ERROR = 3'd6} state_I2C;
 
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
@@ -46,20 +46,26 @@ module team_06_i2c
             scl <= 1;
             oeb <= 0;
             ack <= 0;
+            commsError <= 0;
+            ready <= 0;
         end else begin
             state <= state_n;
             sda_o <= sda_o_n;
             scl <= scl_n;
             oeb <= oeb_n;
             ack <= ack_n;
+            commsError <= commsError_n;
+            ready <= ready_n;
         end 
     end
 
     always_comb begin
+        ready_n = 0;
+        commsError_n = 0;
         case (state)
             OFF: 
             begin 
-                if (effect != effect_store) begin // If the effect has changed, we start a transmission
+                if (trans) begin // If the effect has changed, we start a transmission
                     state_n = BEGINS;
                 end else begin
                     state_n = OFF;
@@ -67,17 +73,21 @@ module team_06_i2c
             end
             ACK: 
             begin
-                if (ack && complete && transmissionCount != 2) begin // If we have recieved an ack from the slave and 
-                                                                                  //we are done and we have not transmitted enough times
-                    state_n = BEGINS;
-                end else if (complete) begin
-                    state_n = ENDS;
-                end else 
+                if (complete) begin  // if we are done             
+                    if (ack && transmissionCount != 2) begin // If we have recieved an ack from the slave and we need to continue                                                       
+                        state_n = BEGINS;
+                        ready_n = 1;
+                    end else begin // If we need to end
+                        state_n = ENDS;
+                        commsError_n = ack ? 0 : 1; // Tells display FSM if there is a lack of ack
+                    end
+                end else begin
                     state_n = ACK;
+                end
             end
             default:
             begin
-                if (complete) begin
+                if (complete) begin // If we are done with our current state, go to our next state
                     state_n = state + 1'b1;
                 end else begin
                     state_n = state; 
@@ -91,6 +101,7 @@ module team_06_i2c
     logic [1:0] waitCounter, waitCounter_n, endCounter, endCounter_n, beginCounter, beginCounter_n;
     logic [4:0] sendCounter, sendCounter_n;
     logic [2:0] ackCounter, ackCounter_n;
+    logic [7:0] lcdDataPadded;
 
     always_ff @(posedge clk, posedge rst) begin
         if (rst) begin
@@ -111,6 +122,7 @@ module team_06_i2c
     end
 
     always_comb begin
+        lcdDataPadded = 0;
         sda_o_n = sda_o;
         scl_n = scl;
         endCounter_n = endCounter;
@@ -124,11 +136,6 @@ module team_06_i2c
         ack_n = ack;
 
         if (clkdiv && !clkdiv_temp) begin
-            // endCounter_n = 0;
-            // beginCounter_n = 0;
-            // sendCounter_n = 0;
-            // ackCounter_n = 0;
-            // waitCounter_n = 0;
             oeb_n = 0;
             case (state)
             OFF: // If we are off, we keep our output high
@@ -161,7 +168,8 @@ module team_06_i2c
             begin
                 sendCounter_n = sendCounter + 1;
                 if (sendCounter[1:0] == 0) begin        // First, update the data
-                    sda_o_n = lcdData[7-sendCounter[4:2]];
+                    lcdDataPadded = {lcdData, 2'b0};
+                    sda_o_n = lcdDataPadded[7-sendCounter[4:2]]; // This means we transmit 8 bits, and the last two are padding
                     scl_n = 0;
                 end else if (sendCounter[1:0] == 3) begin // At the end, turn clock off
                     scl_n = 0;

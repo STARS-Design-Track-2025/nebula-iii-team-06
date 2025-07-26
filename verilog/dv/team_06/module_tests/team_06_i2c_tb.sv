@@ -81,6 +81,13 @@ initial begin
     repeat(1024*160) @(posedge clk);
     #50
     rst = 0;
+    sda_i = 1;
+    trans = 0;
+    lcdData = 63;
+    repeat(1024*160) @(posedge clk);
+    
+    #50
+    rst = 0;
     #20
     $finish;
 

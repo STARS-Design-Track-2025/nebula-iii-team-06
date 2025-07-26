@@ -9,7 +9,7 @@ module team_06_echo_and_reverb (
   output logic [7:0] save_audio //what is being sent to the SRAM
 );
 
-//ECHO = (audio_in  + c*past_input)/(1 + C) 
+
 logic [7:0] current_out; //temporary echo output 
 logic [7:0] save_audio_n;
 
@@ -19,7 +19,7 @@ always_ff @(posedge clk or posedge rst) begin
         save_audio <= 8'd0;
     end else begin
         echo_reverb_out <= current_out; 
-        save_audio <= audio_in;
+        save_audio <= save_audio_n;
     end
 end
 

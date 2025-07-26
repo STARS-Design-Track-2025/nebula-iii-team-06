@@ -13,7 +13,7 @@ module team_06_volume_shifter(
 
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
-            audio_out_16 <= '0;
+            audio_out_16 <= 16'd128;
             en<=0;
         end
         else begin
@@ -32,7 +32,7 @@ module team_06_volume_shifter(
                audio_out_16_n = 127 - ( (16'd127 - audio_in_16) * scale ) / 255;
                en_n = 1;
         end else begin
-            audio_out_16_n = 16'd0;
+            audio_out_16_n = 16'd128;
             en_n = 0;
         end
         audio_out = audio_out_16[7:0];

@@ -56,8 +56,8 @@ end
 logic [12:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
 logic [1:0] pointer2; // pointer2 is used later to find when we have four bytes of data to send to SRAM
 logic goodData, goodData_n; // Whether your data is good
-logic [2:0] effect_old;
-
+logic [2:0] effect_old, effect_older;
+logic [12:0] flag;
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
@@ -70,20 +70,21 @@ always_ff @(posedge clk, posedge rst) begin
         dataEvaluation <= dataEvaluation_n;
         goodData <= goodData_n;
         effect_old <= effect;
+        effect_older <= effect_old;
     end
 end
 
 assign pointer2 = pointer[1:0]; 
 
 always_comb begin
-
+    flag = dataEvaluation - 1;
     dataEvaluation_n = dataEvaluation;
     goodData_n = goodData;
 
-    if (effect_old != effect) begin // If we reset the mode, we designate the last memory address to clean
+    if (effect_old != effect_older) begin // If we reset the mode, we designate the last memory address to clean
         dataEvaluation_n = pointer;
         goodData_n = 0;
-    end else if (dataEvaluation - 1 == pointer) begin // If we reach the last memory address, we should have clean data next clock cycle
+    end else if (flag == pointer) begin // If we reach the last memory address, we should have clean data next clock cycle
         goodData_n = 1;
     end
 
@@ -134,7 +135,7 @@ always_ff @ (posedge clk, posedge rst) begin
     if (rst) begin
         read <= WAIT; 
         audioSample <= 0;
-        audioOutput <= 0;
+        audioOutput <= 8'd128;
         audioLocation <= 11'b0;
         readOld <= 0;
         sramOld <= 0;
@@ -159,7 +160,7 @@ always_comb begin
     if (!goodData) begin  // If we do not have good data, just stop reading and clear everything
         read_n = WAIT;
         audioSample_n = 0;
-        audioOutput_n = 0;
+        audioOutput_n = 8'd128;
         audioLocation_n = 0; 
     end else if (sram == READ) begin
         read_n = REQUEST;

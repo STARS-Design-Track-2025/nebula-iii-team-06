@@ -12,10 +12,9 @@ logic echo_en;
 logic reverb_en;
 logic [7:0] past_output;
 logic [12:0] offset;
-logic search;
-logic [7:0] echo_out;
+//logic search;
+logic [7:0] echo_reverb_out;
 logic [7:0] save_audio;
-
 
 // Instantiation of the echo module
 team_06_echo_and_reverb sahur (
@@ -26,9 +25,10 @@ team_06_echo_and_reverb sahur (
 .reverb_en(reverb_en),
 .past_output(past_output),
 .offset(offset),
-.out(echo_out),
+.echo_reverb_out(echo_reverb_out),
 .save_audio(save_audio)
 );
+
 
 initial clk = 0;
 always #0.5 clk = ~clk;

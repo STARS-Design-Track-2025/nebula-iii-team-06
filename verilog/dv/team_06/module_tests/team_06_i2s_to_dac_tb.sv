@@ -1,11 +1,13 @@
 module team_06_i2s_to_dac_tb;
     logic [7:0] parallel_in;
-    logic clk, rst, en;
+    logic clk, clkdiv, rst, en;
     logic serial_out;
     
     
     
     team_06_i2s_to_dac DUT(.parallel_in(parallel_in), .clk(clk), .rst(rst), .serial_out(serial_out), .en(en));
+    team_06_i2sclkdivider div_i2sclk(.clk(clk), .rst(rst), .i2sclk(clkdiv));
+
 
     initial begin
         clk = 0;
@@ -20,11 +22,15 @@ module team_06_i2s_to_dac_tb;
         en = 1;
         rst = 1;
         parallel_in = 8'b11011011; //@(negedge i2sclk);
-        #40;
+        
 
-       //normal operatopm
+       //normal operatop
+       @(posedge clk);
         rst = 0;
-        #10000000;
+        repeat(8) @(negedge clkdiv);
+        parallel_in = 8'b00101001; 
+
+     #10000000;
         en = 0;
       #10000;
 

@@ -99,6 +99,7 @@ sram_WB_Wrapper sram_wrapper(
     .wbs_dat_o(wdati)
 );
     
+
 initial begin
     clk = 0;
     forever #10 clk = ~clk;
@@ -124,17 +125,31 @@ initial begin
     #300;
     //normal operation
     rst = 0;
-    #100000;
-    sel = 3'b001;
-    #100000;
-    sel = 3'b010;
-    #100000;
-    sel = 3'b011;
-    #100000;
-    sel = 3'b100;
-    
-    #10000000;
     repeat (1000) toggleFinished;
+    sel = 3'b001;
+    repeat (6000) toggleFinished;
+    sel = 3'b010;
+    repeat (6000) toggleFinished;
+    audio_in = 8'd54;
+    repeat (1000) toggleFinished;
+    audio_in = 8'd64;
+    repeat (1000) toggleFinished;
+    audio_in = 8'd22;
+    repeat (1000) toggleFinished;
+    audio_in = 8'd88;
+    repeat (1000) toggleFinished;
+    audio_in = 8'd80;
+    repeat (1000) toggleFinished;
+    audio_in = 8'd24;
+    repeat (1000) toggleFinished;
+    audio_in = 8'd14;
+    repeat (1000) toggleFinished;
+    audio_in = 8'd24;
+    repeat (10000) toggleFinished;
+    sel = 3'b011;
+    repeat (6000) toggleFinished;
+    sel = 3'b100;
+    repeat (6000) toggleFinished;
     #100
     //reset
     rst = 1;

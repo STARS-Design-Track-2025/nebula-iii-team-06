@@ -5,6 +5,7 @@
 
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_adc_to_i2s.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_clkdivider.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_displayFSM.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_echo_and_reverb.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_edge_detection_i2s.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_esp_to_spi.sv

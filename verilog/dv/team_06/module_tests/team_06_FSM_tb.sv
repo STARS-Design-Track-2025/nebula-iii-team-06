@@ -27,7 +27,6 @@ team_06_FSM trung_trung (
 .effect(effect),
 .mute(mute),
 .state(state),
-.eff_en(eff_en),
 .vol_en(vol_en),
 .current_effect(current_effect),
 .mute_tog(mute_tog),

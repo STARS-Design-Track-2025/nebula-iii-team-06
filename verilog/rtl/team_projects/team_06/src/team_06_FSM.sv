@@ -8,7 +8,6 @@ module team_06_FSM (
    input logic effect,             // Effect being used
    input logic mute,               // Mute enabled
    output logic state,        // State we are currently in
-   output logic eff_en,            // Whether the current effect used will be enabled
    output logic vol_en,             // Whether volume is enabled or not
    output logic [2:0] current_effect, // output logic for the current effect we're on
    output logic mute_tog,
@@ -99,7 +98,6 @@ module team_06_FSM (
    // Combinational logic for the output of the module
    always_comb begin
        vol_en = 0;
-       eff_en = 0;
 
        case (current_state)
            LIST: begin
@@ -108,20 +106,16 @@ module team_06_FSM (
                end
                else begin
                    vol_en = 0;
-                   eff_en = 0;
                end
            end
            TALK: begin
                vol_en = 0;
                if (((current_effect != 0) && ptt_en) || ((current_effect != 0) && ng_en && !ptt_en && check)) begin
-                   eff_en = 1;
                end else begin
-                   eff_en = 0;
                end
            end
            default: begin
                vol_en = 0;
-               eff_en = 0;
                end
        endcase
    end

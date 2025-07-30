@@ -46,11 +46,11 @@ endif
 
 # export OPENLANE_ROOT?=$(PWD)/dependencies/openlane_src  # We are not using OpenLane1
 
-# export OPENLANE2_ROOT?=${HOME}/STARS2024/openlane2-2.0.7  # for nanoHUB
-export OPENLANE2_ROOT?=~/openlane2# Working somewhere else
+export OPENLANE2_ROOT?=${HOME}/STARS2024/openlane2-2.0.7  # for nanoHUB
+# export OPENLANE2_ROOT?=~/openlane2  # working somewhere else
 export BUS_WRAP_ROOT?=$(PWD)/dependencies/BusWrap
-export PDK_ROOT?=$(PWD)/dependencies/pdks
-# export PDK_ROOT?=/apps/share64/rocky8/openlane2/openlane2-stars2024-20240613/PDKS   # for nanoHUB
+export PDK_ROOT?=/apps/share64/rocky8/openlane2/openlane2-stars2024-20240613/PDKS   # for nanoHUB
+# export PDK_ROOT?=$(PWD)/dependencies/pdks  # working somewhere else
 export DISABLE_LVS?=0
 
 export ROOTLESS
@@ -61,7 +61,8 @@ export ROOTLESS
 ifeq ($(PDK),sky130A)
 	SKYWATER_COMMIT=f70d8ca46961ff92719d8870a18a076370b85f6c
 	export OPEN_PDKS_COMMIT_LVS?=6d4d11780c40b20ee63cc98e645307a9bf2b2ab8
-	export OPEN_PDKS_COMMIT?=0fe599b2afb6708d281543108caf8310912f54af
+	export OPEN_PDKS_COMMIT?=4d5af10bfee4dab799566aaf903bb22aee69bac9
+# For outside nanoHUB: export OPEN_PDKS_COMMIT?=0fe599b2afb6708d281543108caf8310912f54af
 	export OPENLANE_TAG?=2023.07.19-1
 	MPW_TAG ?= CC2509-test
 

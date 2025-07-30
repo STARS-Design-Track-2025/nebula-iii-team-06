@@ -1,5 +1,4 @@
 module team_06_top_tb;
-
     logic hwclk;
     logic reset;
     logic adc_serial_in;
@@ -10,6 +9,8 @@ module team_06_top_tb;
     logic cs;
     logic mosi;
     logic dac_out;
+
+    typedef enum int {PTT = 0, MUTE = 1, EFFECTCHANGE = 2, NOISEGATE = 3} button_t;
 
     //Instantiation of the top module 
     team_06_top toptime (
@@ -50,6 +51,12 @@ module team_06_top_tb;
         end
     endtask
 
+    task pressButton (int i);
+        begin
+            pbs[i] = ~pbs[i];
+        end
+    endtask
+
     // Mem file???
 
     initial begin
@@ -69,6 +76,10 @@ module team_06_top_tb;
         adc_serial_in = 1;
 
         repeat(4) increaseVolume();
+
+        repeat (100) toggleSerial();
+
+        pressButton(NOISEGATE);
 
         repeat (100) toggleSerial();
 

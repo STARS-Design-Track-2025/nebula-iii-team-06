@@ -579,18 +579,21 @@ cram_%:
 	sed -i 's/sram_for_FPGA/sky130_sram_8kbyte_1r1w_32x2048_8/' $$SRAM_WRAPPER
 
 # KLayout Command
+# Add quotations to command if NOT in nanoHUB
 klayout_cmd = \
-	"klayout $(PROJECT_ROOT)/gds/$*.gds \
-	-l $(PDKPATH)/libs.tech/klayout/tech/$(PDK).lyp"
+	klayout $(PROJECT_ROOT)/gds/$*.gds \
+	-l $(PDKPATH)/libs.tech/klayout/tech/$(PDK).lyp
 
 # Open GDSII of design in KLayout
 # Example target: make gdsview_team_00_klayout
+
+# Replace command with this if NOT in nanoHUB: nix-shell --run $(klayout_cmd) --pure $(OPENLANE2_ROOT)/shell.nix
 .PHONY: gdsview_%_klayout
 gdsview_%_klayout:
 	@if echo "$(blocks)" | grep -qw "$*"; then \
 		if [ -f "$(PROJECT_ROOT)/gds/$*.gds" ]; then \
 			echo "Opening GDSII layout of $* in KLayout..."; \
-			nix-shell --run $(klayout_cmd) --pure $(OPENLANE2_ROOT)/shell.nix; \
+			$(klayout_cmd); \
 		else \
 			if [ -n "$(wildcard $(PROJECT_ROOT)/gds/$*.gds.gz*)" ]; then \
 				echo "Error: Design $* has a compressed GDSII file. Run \"make uncompress\" to extract the original file"; \

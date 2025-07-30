@@ -10,9 +10,8 @@ module team_06_FSM (
    output logic state,        // State we are currently in
    output logic vol_en,             // Whether volume is enabled or not
    output logic [2:0] current_effect, // output logic for the current effect we're on
-   output logic mute_tog,
-   output logic noise_gate_tog,
-   output logic effect_en
+   output logic mute_tog, // This is what actually mutes the volume shifter
+   output logic effect_en // This is what actually mutes the audio effect module
 );
 
    typedef enum logic {
@@ -48,6 +47,7 @@ module team_06_FSM (
    logic [2:0] curr_eff, next_eff;
    logic effect_button_prev, effect_button_prev2;
    logic effect_button_rising;
+   logic noise_gate_tog;
 
    assign threshold = 8'd64; // threshold is 64 decibels
 
@@ -68,7 +68,7 @@ module team_06_FSM (
        end else begin
            check  = (mic_aud <= 128 - threshold);
        end
-       spk_active = (spk_aud != 128);    // speaker is active logic
+       spk_active = (spk_aud != 128);    // speaker is active logic. Critical that the value is 128 because that is the midpoint between 0 and 255
 
    /* Case statements for switching between states
    based on the current state and certain conditions (MEALY)*/

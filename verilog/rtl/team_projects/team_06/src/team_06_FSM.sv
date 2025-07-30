@@ -1,14 +1,14 @@
 module team_06_FSM (
    input logic clk,
    input logic rst,
-   input logic [7:0] mic_aud,       // Live audio being transmitted
-   input logic [7:0] spk_aud,      // Live audio being listened to
-   input logic ng_en,              // Noise gate enabale
-   input logic ptt_en,            //Push-to-talk enable
-   input logic effect,             // Effect being used
-   input logic mute,               // Mute enabled
-   output logic state,        // State we are currently in
-   output logic vol_en,             // Whether volume is enabled or not
+   input logic [7:0] mic_aud, // Live audio being transmitted
+   input logic [7:0] spk_aud, // Live audio being listened to
+   input logic ng_en, // Noise gate enabale
+   input logic ptt_en, //Push-to-talk enable
+   input logic effect, // Effect being used
+   input logic mute, // Mute enabled
+   output logic state, // State we are currently in
+   output logic vol_en, // Whether volume is enabled or not
    output logic [2:0] current_effect, // output logic for the current effect we're on
    output logic mute_tog, // This is what actually mutes the volume shifter
    output logic effect_en // This is what actually mutes the audio effect module
@@ -47,7 +47,7 @@ module team_06_FSM (
    logic [2:0] curr_eff, next_eff;
    logic effect_button_prev, effect_button_prev2;
    logic effect_button_rising;
-   logic noise_gate_tog;
+   logic noise_gate_tog; // Whether or not noise gates has changed states
 
    assign threshold = 8'd64; // threshold is 64 decibels
 

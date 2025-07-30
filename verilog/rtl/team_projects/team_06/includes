@@ -25,3 +25,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_tremelo_clkdiv.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_spi_to_volume_shifter_to_i2s_to_DAC.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_synckey_to_FSM.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_top.sv

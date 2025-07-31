@@ -8,11 +8,12 @@
     input logic cs,
     output logic wsADC,
     output logic mosi,
-    output logic dac_out
+    output logic dac_out,
+    output logic i2sclk
   );
   
   // ADC, i2sclk, edge_detection section
-  logic i2sclk, past_i2sclk; 
+  logic past_i2sclk; 
   logic [7:0] i2s_parallel_out;
   logic finished; 
 
@@ -82,7 +83,7 @@
   .mic_aud(i2s_parallel_out), // Input from ADC
   .spk_aud(spi_parallel_out), // Input from ESP -> SPI
   .ng_en(noise_gate), .ptt_en(ptt),  .mute(mute), .effect(effect), // Input from synckey
-  .state(state), .vol_en(vol_en), .current_effect(current_effect), .mute_tog(mute_tog), .noise_gate_tog(noise_gate_tog), .effect_en(audio_enable) // Output from FSM
+  .state(state), .vol_en(vol_en), .current_effect(current_effect), .mute_tog(mute_tog), .effect_en(audio_enable) // Output from FSM
   );
 
   logic clk;

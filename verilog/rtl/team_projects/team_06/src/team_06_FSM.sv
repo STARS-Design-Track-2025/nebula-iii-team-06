@@ -1,17 +1,17 @@
 module team_06_FSM (
    input logic clk,
    input logic rst,
-   input logic [7:0] mic_aud,       // Live audio being transmitted
-   input logic [7:0] spk_aud,      // Live audio being listened to
-   input logic ng_en,              // Noise gate enabale
-   input logic ptt_en,            //Push-to-talk enable
-   input logic effect,             // Effect being used
-   input logic mute,               // Mute enabled
-   output logic state,        // State we are currently in
-   output logic vol_en,             // Whether volume is enabled or not
+   input logic [7:0] mic_aud, // Live audio being transmitted
+   input logic [7:0] spk_aud, // Live audio being listened to
+   input logic ng_en, // Noise gate enabale
+   input logic ptt_en, //Push-to-talk enable
+   input logic effect, // Effect being used
+   input logic mute, // Mute enabled
+   output logic state, // State we are currently in
+   output logic vol_en, // Whether volume is enabled or not
    output logic [2:0] current_effect, // output logic for the current effect we're on
-   output logic mute_tog,
-   output logic noise_gate_tog
+   output logic mute_tog, // This is what actually mutes the volume shifter
+   output logic effect_en // This is what actually mutes the audio effect module
 );
 
    typedef enum logic {
@@ -47,6 +47,7 @@ module team_06_FSM (
    logic [2:0] curr_eff, next_eff;
    logic effect_button_prev, effect_button_prev2;
    logic effect_button_rising;
+   logic noise_gate_tog; // Whether or not noise gates has changed states
 
    assign threshold = 8'd64; // threshold is 64 decibels
 
@@ -67,7 +68,7 @@ module team_06_FSM (
        end else begin
            check  = (mic_aud <= 128 - threshold);
        end
-       spk_active = (spk_aud != 0);    // speaker is active logic
+       spk_active = (spk_aud != 128);    // speaker is active logic. Critical that the value is 128 because that is the midpoint between 0 and 255
 
    /* Case statements for switching between states
    based on the current state and certain conditions (MEALY)*/
@@ -98,6 +99,7 @@ module team_06_FSM (
    // Combinational logic for the output of the module
    always_comb begin
        vol_en = 0;
+        effect_en = 0;
 
        case (current_state)
            LIST: begin
@@ -110,9 +112,7 @@ module team_06_FSM (
            end
            TALK: begin
                vol_en = 0;
-               if (((current_effect != 0) && ptt_en) || ((current_effect != 0) && ng_en && !ptt_en && check)) begin
-               end else begin
-               end
+                effect_en = 1;
            end
            default: begin
                vol_en = 0;
@@ -259,14 +259,14 @@ module team_06_FSM (
        next_noise_state = noise_state;
        noise_button_rising = (noise_prev & !noise_prev2);
        case(noise_state)
-       MUTE_OFF: begin
+       NOISE_OFF: begin
            if(noise_button_rising)begin
                next_noise_state = NOISE;
            end else begin
                next_noise_state = NOISE_OFF;
            end
        end
-       MUTE: begin
+       NOISE: begin
            if(noise_button_rising)begin
                next_noise_state = NOISE_OFF;
            end else begin

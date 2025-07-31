@@ -10,7 +10,6 @@ module team_06_displayFSM (
    output logic trans // This is telling the i2c when to begin transmitting
 );
 
-
    logic [191:0] lcdData; // This is a group of 16 pairs of 6 bit commands (R/W, RS, DB 7-4)
    logic [35:0] lcdData1; // This is always in the command and tells the screen to basically reset
    logic resetLogic, trans_n; // resetLogic checks if we just reset
@@ -19,27 +18,24 @@ module team_06_displayFSM (
    logic [7:0] lcdOut_n;
 
 
-   // This is a modification of the typedef from FSM to include listen and an empty state
-   typedef enum logic [2:0] {
-      NORMAL = 3'b000,
-      ECHO = 3'b001,
-      TREMOLO = 3'b010,
-      REVERB = 3'b011,
-      SOFT = 3'b100,
-      NONE = 3'b110,
-      LISTEN = 3'b111
-   } display_text_t;
+    // This is a modification of the typedef from FSM to include listen and an empty state
+    typedef enum logic [2:0] {
+       NORMAL = 3'b000,
+       ECHO = 3'b001,
+       TREMOLO = 3'b010,
+       REVERB = 3'b011,
+       SOFT = 3'b100,
+       NONE = 3'b110,
+       LISTEN = 3'b111
+   } current_effect_t;
 
+    typedef enum logic {
+       LIST = 1'b0,
+       TALK = 1'b1
+   } state_t;
 
-   typedef enum logic {
-      LIST = 1'b0,
-      TALK = 1'b1
-  } state_t;
-
-
-   // See I2C for description
-   typedef enum logic [2:0] {BEGINS = 3'b0, SEND = 3'b1, ACK = 3'd2, ENDS = 3'd3, OFF = 3'd4} state_I2C;
-
+    // See I2C for description
+    typedef enum logic [2:0] {BEGINS = 3'b0, SEND = 3'b1, ACK = 3'd2, WAIT = 3'd3, ENDS = 3'd4, OFF = 3'd5, ERROR = 3'd6} state_I2C;
 
    always_ff @(posedge clk, posedge rst) begin
        if (rst) begin
@@ -108,7 +104,3 @@ module team_06_displayFSM (
        end
    end
 endmodule
-
-
-
-

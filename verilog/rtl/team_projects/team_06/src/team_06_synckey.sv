@@ -105,7 +105,6 @@ module team_06_synckey (
        ptt_en = ptt;
        ng_en = noise_gate;
 
-
        if (next_in[1] && ~prev_syncPBS[1]) begin // rising edge for mute
            mute_en = ~mute_en;
        end

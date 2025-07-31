@@ -150,6 +150,9 @@ module team_06_top_tb;
 
         repeat (8192) @(posedge hwclk);
 
+        // Note: for misoVal, zero is 128 (because it is within our system and unsigned)
+        // Wheras for mic val zero is actually zero as the mic val is signed 
+
         // Test case 1: zero volume mic, zero volume speaker, no buttons, full volume
 
         misoVal = 128;
@@ -182,6 +185,7 @@ module team_06_top_tb;
         repeat (8192) @(posedge hwclk);
 
         // Test case 6: zero volume mic, full volume speaker, PTT, full volume
+
 
         // Test case 8: full volume mic, zero volume speaker, PTT, full volume
 

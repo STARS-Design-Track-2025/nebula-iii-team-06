@@ -6,7 +6,7 @@ module team_06_displayFSM (
    input logic [2:0] i2cState, // What state is the i2c in (off, begins, send, ack, wait, ends)
    input logic commsError, // This is a flag that goes high when we do not get an ack from the display
    input logic ready, // This is a flag that goes high when we are ready for new data
-   output logic [5:0] lcdOut, // This is the current command for the i2c to send
+   output logic [7:0] lcdOut, // This is the current command for the i2c to send
    output logic trans // This is telling the i2c when to begin transmitting
 );
 
@@ -16,7 +16,7 @@ module team_06_displayFSM (
    logic resetLogic, trans_n; // resetLogic checks if we just reset
    logic [2:0] desiredLCDstate, desiredLCDstate_n, currentLCDstate, currentLCDstate_n; // Current updates when we succesfully update the LCD, desired updates when we are not transmitting
    logic [4:0] counter, counter_n; // What part of our 16 pairs of 6 bit commands are we in?
-   logic [5:0] lcdOut_n;
+   logic [7:0] lcdOut_n;
 
 
    // This is a modification of the typedef from FSM to include listen and an empty state
@@ -87,21 +87,22 @@ module team_06_displayFSM (
            desiredLCDstate_n = (talkieState == LIST) ? LISTEN : current_effect; // We need to convert our talkiestate and effect into just one state machine
        end
    end
+    // DB7, DB6, DB5, DB4, LED+ (always 1), E (always on during transmission), R/W, RS
 
-
+    // Old: RS, R/W, DB7, DB6, DB5, DB4
    always_comb begin
-       lcdData1 = {12'b000000000001, 12'b000000000110, 12'b000000000010}; // CLEAR_DISPLAY, ENTRY_MODE, RETURN_HOME
+       lcdData1 = {16'b0000110000011100, 16'b0000110001101100, 16'b0000110000101100}; // CLEAR_DISPLAY, ENTRY_MODE, RETURN_HOME
        if (resetLogic) begin
-           lcdData = {12'b000010000000, 12'b000010001000, 12'b000000001110, lcdData1, {120{1'b1}}}; // FUNCTION_SET, FOUR_BIT_2_LINE, DISPLAY_ON
+           lcdData = {16'b0010110000001100, 16'b0010110010001100, 16'b0000110011101100, lcdData1, {120{1'b1}}}; // FUNCTION_SET, FOUR_BIT_2_LINE, DISPLAY_ON
        end else begin
            case(desiredLCDstate)
-               ECHO: lcdData = {lcdData1, 12'b100101100111, 12'b100100100011, 12'b100100101000, 12'b100100101111, {108{1'b1}}}; //ECHO
-               REVERB: lcdData = {lcdData1, 12'b100101100010, 12'b100101100111, 12'b100101100110, 12'b100101100111, 12'b100101100010, 12'b100100100010, {84{1'b1}}}; //REVERB
-               SOFT: lcdData = {lcdData1, 12'b100101100011, 12'b100100101111, 12'b100100100110, 12'b100101100100, 12'b100101101111, 12'b100100100011, 12'b100100101100, 12'b100100101001, 12'b1001010000, 12'b1001010000, 12'b100100101001, 12'b100100101110, 12'b100100100111};
+               ECHO: lcdData = {lcdData1, 16'b0100110101011101, 16'b0100110100111101, 16'b0100110110001101, 16'b0100110111111101, {108{1'b1}}}; //ECHO
+               REVERB: lcdData = {lcdData1, 16'b0101110100101101, 16'b0100110101011101, 16'b0101110101101101, 16'b0100110101011101, 16'b0101110100101101, 16'b0100110100101101, {84{1'b1}}}; //REVERB
+               SOFT: lcdData = {lcdData1, 16'b0101110100111101, 16'b0100110111111101, 16'b0100110101101101, 16'b0101110101001101, 16'b0101110111111101, 16'b0100110100111101, 16'b0100110111001101, 16'b0100110110011101, 16'b0101110100001101, 16'b0101110100001101, 16'b0100110110011101, 16'b0100110111101101, 16'b0100110101111101};
                //SOFT_CLIPPING
-               TREMOLO: lcdData = {lcdData1, 12'b100101100100, 12'b100101100010, 12'b100101100111, 12'b100100101101, 12'b100101100111, 12'b100100101100, 12'b100100101111, {72{1'b1}}}; //TREMELO
-               NORMAL: lcdData = {lcdData1, 12'b100100101110, 12'b100100101111, 12'b100101100010, 12'b100100101101, 12'b100100100001, 12'b100100101100, {84{1'b1}}}; //NORMAL
-               LISTEN: lcdData = {lcdData1, 12'b100100101100, 12'b100100101001, 12'b100101100011, 12'b100101100100, 12'b100101100111, 12'b100100101110, 12'b100100101001, 12'b100100101110, 12'b100100100111, {48{1'b1}}}; //LISTENING
+               TREMOLO: lcdData = {lcdData1, 16'b0101110101001101, 16'b0101110100101101, 16'b0100110101011101, 16'b0100110111011101, 16'b0100110111111101, 16'b0100110111001101, 16'b0100110111111101, {72{1'b1}}}; //TREMELO
+               NORMAL: lcdData = {lcdData1, 16'b0100110111101101, 16'b0100110111111101, 16'b0101110100101101, 16'b0100110111011101, 16'b0100110100011101, 16'b0100110111001101, {84{1'b1}}}; //NORMAL
+               LISTEN: lcdData = {lcdData1, 16'b0100110111001101, 16'b0100110110011101, 16'b0101110100111101, 16'b0101110101001101, 16'b0100110101011101, 16'b0100110111101101, 16'b0100110110011101, 16'b0100110111101101, 16'b0100110101111101, {48{1'b1}}}; //LISTENING
                default: lcdData = {192{1'b1}};
            endcase
        end

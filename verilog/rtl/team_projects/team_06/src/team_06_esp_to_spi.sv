@@ -10,7 +10,7 @@ module team_06_esp_to_spi
 );
 
    //logic past_i2sclk;
-   logic [4:0] counter, counter_n; // counter is used to count how many bits we have right now. it will count from 1 to 8
+   logic [3:0] counter, counter_n; // counter is used to count how many bits we have right now. it will count from 1 to 8
    logic [7:0] spi_parallel_out_n; // our temporary variable we use to update the output
    logic finished_n;              // this is the logic used to detect when the counter reaches eight
    logic [7:0] out_temp, out_temp_n; // buffer signal

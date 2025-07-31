@@ -16,6 +16,7 @@ module team_06_top_tb;
     // Testbench logics
     logic [7:0] misoVal;
     logic [7:0] micVal;
+    int testcase;
 
     //Instantiation of the top module 
     team_06_top toptime (
@@ -81,7 +82,7 @@ module team_06_top_tb;
         logic temp;
         counter = 0;
         repeat (8) begin
-            repeat(48) @(posedge hwclk);
+            @(posedge i2sclk);
             miso = i[7-counter];
             temp = miso;
             counter = counter + 1;
@@ -111,12 +112,12 @@ module team_06_top_tb;
     // Mem file???
 
     always begin
-        #1;
+        repeat (8) @(posedge hwclk);
         simVol(misoVal); // Choose your input volume
     end
 
     always begin
-        #1;
+        repeat (8) @(posedge hwclk);
         simMic(micVal); // Choose your mic input
     end
     // BEN SISKKKK, YOU HAVE TO CALL THESE TWO FUNCTIONS IN INITIAL BEGIN
@@ -147,24 +148,38 @@ module team_06_top_tb;
 
         repeat(4) increaseVolume();
 
-        repeat (2048) @(posedge hwclk);
+        repeat (8192) @(posedge hwclk);
 
         // Test case 1: zero volume mic, zero volume speaker, no buttons, full volume
 
-        misoVal = 0;
+        misoVal = 128;
         micVal = 0;
-        repeat (2048) @(posedge hwclk);
+        testcase = 1;
+        repeat (8192) @(posedge hwclk);
         // Test case 2: zero volume mic, full volume speaker, no buttons, full volume
 
-        misoVal = 146;
+        misoVal = 255;
         micVal = 0;
-        repeat (2048) @(posedge hwclk);
-
+        testcase = 2;
+        repeat (8192) @(posedge hwclk);
         // Test case 3: full volume mic, zero volume speaker, no buttons, full volume
+
+        misoVal = 128;
+        micVal = 255;
+        testcase = 3;
+        repeat (8192) @(posedge hwclk);
 
         // Test case 4: full volume mic, full volume speaker, no buttons, full volume
 
+        misoVal = 255;
+        micVal = 255;
+        testcase = 4;
+        repeat (8192) @(posedge hwclk);
+
         // Test case 5: mid operation reset
+        reset = 1;
+        testcase = 5;
+        repeat (8192) @(posedge hwclk);
 
         // Test case 6: zero volume mic, full volume speaker, PTT, full volume
 

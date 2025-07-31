@@ -9,7 +9,8 @@
     output logic wsADC,
     output logic mosi,
     output logic dac_out,
-    output logic i2sclk
+    output logic i2sclk,
+    output logic spiclk
   );
   
   // ADC, i2sclk, edge_detection section

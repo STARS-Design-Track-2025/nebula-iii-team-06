@@ -80,33 +80,51 @@ module team_06_top_tb;
     task simVol (logic [7:0] i);
         logic [2:0] counter;
         logic temp;
+        logic done;
         counter = 0;
-        repeat (8) begin
-            @(posedge i2sclk);
-            miso = i[7-counter];
-            temp = miso;
-            counter = counter + 1;
+        done = 0;
+        if (reset) begin
+            counter = 0;
+        end else begin
+            while(!reset && !done) begin
+                @(posedge i2sclk, posedge reset);
+                miso = i[7-counter];
+                temp = miso;
+                counter = counter + 1;
+                if (counter == 0) begin
+                    done = 1;
+                end else begin
+                    done = 0;
+                end
+            end
         end
     endtask
 
     task simMic (logic [7:0] i);
+    
         logic [4:0] counter;
-        logic temp;
+        logic done;
         counter = 0;
         adc_serial_in = 0;
-        repeat (32) begin
-            if (counter > 1 && counter < 10) begin
-                adc_serial_in = i[9-counter];
-                temp = adc_serial_in;
+        if (reset) begin
+            counter = 0;
+        end else begin
+            done = 0;
+            while (!reset && !done) begin // Need to fix so it exists while loop after transmission
+                if (counter > 1 && counter < 10) begin
+                    adc_serial_in = i[9-counter];
+                end else begin
+                    adc_serial_in = 0;
+                end
                 counter = counter + 1;
-            end else begin
-                adc_serial_in = 0;
-                temp = 0;
-                counter = counter + 1;
+                if (counter == 0) begin
+                    done = 1;
+                end else begin
+                    done = 0;
+                end
+                @(posedge i2sclk, posedge reset);
             end
-            @(posedge i2sclk);
         end
-        adc_serial_in = 0;
     endtask
 
     // Mem file???
@@ -137,7 +155,7 @@ module team_06_top_tb;
         misoVal = 8'd0;
         micVal = 8'd0;
 
-        repeat (8) @(posedge hwclk);
+        repeat (6144) @(posedge hwclk);
 
         reset = 0;
         pbs = 0;
@@ -148,7 +166,7 @@ module team_06_top_tb;
 
         repeat(4) increaseVolume();
 
-        repeat (8192) @(posedge hwclk);
+        repeat (6144) @(posedge hwclk);
 
         // Note: for misoVal, zero is 128 (because it is within our system and unsigned)
         // Wheras for mic val zero is actually zero as the mic val is signed 
@@ -158,40 +176,61 @@ module team_06_top_tb;
         misoVal = 128;
         micVal = 0;
         testcase = 1;
-        repeat (8192) @(posedge hwclk);
+        repeat (6144) @(posedge hwclk);
         // Test case 2: zero volume mic, full volume speaker, no buttons, full volume
 
         misoVal = 255;
         micVal = 0;
         testcase = 2;
-        repeat (8192) @(posedge hwclk);
+        repeat (6144) @(posedge hwclk);
         // Test case 3: full volume mic, zero volume speaker, no buttons, full volume
 
         misoVal = 128;
         micVal = 255;
         testcase = 3;
-        repeat (8192) @(posedge hwclk);
+        repeat (6144) @(posedge hwclk);
 
         // Test case 4: full volume mic, full volume speaker, no buttons, full volume
 
         misoVal = 255;
         micVal = 255;
         testcase = 4;
-        repeat (8192) @(posedge hwclk);
+        repeat (6144) @(posedge hwclk);
 
         // Test case 5: mid operation reset
         reset = 1;
         testcase = 5;
-        repeat (8192) @(posedge hwclk);
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 6: zero volume mic, full volume speaker, PTT, full volume
+        // Test case 6: zero volume mic, zero volume speaker, PTT, full volume
+        reset = 0;
+        misoVal = 128;
+        micVal = 0;
+        pressButton(PTT);
+        testcase = 6;
+        repeat (6144) @(posedge hwclk);
 
+        // Test case 7: zero volume mic, full volume speaker, PTT, full volume
+        misoVal = 255;
+        micVal = 0;
+        testcase = 7;
+        repeat (6144) @(posedge hwclk);
 
         // Test case 8: full volume mic, zero volume speaker, PTT, full volume
 
+        misoVal = 128;
+        micVal = 255;
+        testcase = 8;
+        repeat (6144) @(posedge hwclk);
+
         // Test case 9: full volume mic, full volume speaker, PTT, full volume
 
-        // Test case 6: zero volume mic, full volume speaker, noise gate, full volume
+        misoVal = 255;
+        micVal = 255;
+        testcase = 9;
+        repeat (6144) @(posedge hwclk);
+
+        // Test case 10: zero volume mic, full volume speaker, noise gate, full volume
 
         // Test case 8: full volume mic, zero volume speaker, noise gate, full volume
 

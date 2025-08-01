@@ -10,7 +10,17 @@
     output logic mosi,
     output logic dac_out,
     output logic i2sclk,
-    output logic spiclk
+    output logic spiclk,
+    // output logic busAudioWrite,
+    //wishbone's stuff
+    input logic [31:0] wdati,
+    input logic wack,
+    output logic [31:0] wadr,
+    output logic [31:0] wdat,
+    output logic [3:0] wsel,
+    output logic wwe,
+    output logic wstb,
+    output logic wcyc
   );
   
   // ADC, i2sclk, edge_detection section
@@ -136,17 +146,7 @@
   .serial_out(dac_out)); // Output to DAC
   // NEED ws + clock signal!!!
 
-  //wishbone's stuff
-  logic [31:0] wdati;
-  logic wack;
-  logic [31:0] wadr;
-  logic [31:0] wdato;
-  logic [3:0] wsel;
-  logic wwe;
-  logic wstb;
-  logic wcyc;
-
-  // Instantiate SRAM model
+  // // Instantiate SRAM model
   wishbone_manager wishbone_manager(
   // User design
   .nRST(!reset),
@@ -170,17 +170,24 @@
   .CYC_O(wcyc)
   );
  
-  sram_WB_Wrapper sram_wrapper(
-      .wb_rst_i(reset),
-      .wb_clk_i(hwclk),
-      .wbs_stb_i(wstb),
-      .wbs_cyc_i(wcyc),
-      .wbs_we_i(wwe),
-      .wbs_sel_i(wsel),
-      .wbs_dat_i(wdato),
-      .wbs_adr_i(wadr),
-      .wbs_ack_o(wack),
-      .wbs_dat_o(wdati)
-  );
-
+  // sram_WB_Wrapper sram_wrapper(
+  //     .wb_rst_i(reset),
+  //     .wb_clk_i(hwclk),
+  //     .wbs_stb_i(wstb),
+  //     .wbs_cyc_i(wcyc),
+  //     .wbs_we_i(wwe),
+  //     .wbs_sel_i(wsel),
+  //     .wbs_dat_i(wdato),
+  //     .wbs_adr_i(wadr),
+  //     .wbs_ack_o(wack),
+  //     .wbs_dat_o(wdati)
+  // );
+input logic [31:0] wdati,
+    input logic wack,
+    output logic [31:0] wadr,
+    output logic [31:0] wdat,
+    output logic [3:0] wsel,
+    output logic wwe,
+    output logic wstb,
+    output logic wcyc
   endmodule

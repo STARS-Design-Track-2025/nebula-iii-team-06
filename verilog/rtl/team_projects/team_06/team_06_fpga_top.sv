@@ -16,7 +16,8 @@ module top (
   output logic txclk, rxclk,
   input  logic txready, rxready
 );
-
+  
+  
   // GPIOs
   // Don't forget to assign these to the ports above as needed
   logic [33:0] gpio_in, gpio_out;
@@ -25,12 +26,12 @@ module top (
   // Team 06 Design Instance
   team_06 team_06_inst (
     .clk(hwclk),
-    .nrst(~reset),
+    .nrst(~pb[19]),
     .en(1'b1),
 
     .gpio_in(gpio_in),
     .gpio_out(gpio_out),
-    .gpio_oeb()  // don't really need it her since it is an output
+    .gpio_oeb(gpio_oeb),  // don't really need it her since it is an output
 
     // Uncomment only if using LA
     // .la_data_in(),
@@ -39,16 +40,54 @@ module top (
 
     // Uncomment only if using WB Master Ports (i.e., CPU teams)
     // You could also instantiate RAM in this module for testing
-    // .ADR_O(ADR_O),
-    // .DAT_O(DAT_O),
-    // .SEL_O(SEL_O),
-    // .WE_O(WE_O),
-    // .STB_O(STB_O),
-    // .CYC_O(CYC_O),
-    // .ACK_I(ACK_I),
-    // .DAT_I(DAT_I),
+    .ADR_O(ADR_O),
+    .DAT_O(DAT_O),
+    .SEL_O(SEL_O),
+    .WE_O(WE_O),
+    .STB_O(STB_O),
+    .CYC_O(CYC_O),
+    .ACK_I(ACK_I),
+    .DAT_I(DAT_I)
 
-    // Add other I/O connections to WB bus here
   );
+    // Add other I/O connections to WB bus here
+
+// // Instantiate SRAM model
+//   wishbone_manager wishbone_manager(
+//   // User design
+//   .nRST(!reset),
+//   .CLK(hwclk),
+//   .CPU_DAT_I(busAudioWrite),
+//   .ADR_I(addressOut),
+//   .SEL_I(select), // all 1s 
+//   .WRITE_I(write),
+//   .READ_I(readEdge),
+//   .CPU_DAT_O(busAudioRead),
+//   .BUSY_O(busySRAM),
+//   // Wishbone interconnect inputs
+//   .DAT_I(wdati),
+//   .ACK_I(wack),
+//   // Wishbone interconnect outputs
+//   .ADR_O(wadr),
+//   .DAT_O(wdato),
+//   .SEL_O(wsel),
+//   .WE_O(wwe),
+//   .STB_O(wstb),
+//   .CYC_O(wcyc)
+//   );
+ 
+  sram_WB_Wrapper sram_wrapper(
+      .wb_rst_i(reset),
+      .wb_clk_i(hwclk),
+      .wbs_stb_i(wstb),
+      .wbs_cyc_i(wcyc),
+      .wbs_we_i(wwe),
+      .wbs_sel_i(wsel),
+      .wbs_dat_i(wdato),
+      .wbs_adr_i(wadr),
+      .wbs_ack_o(wack),
+      .wbs_dat_o(wdati)
+  );
+
 
 endmodule

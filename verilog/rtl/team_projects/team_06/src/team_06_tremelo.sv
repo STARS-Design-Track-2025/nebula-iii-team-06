@@ -17,7 +17,7 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
         if(rst) begin
             curr_depth <= '0;
             curr_direction <= 1;
-            dividerout <= 127;
+            dividerout <= 128;
         end
         else begin
             curr_depth <= nxt_depth;

@@ -38,41 +38,42 @@ module team_06_top_tb;
 
     // task toggleSerial ();
     //     begin
-    //         repeat(32) @(posedge hwclk)
+    //         repeat(32) @(posedge hwclk);
     //         adc_serial_in = 0;
-    //         repeat(32) @(posedge hwclk)
+    //         repeat(32) @(posedge hwclk);
     //         adc_serial_in = 1;
     //     end
     // endtask
 
     task increaseVolume ();
         begin
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 1;
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 3;
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 2;
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 0;
         end
     endtask
 
     task decreaseVolume ();
         begin
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 2;
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 3;
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 1;
-            repeat (8) @(posedge hwclk)
+            repeat (8) @(posedge hwclk);
             vol = 0;
         end
     endtask
 
     task pressButton (int i);
         begin
+            repeat (8) @(posedge hwclk);
             pbs[i] = ~pbs[i];
         end
     endtask
@@ -104,6 +105,7 @@ module team_06_top_tb;
     
         logic [4:0] counter;
         logic done;
+        logic flag;
         counter = 0;
         adc_serial_in = 0;
         if (reset) begin
@@ -111,8 +113,9 @@ module team_06_top_tb;
         end else begin
             done = 0;
             while (!reset && !done) begin // Need to fix so it exists while loop after transmission
-                if (counter > 1 && counter < 10) begin
-                    adc_serial_in = i[9-counter];
+                if (counter < 8) begin
+                    adc_serial_in = i[7-counter];
+                    flag = 1;
                 end else begin
                     adc_serial_in = 0;
                 end
@@ -122,7 +125,7 @@ module team_06_top_tb;
                 end else begin
                     done = 0;
                 end
-                @(posedge i2sclk, posedge reset);
+                @(negedge i2sclk, posedge reset);
             end
         end
     endtask
@@ -136,7 +139,7 @@ module team_06_top_tb;
 
     always begin
         repeat (8) @(posedge hwclk);
-        simMic(micVal); // Choose your mic input
+        simMic(micVal+128); // Choose your mic input
     end
     // BEN SISKKKK, YOU HAVE TO CALL THESE TWO FUNCTIONS IN INITIAL BEGIN
 
@@ -162,101 +165,159 @@ module team_06_top_tb;
         vol = 0;
         cs = 1;
 
-        repeat (8) @(posedge hwclk);
+        repeat (8) @(posedge hwclk); 
 
         repeat(4) increaseVolume();
 
         repeat (6144) @(posedge hwclk);
 
         // Note: for misoVal, zero is 128 (because it is within our system and unsigned)
-        // Wheras for mic val zero is actually zero as the mic val is signed 
+        // Wheras for mic val zero is actually zero as the mic val is signed, 128 is max, 255 is -1
 
         // Test case 1: zero volume mic, zero volume speaker, no buttons, full volume
-
-        misoVal = 128;
-        micVal = 0;
         testcase = 1;
-        repeat (6144) @(posedge hwclk);
-        // Test case 2: zero volume mic, full volume speaker, no buttons, full volume
-
-        misoVal = 255;
-        micVal = 0;
-        testcase = 2;
-        repeat (6144) @(posedge hwclk);
-        // Test case 3: full volume mic, zero volume speaker, no buttons, full volume
-
+        micVal = 128;
         misoVal = 128;
-        micVal = 255;
+        repeat (6144) @(posedge hwclk);
+
+        // Test case 2: zero volume mic, full volume speaker, no buttons, full volume
+        testcase = 2;
+        micVal = 128;
+        misoVal = 255;
+        repeat (6144) @(posedge hwclk);
+
+        // Test case 3: full volume mic, zero volume speaker, no buttons, full volume
         testcase = 3;
+        micVal = 255;
+        misoVal = 128;
         repeat (6144) @(posedge hwclk);
 
         // Test case 4: full volume mic, full volume speaker, no buttons, full volume
-
-        misoVal = 255;
-        micVal = 255;
         testcase = 4;
+        micVal = 255;
+        misoVal = 255;
         repeat (6144) @(posedge hwclk);
 
         // Test case 5: mid operation reset
-        reset = 1;
         testcase = 5;
+        reset = 1;
         repeat (6144) @(posedge hwclk);
+        reset = 0;
 
         // Test case 6: zero volume mic, zero volume speaker, PTT, full volume
-        reset = 0;
-        misoVal = 128;
-        micVal = 0;
-        pressButton(PTT);
         testcase = 6;
+        micVal = 128;
+        misoVal = 128;
+        pressButton(PTT);
         repeat (6144) @(posedge hwclk);
 
         // Test case 7: zero volume mic, full volume speaker, PTT, full volume
-        misoVal = 255;
-        micVal = 0;
         testcase = 7;
+        micVal = 128;
+        misoVal = 255;
         repeat (6144) @(posedge hwclk);
 
         // Test case 8: full volume mic, zero volume speaker, PTT, full volume
 
-        misoVal = 128;
-        micVal = 255;
         testcase = 8;
+        micVal = 255;
+        misoVal = 128;
         repeat (6144) @(posedge hwclk);
 
         // Test case 9: full volume mic, full volume speaker, PTT, full volume
 
-        misoVal = 255;
-        micVal = 255;
         testcase = 9;
+        micVal = 255;
+        misoVal = 255;
         repeat (6144) @(posedge hwclk);
+        pressButton(PTT);
 
         // Test case 10: zero volume mic, full volume speaker, noise gate, full volume
 
-        // Test case 8: full volume mic, zero volume speaker, noise gate, full volume
+        testcase = 10;
+        micVal = 128;
+        misoVal = 255;
+        repeat (2) pressButton(NOISEGATE);
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 9: low volume mic, full volume speaker, noise gate, full volume
+        // Test case 11: full volume mic, zero volume speaker, noise gate, full volume
+        testcase = 11;
+        micVal = 255;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 10: zero volume mic, full volume speaker, mute, full volume
+        // Test case 12: low volume mic, zero volume speaker, noise gate, full volume
 
-        // Test case 11: full volume mic, zero volume speaker, mute, full volume
+        testcase = 12;
+        micVal = 110;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
+        repeat (2) pressButton(NOISEGATE);
 
-        // Test case 12: full volume mic, full volume speaker, mute, full volume
+        // Test case 13: zero volume mic, full volume speaker, mute, full volume
+        testcase = 13;
+        micVal = 128;
+        misoVal = 255;
+        repeat (2) pressButton(MUTE);
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 13: full volume mic, full volume speaker, half volume
+        // Test case 14: full volume mic, zero volume speaker, mute, full volume
+        testcase = 14;
+        micVal = 255;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
+        
 
-        // Test case 14: full volume mic, full volume speaker, no volume
+        // Test case 15: full volume mic, full volume speaker, mute, full volume
+        testcase = 15;
+        micVal = 255;
+        misoVal = 255;
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 15: full volume mic, zero volume speaker, tremelo, full volume
 
-        // Test case 16: half volume mic, zero volume speaker, tremelo, full volume
+        // Test case 16: full volume mic, full volume speaker, half volume
+        testcase = 16;
+        micVal = 255;
+        misoVal = 255;
+        repeat (2) decreaseVolume();
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 17: very low volume mic, zero volume speaker, tremelo, full volume
+        // Test case 17 full volume mic, full volume speaker, no volume
+        testcase = 17;
+        micVal = 255;
+        misoVal = 255;
+        repeat (2) decreaseVolume();
+        repeat (6144) @(posedge hwclk);
+        
 
-        // Test case 18: full echo test with varying volume from mic
+        // Test case 18: full volume mic, zero volume speaker, tremelo, full volume
+        testcase = 18;
+        micVal = 255;
+        misoVal = 128;
+        repeat (4) increaseVolume();
+        repeat (2) pressButton(EFFECTCHANGE);
+        pressButton(PTT);
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 19: mid operation reset
+        // Test case 19: half volume mic, zero volume speaker, tremelo, full volume
+        testcase = 19;
+        micVal = 64;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 20: full echo test with varying volume from mic
+
+        // Test case 20: very low volume mic, zero volume speaker, tremelo, full volume
+        testcase = 20;
+        micVal = 140; // Check if this is the case
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
+
+        // Test case 21: full echo test with varying volume from mic
+                                                                                
+
+        // Test case 22: mid operation reset
+
+        // Test case 23: full echo test with varying volume from mic
 
         // Test case 21: full volume mic, zero volume speaker, soft clipping, full volume
 

@@ -23,14 +23,14 @@ module team_06 (
 
 
     // Wishbone master interface
-    // output wire [31:0] ADR_O,
-    // output wire [31:0] DAT_O,
-    // output wire [3:0]  SEL_O,
-    // output wire        WE_O,
-    // output wire        STB_O,
-    // output wire        CYC_O,
-    // input wire [31:0]  DAT_I,
-    // input wire         ACK_I,
+    output wire [31:0] ADR_O,
+    output wire [31:0] DAT_O,
+    output wire [3:0]  SEL_O,
+    output wire        WE_O,
+    output wire        STB_O,
+    output wire        CYC_O,
+    input wire [31:0]  DAT_I,
+    input wire         ACK_I,
 
     // 34 out of 38 GPIOs (Note: if you need up to 38 GPIO, discuss with a TA)
     input  logic [33:0] gpio_in, // Breakout Board Pins
@@ -46,7 +46,30 @@ module team_06 (
     // You can also have input registers controlled by the Caravel Harness's on chip processor
 );
 
-    assign gpio_out = '0;
+    assign gpio_out[8:0] = '0;
     assign gpio_oeb = '0;
+
+    team_06_top t06top (
+    .hwclk(clk),
+    .reset(~nrst | ~en),
+    .adc_serial_in(gpio_in[0]),
+    .pbs(gpio_in[4:1]),
+    .vol(gpio_in[6:5]),
+    .miso(gpio_in[7]),
+    .cs(gpio_in[8]),
+    .wsADC(gpio_out[9]),
+    .mosi(gpio_out[10]),
+    .dac_out(gpio_out[11]),
+    .i2sclk(gpio_out[12]),
+    .spiclk(gpio_out[13]),
+    .wdati(DAT_I),
+    .wack(ACK_I),
+    .wadr(ADR_O),
+    .wdat(DAT_O),
+    .wsel(SEL_O),
+    .wwe(WE_O),
+    .wstb(STB_O),
+    .wcyc(CYC_O)
+  );
 
 endmodule

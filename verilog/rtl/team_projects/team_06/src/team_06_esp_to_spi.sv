@@ -6,7 +6,6 @@ module team_06_esp_to_spi
    input logic past_spiclk,  // We use this clock in tandem with the spiclk to detect edges for the parallel output
    output logic [7:0] spi_parallel_out,// i2s_parallel_out will always be 0 unitl it collects all 8 bits
    output logic finished // this is to know if our 8 bit register recieve 8bbits form ADC
- 
 );
 
    //logic past_i2sclk;
@@ -22,7 +21,6 @@ module team_06_esp_to_spi
            out_temp <= 0;
            finished <= 0;
            spi_parallel_out <= 8'd128;
-          
        end else begin
            counter <= counter_n;
            finished <= finished_n;                                                 
@@ -32,25 +30,25 @@ module team_06_esp_to_spi
    end
    // Here, is the comb-logic for the counter, the "finished", and the output for the esp to spi module
    always_comb begin
+
+       // If we are not on a falling edge, do not update the data
        counter_n = counter;
        finished_n = finished;
        out_temp_n = out_temp;
        spi_parallel_out_n =  spi_parallel_out;
-       if (!spiclk && past_spiclk) begin
-          if ( counter == 8) begin
-               spi_parallel_out_n = out_temp;
-               out_temp_n = {out_temp[6:0], esp_serial_in};
-               counter_n = 1;
-               finished_n = 1;
-          end else begin
-           out_temp_n = {out_temp[6:0], esp_serial_in};
-           counter_n = counter + 1;
-           finished_n = 0;
-          end
-         
 
-
+       if (!spiclk && past_spiclk) begin // On the falling edge of the clock
+            out_temp_n = {out_temp[6:0], esp_serial_in};
+            if (counter == 8) begin // If we are at the end of our transmission
+                spi_parallel_out_n = out_temp;
+                counter_n = 1;
+                finished_n = 1;
+            end else begin
+                counter_n = counter + 1;
+                finished_n = 0;
+            end
        end
+       
    end
 
 

@@ -1,4 +1,4 @@
-`timescale 100ps / 1ps
+`timescale 1ns / 1ps
 
 module team_06_top_tb;
     logic hwclk;
@@ -20,6 +20,7 @@ module team_06_top_tb;
     logic wwe;
     logic wstb;
     logic wcyc;
+    logic i2sclk_out_chip;
 
     typedef enum int {PTT = 0, MUTE = 1, EFFECTCHANGE = 2, NOISEGATE = 3} button_t;
 
@@ -49,7 +50,8 @@ module team_06_top_tb;
         .wwe(wwe),
         .wstb(wstb),
         .wcyc(wcyc),
-        .wdato(wdato)
+        .wdato(wdato),
+        .i2sclk_out_chip(i2sclk_out_chip)
     );
 
       sram_WB_Wrapper sram_wrapper(
@@ -66,7 +68,7 @@ module team_06_top_tb;
   );
 
     initial hwclk = 0;
-    always #0.5 hwclk = ~hwclk;
+    always #10 hwclk = ~hwclk;
 
     // task toggleSerial ();
     //     begin
@@ -205,6 +207,12 @@ module team_06_top_tb;
 
         // Note: for misoVal, zero is 128 (because it is within our system and unsigned)
         // Wheras for mic val zero is actually zero as the mic val is signed, 128 is max, 255 is -1
+
+        // Test case 111: zero volume mic, zero volume speaker, no buttons, full volume
+        testcase = 111;
+        micVal = 128;
+        misoVal = 251;
+        repeat (6144) @(posedge hwclk);
 
         // Test case 1: zero volume mic, zero volume speaker, no buttons, full volume
         testcase = 1;
@@ -355,6 +363,7 @@ module team_06_top_tb;
         repeat (170000) begin micVal = 210; @(posedge hwclk); end
         repeat (170000) begin micVal = 190; @(posedge hwclk); end
         repeat (170000) begin micVal = 180; @(posedge hwclk); end
+        repeat (6144) @(posedge hwclk);
 
         // Test case 22: mid operation reset
         testcase = 22;
@@ -363,6 +372,15 @@ module team_06_top_tb;
         reset = 0;
 
         // Test case 23: full reverb test with varying volume from mic
+        testcase = 23;
+        repeat (8) pressButton(EFFECTCHANGE);
+        repeat (170000) begin micVal = 200; @(posedge hwclk); end
+        repeat (170000) begin micVal = 250; @(posedge hwclk); end
+        repeat (170000) begin micVal = 160; @(posedge hwclk); end
+        repeat (170000) begin micVal = 210; @(posedge hwclk); end
+        repeat (170000) begin micVal = 190; @(posedge hwclk); end
+        repeat (170000) begin micVal = 180; @(posedge hwclk); end
+        repeat (6144) @(posedge hwclk);
  
         // Test case 24: full volume mic, zero volume speaker, soft clipping, full volume
         testcase = 24;

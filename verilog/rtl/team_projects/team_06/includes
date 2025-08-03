@@ -11,7 +11,6 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_FSM.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_i2c.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_i2s_to_dac.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_mux.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_readWrite.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_soft_clipping.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_06/src/team_06_spi_to_esp.sv

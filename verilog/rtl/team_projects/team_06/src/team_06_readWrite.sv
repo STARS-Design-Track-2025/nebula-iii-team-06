@@ -12,7 +12,8 @@ module team_06_readWrite (
     output logic [7:0] audioOutput, // the audio output from read write that goes to the audio effects module  //CJIP
     output logic [3:0] select, // goes to SRAM, which bytes we want in the four byte word (we always want all of them for efficency) //CJIP
     output logic write, //CJIP
-    output logic readEdge //CJIP
+    output logic readEdge, //CJIP
+    output logic goodData // If high, we have good data
 );
 
 // Hi
@@ -55,7 +56,7 @@ end
 // POINTER ARITHMETIC and SRAM cleaning
 logic [12:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
 logic [1:0] pointer2; // pointer2 is used later to find when we have four bytes of data to send to SRAM
-logic goodData, goodData_n; // Whether your data is good
+logic goodData_n; // Whether your data is good
 logic [2:0] effect_old, effect_older;
 logic [12:0] flag;
 

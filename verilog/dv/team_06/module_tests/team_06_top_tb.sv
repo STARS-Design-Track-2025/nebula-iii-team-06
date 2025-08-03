@@ -1,3 +1,5 @@
+`timescale 100ps / 1ps
+
 module team_06_top_tb;
     logic hwclk;
     logic reset;
@@ -10,6 +12,14 @@ module team_06_top_tb;
     logic mosi;
     logic dac_out;
     logic i2sclk;
+    logic [31:0] wdati, wdato;
+    logic wack;
+    logic [31:0] wadr;
+    logic [31:0] wdat;
+    logic [3:0] wsel;
+    logic wwe;
+    logic wstb;
+    logic wcyc;
 
     typedef enum int {PTT = 0, MUTE = 1, EFFECTCHANGE = 2, NOISEGATE = 3} button_t;
 
@@ -30,8 +40,30 @@ module team_06_top_tb;
         .cs(cs),
         .mosi(mosi),
         .dac_out(dac_out),
-        .i2sclk(i2sclk)
+        .i2sclk(i2sclk),
+        .wdati(wdati),
+        .wack(wack),
+        .wadr(wadr),
+        .wdat(wdat),
+        .wsel(wsel),
+        .wwe(wwe),
+        .wstb(wstb),
+        .wcyc(wcyc),
+        .wdato(wdato)
     );
+
+      sram_WB_Wrapper sram_wrapper(
+      .wb_rst_i(reset),
+      .wb_clk_i(hwclk),
+      .wbs_stb_i(wstb),
+      .wbs_cyc_i(wcyc),
+      .wbs_we_i(wwe),
+      .wbs_sel_i(wsel),
+      .wbs_dat_i(wdato),
+      .wbs_adr_i(wadr),
+      .wbs_ack_o(wack),
+      .wbs_dat_o(wdati)
+  );
 
     initial hwclk = 0;
     always #0.5 hwclk = ~hwclk;
@@ -209,6 +241,7 @@ module team_06_top_tb;
         micVal = 128;
         misoVal = 128;
         pressButton(PTT);
+        repeat(4) increaseVolume();
         repeat (6144) @(posedge hwclk);
 
         // Test case 7: zero volume mic, full volume speaker, PTT, full volume
@@ -226,6 +259,7 @@ module team_06_top_tb;
 
         // Test case 9: full volume mic, full volume speaker, PTT, full volume
 
+        // SENO CHECK
         testcase = 9;
         micVal = 255;
         misoVal = 255;
@@ -259,6 +293,7 @@ module team_06_top_tb;
         micVal = 128;
         misoVal = 255;
         repeat (2) pressButton(MUTE);
+        pressButton(PTT);
         repeat (6144) @(posedge hwclk);
 
         // Test case 14: full volume mic, zero volume speaker, mute, full volume
@@ -273,18 +308,19 @@ module team_06_top_tb;
         micVal = 255;
         misoVal = 255;
         repeat (6144) @(posedge hwclk);
+        repeat (2) pressButton(MUTE);
 
 
-        // Test case 16: full volume mic, full volume speaker, half volume
+        // Test case 16: no volume mic, full volume speaker, half volume
         testcase = 16;
-        micVal = 255;
+        micVal = 128;
         misoVal = 255;
         repeat (2) decreaseVolume();
         repeat (6144) @(posedge hwclk);
 
-        // Test case 17 full volume mic, full volume speaker, no volume
+        // Test case 17 no volume mic, full volume speaker, no volume
         testcase = 17;
-        micVal = 255;
+        micVal = 128;
         misoVal = 255;
         repeat (2) decreaseVolume();
         repeat (6144) @(posedge hwclk);
@@ -296,7 +332,6 @@ module team_06_top_tb;
         misoVal = 128;
         repeat (4) increaseVolume();
         repeat (2) pressButton(EFFECTCHANGE);
-        pressButton(PTT);
         repeat (6144) @(posedge hwclk);
 
         // Test case 19: half volume mic, zero volume speaker, tremelo, full volume
@@ -305,7 +340,6 @@ module team_06_top_tb;
         misoVal = 128;
         repeat (6144) @(posedge hwclk);
 
-
         // Test case 20: very low volume mic, zero volume speaker, tremelo, full volume
         testcase = 20;
         micVal = 140; // Check if this is the case
@@ -313,38 +347,95 @@ module team_06_top_tb;
         repeat (6144) @(posedge hwclk);
 
         // Test case 21: full echo test with varying volume from mic
-                                                                                
+        // testcase = 21;
+        // repeat (2) pressButton(EFFECTCHANGE);
+        // repeat (170000) begin micVal = 200; @(posedge hwclk); end
+        // repeat (170000) begin micVal = 250; @(posedge hwclk); end
+        // repeat (170000) begin micVal = 160; @(posedge hwclk); end
+        // repeat (170000) begin micVal = 210; @(posedge hwclk); end
+        // repeat (170000) begin micVal = 190; @(posedge hwclk); end
+        // repeat (170000) begin micVal = 180; @(posedge hwclk); end
 
         // Test case 22: mid operation reset
+        testcase = 22;
+        reset = 1;
+        repeat (6144) @(posedge hwclk);
+        reset = 0;
 
-        // Test case 23: full echo test with varying volume from mic
+        // Test case 23: full reverb test with varying volume from mic
+ 
+        // Test case 24: full volume mic, zero volume speaker, soft clipping, full volume
+        testcase = 24;
+        micVal = 255;
+        misoVal = 128;
+        repeat (6) pressButton(EFFECTCHANGE);
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 21: full volume mic, zero volume speaker, soft clipping, full volume
+        // Test case 25: high volume mic, zero volume speaker, soft clipping, full volume
+        testcase = 25;
+        micVal = 200;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 22: high volume mic, zero volume speaker, soft clipping, full volume
+        // Test case 26: zero volume mic, zero volume speaker, soft clipping, full volume
+        testcase = 26;
+        micVal = 128;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 23: zero volume mic, zero volume speaker, soft clipping, full volume
+        // Test case 27: high opposite amp low volume mic, zero volume speaker, soft clipping, full volume
+        testcase = 27;
+        micVal = 60;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
 
-        // Test case 24: high opposite amp low volume mic, zero volume speaker, soft clipping, full volume
-
-        // Test case 25: full opposite amp low volume mic, zero volume speaker, soft clipping, full volume
-
-        // Test case 26: full reverb test with varying volume from mic
-
-        // Test case 27: mid operation reset
-
-        // Test case 28: full reverb test with varying volume from mic
+        // Test case 28: full opposite amp low volume mic, zero volume speaker, soft clipping, full volume
+        testcase = 28;
+        micVal = 0;
+        misoVal = 128;
+        repeat (6144) @(posedge hwclk);
 
         // Test case 29: full volume mic, full volume speaker, PTT + noise gate
+        testcase = 29;
+        micVal = 140;
+        misoVal = 128;
+        repeat (2) pressButton(NOISEGATE);
+        repeat (4) pressButton(EFFECTCHANGE);
+        repeat (6144) @(posedge hwclk);
 
         // Test case 30: full volume mic, full volume speaker, PTT + mute
+        testcase = 30;
+        micVal = 110;
+        misoVal = 128;
+        repeat (2) pressButton(NOISEGATE);
+        repeat (2) pressButton(MUTE);
+        repeat (6144) @(posedge hwclk);
 
         // Test case 31: full volume mic, full volume speaker, noise gate + mute
+        testcase = 31;
+        micVal = 110;
+        misoVal = 255;
+        repeat (2) pressButton(NOISEGATE);
+        pressButton(PTT);
+        repeat (6144) @(posedge hwclk);
 
         // Test case 32: full volume mic, full volume speaker, no chip select
+        testcase = 32;
+        micVal = 255;
+        misoVal = 128;
+        cs = 0;
+        repeat (6144) @(posedge hwclk);
+
+        // Test case 33: max volume mic, zero volume speaker, tremelo, full volume, noise gate
+        testcase = 33;
+        micVal = 255; // Check if this is the case
+        misoVal = 128;
+        repeat (2) pressButton(MUTE);
+        repeat (2) pressButton(EFFECTCHANGE);
+        repeat (6144) @(posedge hwclk);
+
 
     $finish;
     end
 
 endmodule
-

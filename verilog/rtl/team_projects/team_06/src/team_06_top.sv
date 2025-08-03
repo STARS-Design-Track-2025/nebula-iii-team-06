@@ -20,7 +20,8 @@
     output logic [3:0] wsel,
     output logic wwe,
     output logic wstb,
-    output logic wcyc
+    output logic wcyc,
+    output logic [31:0] wdato
   );
   
   // ADC, i2sclk, edge_detection section
@@ -182,12 +183,12 @@
   //     .wbs_ack_o(wack),
   //     .wbs_dat_o(wdati)
   // );
-input logic [31:0] wdati,
-    input logic wack,
-    output logic [31:0] wadr,
-    output logic [31:0] wdat,
-    output logic [3:0] wsel,
-    output logic wwe,
-    output logic wstb,
-    output logic wcyc
-  endmodule
+// input logic [31:0] wdati,
+//     input logic wack,
+//     output logic [31:0] wadr,
+//     output logic [31:0] wdat,
+//     output logic [3:0] wsel,
+//     output logic wwe,
+//     output logic wstb,
+//     output logic wcyc
+endmodule

@@ -2,8 +2,8 @@ module team_06_adc_to_i2s
 (
     input logic clk, rst,
     input logic adc_serial_in, //adc sends msb first, so we shift right
-    input logic i2sclk,
-    input logic past_i2sclk,
+    input logic i2sclk, // Comes from i2sclkdivider, clock speed is 10MHZ / (2 * counter), must not exceed 3.2 MHZ
+    input logic past_i2sclk, // Comes from i2sclkdivider
     output logic [7:0] i2s_parallel_out,// i2s_parallel_out will always be 0 unitl it collects all 8 bits
     output logic finished, // this is to know if our 8 bit register recieve 8bbits form ADC
     output logic ws // Indicates we are changing the word (set of data)

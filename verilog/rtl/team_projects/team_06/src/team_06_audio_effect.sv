@@ -19,7 +19,7 @@ module team_06_audio_effect(
     logic clkdiv;
     logic tremelo_en;
     logic [7:0] tremelo_out;
-    team_06_tremelo_clkdiv clkdivider(.clk(clk), .rst(rst), .clkdiv(clkdiv));
+
     team_06_tremelo tremelo(.audio_in(audio_in), .clk(clk), .rst(rst), .en(tremelo_en), .audio_out(tremelo_out));
 
     //soft clipping ports

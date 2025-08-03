@@ -29,11 +29,11 @@
   logic [7:0] i2s_parallel_out;
   logic finished; 
 
-  team_06_i2sclkdivider div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
-  .i2sclk(i2sclk)); // Outputs
+  team_06_clkdivider #(.COUNT(24), .WIDTH(5)) div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
+  .clkOut(i2sclk), .past_clkOut(past_i2sclk)); // Outputs
 
-  team_06_edge_detection_i2s edgeDetector (.i2sclk(i2sclk), .clk(hwclk), .rst(reset), // Inputs from top
-  .past_i2sclk(past_i2sclk)); // Input from i2sclkdivider
+  // team_06_edge_detection_i2s edgeDetector (.i2sclk(i2sclk), .clk(hwclk), .rst(reset), // Inputs from top
+  // .past_i2sclk(past_i2sclk)); // Input from i2sclkdivider
 
   team_06_adc_to_i2s adc (.clk(hwclk), .rst(reset), .adc_serial_in(adc_serial_in), // Inputs from top
   .i2sclk(i2sclk), .past_i2sclk(past_i2sclk), // Inputs from i2sclkdivider + edge_detection

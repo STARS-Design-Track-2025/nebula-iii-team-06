@@ -7,9 +7,8 @@ module team_06_spi_to_esp(  // this module is to send  8-bit data from SPI seria
     logic spiclk, past_spiclk; // this is used for edge detection of spiclk. we only increments counter and shift parallel_in_temp on rising edge of spiclk
     logic serial_out_n; // sequential value of serial_out
     logic [7:0] parallel_in_temp, parallel_in_temp_n;
-    team_06_i2sclkdivider div_clk(.clk(clk), .rst(rst), .i2sclk(spiclk)); // we get spiclk by dividing the system's clk
-    team_06_edge_detection_i2s ed(.i2sclk(spiclk), .clk(clk), .rst(rst), .past_i2sclk(past_spiclk)); //edge detection of spiclk
-    
+    team_06_clkdivider #(.COUNT(24), .WIDTH(5) )div_clk(.clk(clk), .rst(rst), .clkOut(spiclk), .past_clkOut(past_spiclk)); // we get spiclk by dividing the system's clk
+    // team_06_edge_detection_i2s ed(.i2sclk(spiclk), .clk(clk), .rst(rst), .past_i2sclk(past_spiclk)); //edge detection of spiclk
     
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin

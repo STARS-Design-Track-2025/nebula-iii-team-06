@@ -347,14 +347,14 @@ module team_06_top_tb;
         repeat (6144) @(posedge hwclk);
 
         // Test case 21: full echo test with varying volume from mic
-        // testcase = 21;
-        // repeat (2) pressButton(EFFECTCHANGE);
-        // repeat (170000) begin micVal = 200; @(posedge hwclk); end
-        // repeat (170000) begin micVal = 250; @(posedge hwclk); end
-        // repeat (170000) begin micVal = 160; @(posedge hwclk); end
-        // repeat (170000) begin micVal = 210; @(posedge hwclk); end
-        // repeat (170000) begin micVal = 190; @(posedge hwclk); end
-        // repeat (170000) begin micVal = 180; @(posedge hwclk); end
+        testcase = 21;
+        repeat (2) pressButton(EFFECTCHANGE);
+        repeat (170000) begin micVal = 200; @(posedge hwclk); end
+        repeat (170000) begin micVal = 250; @(posedge hwclk); end
+        repeat (170000) begin micVal = 160; @(posedge hwclk); end
+        repeat (170000) begin micVal = 210; @(posedge hwclk); end
+        repeat (170000) begin micVal = 190; @(posedge hwclk); end
+        repeat (170000) begin micVal = 180; @(posedge hwclk); end
 
         // Test case 22: mid operation reset
         testcase = 22;

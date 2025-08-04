@@ -17,60 +17,28 @@ output logic txclk, rxclk,
 input logic txready, rxready
 );
 
-assign green = reset;
-
-  
-
-  team_06_top t06top (
-    .hwclk(hwclk),
-    .reset(pb[14]),
-    .adc_serial_in(pb[0]),
-    .pbs(pb[4:1]),
-    .vol(pb[6:5]),
-    .miso(pb[7]),
-    .cs(pb[8]),
-    .wsADC(pb[9]),
-    .mosi(pb[10]),
-    .dac_out(pb[11]),
-    .i2sclk(pb[12]),
-    .spiclk(pb[13]),
-    .wdati(gpio_in[1]),
-    .wack(gpio_in[2]),
-    .wadr(gpio_out[3]),
-    .wdat(gpio_out[4]),
-    .wsel(gpio_out[5]),
-    .wwe(gpio_out[6]),
-    .wstb(gpio_out[7]),
-    .wcyc(gpio_out[8])
-  );
-
+  // Assignments to Wrapper Ports
+  assign green = reset;
+  assign gpio_in[8:0] = pb[8:0];
+  assign right[5:0] = gpio_out[14:9];
   
   // GPIOs
   // Don't forget to assign these to the ports above as needed
   logic [33:0] gpio_in, gpio_out, gpio_oeb;
-  wire [31:0] ADR_O;
-  wire [31:0] DAT_O;
-  wire [3:0]  SEL_O;
-  wire        WE_O;
-  wire        STB_O;
-  wire        CYC_O;
-  wire [31:0] DAT_I;
-  wire         ACK_I;
-
-  wire wstb;
-  wire wcyc;
-  wire wwe;
-  wire [3:0] wsel;
-  wire [31:0] wdati;
-  wire [31:0] wadr;
-  wire wack;
-  wire [31:0] wdato;
+  logic [31:0] ADR_O;
+  logic [31:0] DAT_O;
+  logic [3:0]  SEL_O;
+  logic        WE_O;
+  logic        STB_O;
+  logic        CYC_O;
+  logic [31:0] DAT_I;
+  logic         ACK_I;
   
 
 // Team 06 Design Instance
 team_06 team_06_inst (
 .clk(hwclk),
-.nrst(~pb[19]),
+.nrst(~reset),
 .en(1'b1),
 
 .gpio_in(gpio_in),
@@ -97,39 +65,18 @@ team_06 team_06_inst (
 // Add other I/O connections to WB bus here
 
 // // Instantiate SRAM model
-// wishbone_manager wishbone_manager(
-// // User design
-// .nRST(!reset),
-// .CLK(hwclk),
-// .CPU_DAT_I(busAudioWrite),
-// .ADR_I(addressOut),
-// .SEL_I(select), // all 1s 
-// .WRITE_I(write),
-// .READ_I(readEdge),
-// .CPU_DAT_O(busAudioRead),
-// .BUSY_O(busySRAM),
-// // Wishbone interconnect inputs
-// .DAT_I(wdati),
-// .ACK_I(wack),
-// // Wishbone interconnect outputs
-// .ADR_O(wadr),
-// .DAT_O(wdato),
-// .SEL_O(wsel),
-// .WE_O(wwe),
-// .STB_O(wstb),
-// .CYC_O(wcyc)
-// );
+
 sram_WB_Wrapper sram_wrapper(
 .wb_rst_i(reset),
 .wb_clk_i(hwclk),
-.wbs_stb_i(wstb),
-.wbs_cyc_i(wcyc),
-.wbs_we_i(wwe),
-.wbs_sel_i(wsel),
-.wbs_dat_i(wdato),
-.wbs_adr_i(wadr),
-.wbs_ack_o(wack),
-.wbs_dat_o(wdati)
+.wbs_stb_i(STB_O),
+.wbs_cyc_i(CYC_O),
+.wbs_we_i(WE_O),
+.wbs_sel_i(SEL_O),
+.wbs_dat_i(DAT_O),
+.wbs_adr_i(ADR_O),
+.wbs_ack_o(ACK_I),
+.wbs_dat_o(DAT_I)
 );
 
 

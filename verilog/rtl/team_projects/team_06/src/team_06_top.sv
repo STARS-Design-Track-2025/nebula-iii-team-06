@@ -22,7 +22,8 @@
     output logic wstb,
     output logic wcyc,
     output logic [31:0] wdato,
-    output logic i2sclk_out_chip
+    output logic i2sclk_out_chip,
+    output logic word_select
   );
   
   // ADC, i2sclk, edge_detection section
@@ -151,7 +152,7 @@ logic [2:0] current_effect;
   .clk(hwclk), .rst(reset), // Inputs from top
   .i2sclk (i2sclk_out_chip), .past_i2sclk (past_i2sclk_out_chip), // Input from i2sclk, edge detector 
   .parallel_in(audio_to_I2S), // Input from volume shifter
-  .serial_out(dac_out)); // Output to DAC
+  .serial_out(dac_out), .word_select(word_select)); // Output to DAC
 
 
   // NEED ws + clock signal!!!

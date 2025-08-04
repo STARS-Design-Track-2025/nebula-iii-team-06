@@ -24,7 +24,6 @@ module team_06_synckey (
    logic effect_en;    // temporary variable for teh effect output
    logic [3:0][15:0] debounce_counters, next_counters; // temporary signals for the counter
    logic [3:0] debouncedPBS, next_debounced_pbs; // temporary signals for the debouncer
-   logic i;    // control variable signals
 
 
    typedef enum logic [1:0] { 

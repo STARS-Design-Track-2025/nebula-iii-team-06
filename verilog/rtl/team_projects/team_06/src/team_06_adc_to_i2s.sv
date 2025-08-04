@@ -13,7 +13,6 @@ module team_06_adc_to_i2s
     logic finished_n;
     logic [31:0] out_temp, out_temp_n;
     logic [7:0] temp_signed, i2s_parallel_out_n; // Temp signed is the data before any conversions, raw ADC data
-    logic [7:0] data;
     logic ws_n;
 
     always_ff @(posedge clk or posedge rst) begin

@@ -45,7 +45,7 @@ module team_06_FSM (
   logic next_state;   // Variables for controlling the state case-satatements
   logic [7:0] threshold;                  // Threshold for which the mic_audio should pass in noise gate
   logic check, check_n;                // check logic for if we're above the threshold or not
-  logic eff_en_temp;          // effect enable temporary variable
+//   logic eff_en_temp;          // effect enable temporary variable
   logic spk_active;           // logic for if speaker is active
   logic [2:0] next_eff;
   logic effect_button_prev, effect_button_prev2;
@@ -60,10 +60,10 @@ module team_06_FSM (
   always_ff @(posedge clk, posedge rst) begin
       if (rst) begin
           state <= LIST;
-          check = 0;
+          check <= 0;
       end else begin
           state <= next_state;
-          check = check_n;
+          check <= check_n;
       end
   end
 
@@ -125,9 +125,7 @@ module team_06_FSM (
                time_count2 = 0;
            end
            if (ng_en && (mic_aud != 128)) begin
-               for (int time_count2 = 1; time_count2 < 1048575; time_count2++) begin
-                       time_count2++;
-               end
+                time_count2 = time_count + 1;
            end
                if ((time_count == 1048575) && ng_en && !ptt_en && !check) begin
                    time_count2 = 0;                    
@@ -231,7 +229,7 @@ module team_06_FSM (
   end
 
   logic mute_prev, mute_prev2;
-  logic mute_state, next_mute_state, mute_button_rising;
+  logic next_mute_state, mute_button_rising;
   always_ff @(posedge clk, posedge rst) begin
       if (rst) begin
           mute_prev <= 0;

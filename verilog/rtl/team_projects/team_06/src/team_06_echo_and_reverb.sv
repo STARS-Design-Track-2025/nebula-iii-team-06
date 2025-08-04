@@ -33,21 +33,12 @@ always_comb begin
   end
 end
 
-logic [8:0] dividerin, dividerpast, dividercurrent;
 always_comb begin
-    dividerin = {audio_in, 1'b0}; // This is just to make the division work
-    dividerpast = {past_output, 1'b0};
-end 
-
-always_comb begin
-    dividercurrent = 0;
     if(echo_en ^ reverb_en && goodData) begin // if just echo or just reverb is enabled
-        dividercurrent = (dividerin + dividerpast)/2; //the echo formula: we are using C as 1, 
-        current_out = dividercurrent[8:1];
+        current_out = (audio_in + past_output)/2; //the echo formula: we are using C as 1, 
     end else if (echo_en ^ reverb_en) begin
         current_out = audio_in;
     end else begin
-        dividercurrent = 0;
         current_out = 128; 
     end
 end

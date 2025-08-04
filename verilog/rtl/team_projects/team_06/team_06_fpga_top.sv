@@ -20,7 +20,7 @@ input logic txready, rxready
   // Assignments to Wrapper Ports
   assign green = reset;
   assign gpio_in[8:0] = pb[8:0];
-  assign right[5:0] = gpio_out[14:9];
+  assign right[6:0] = gpio_out[15:9];
   
   // GPIOs
   // Don't forget to assign these to the ports above as needed

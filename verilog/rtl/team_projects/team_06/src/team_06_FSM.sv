@@ -7,13 +7,12 @@ module team_06_FSM (
   input logic ptt_en, //Push-to-talk enable
   input logic effect, // Effect being used
   input logic mute, // Mute enabled
-  output logic state, // State we are currently in
   output logic vol_en, // Whether volume is enabled or not
   output logic [2:0] current_effect, // output logic for the current effect we're on
-  output logic mute_tog, // This is what actually mutes the volume shifter
   output logic effect_en // This is what actually mutes the audio effect module
 );
-
+  logic state; // State we are currently in
+  logic mute_tog; // This is what actually mutes the volume shifter
 
   typedef enum logic {
       LIST = 1'b0,

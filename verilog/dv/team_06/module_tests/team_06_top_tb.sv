@@ -15,7 +15,6 @@ module team_06_top_tb;
     logic [31:0] wdati, wdato;
     logic wack;
     logic [31:0] wadr;
-    logic [31:0] wdat;
     logic [3:0] wsel;
     logic wwe;
     logic wstb;
@@ -45,7 +44,6 @@ module team_06_top_tb;
         .wdati(wdati),
         .wack(wack),
         .wadr(wadr),
-        .wdat(wdat),
         .wsel(wsel),
         .wwe(wwe),
         .wstb(wstb),

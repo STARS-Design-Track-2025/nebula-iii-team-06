@@ -11,10 +11,9 @@ module team_06_synckey (
 );
 
 
-   logic [3:0] prevPBS, currPBS;  // synchronization signals for push-buttons
+   logic [3:0] currPBS;  // synchronization signals for push-buttons
    logic [1:0] prevV, currV;         // synchronization signals for volume knob
    logic [3:0] prev_syncPBS; // previous synchronized values for push-buttons for the edge detector
-   logic [1:0] prev_syncV;   // previous synchronized values for volume knob for the edge detector
    logic [3:0] next_in;       // "next" signal logic for edge detetctor
    logic CW, ACW;          // clockwise and anti-clockwise logic
    logic [3:0] new_volume; // temporary variable for the volmue output
@@ -39,13 +38,11 @@ module team_06_synckey (
    // 2-stage synchronizer for pushbuttons and volume knob
    always_ff @(posedge clk, posedge rst) begin
        if (rst) begin
-           prevPBS <= 4'b0;
            currPBS <= 4'b0;
            prevV <= 2'b0;
            currV <= 2'b0;
        end else begin
            currPBS <= pbs;
-           prevPBS <= currPBS;
            currV <= vol;
            prevV <= currV;
        end
@@ -75,7 +72,6 @@ module team_06_synckey (
        if (rst) begin
            debounce_counters <= 64'd0;
            debouncedPBS <= 0;
-           currPBS <= 0;
            end else begin
            debounce_counters <= next_counters;
            debouncedPBS <= currPBS;

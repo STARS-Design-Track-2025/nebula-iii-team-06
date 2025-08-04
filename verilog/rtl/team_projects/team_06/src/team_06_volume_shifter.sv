@@ -8,16 +8,16 @@ module team_06_volume_shifter(
 );
 
     logic [7:0] scale;
-    logic [15:0] audio_in_16, audio_out_16, audio_out_16_n;
+    logic [15:0] audio_in_16, audio_out_16_n;
     logic en_n;
 
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
-            audio_out_16 <= 16'd128;
+            audio_out <= 8'd128;
             en<=0;
         end
         else begin
-            audio_out_16 <= audio_out_16_n;
+            audio_out <= audio_out_16_n[7:0];
             en <= en_n;
         end
     end
@@ -36,7 +36,6 @@ module team_06_volume_shifter(
             audio_out_16_n = 16'd128;
             en_n = 0;
         end
-        audio_out = audio_out_16[7:0];
     end
 
     always_comb begin  // Logarithmic volume control

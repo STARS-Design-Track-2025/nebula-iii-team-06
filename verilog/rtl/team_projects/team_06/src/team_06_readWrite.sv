@@ -1,7 +1,7 @@
 module team_06_readWrite (
     input logic clk, rst,  //CJIP
     input logic [31:0] busAudioRead, // The data that is coming from the SRAM bus (only valid when not busy)
-    input logic [12:0] offset, // How many samples into the past are you going (0 is current, all 1s is the oldest)    //CJIP
+    input logic [11:0] offset, // How many samples into the past are you going (0 is current, all 1s is the oldest)    //CJIP
     input logic [7:0] effectAudioIn, // The audio coming in from the audio effect module for storage in SRAM //CJIP
     input logic search, // Audio effects module telling the read write module it is time to read from SRAM //CJIP
     input logic record, // Audio effects module telling the read write module it is time to write effectAudioIn to SRAM //CJIP
@@ -54,11 +54,11 @@ always_comb begin
 end
 
 // POINTER ARITHMETIC and SRAM cleaning
-logic [12:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
+logic [11:0] pointer, pointer_n, dataEvaluation, dataEvaluation_n; // Pointer counts each byte in memory. 0 is 0x33....0, 1 is 0x33.....1
 logic [1:0] pointer2; // pointer2 is used later to find when we have four bytes of data to send to SRAM
 logic goodData_n; // Whether your data is good
 logic [2:0] effect_old, effect_older;
-logic [12:0] flag;
+logic [11:0] flag;
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
@@ -98,8 +98,8 @@ end
 
 // ADDRESS CALCULATION
 
-logic [10:0] address, address_n; // The address represents a word. 0 is 0x33000000, 1 is 0x33000001, ect.
-logic [12:0] inter; // just some intermediate variable for bit addressing
+logic [9:0] address, address_n; // The address represents a word. 0 is 0x33000000, 1 is 0x33000001, ect.
+logic [11:0] inter; // just some intermediate variable for bit addressing
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
@@ -112,14 +112,14 @@ end
 always_comb begin
     inter = 'b0; 
     if (sram == WRITE) begin
-        address_n = pointer[12:2]; // This is so that you are not selecting bits zero through 3, which are all given by SRAM if you request 4
+        address_n = pointer[11:2]; // This is so that you are not selecting bits zero through 3, which are all given by SRAM if you request 4
     end else if (sram == BUSY) begin
         address_n = address;
     end else begin
         inter = pointer - offset;
-        address_n = inter[12:2]; // This is so that you are not selecting bits zero through 3, which are all given by SRAM if you request 4
+        address_n = inter[11:2]; // This is so that you are not selecting bits zero through 3, which are all given by SRAM if you request 4
     end
-    addressOut = 32'h33000000 + {21'b0, address}; // The global address space begins at 33000000 in hex
+    addressOut = 32'h33000000 + {19'b0, address, 2'b0}; // The global address space begins at 33000000 in hex
 end
 
 // READER - What reads from memory 
@@ -127,17 +127,17 @@ end
 typedef enum logic {WAIT, REQUEST} state_reader; // Both the reader and writer can either be waiting for the SRAM state change or completing a request.
 // Note that the actual state of the SRAM changes due to the reader and writer sections
 
-logic [10:0] audioLocation, audioLocation_n; // Stores the address of the most recent audio file (word)
+logic [9:0] audioLocation, audioLocation_n; // Stores the address of the most recent audio file (word)
 logic [7:0] audioOutput_n; // What the audio effect modules receieve
 logic [31:0] audioSample, audioSample_n; // Most recent audio file (word)
-logic read, read_n, readOld, readOld2, readDone, readDone_n;
+logic read, read_n, readOld, readDone, readDone_n;
 
 always_ff @ (posedge clk, posedge rst) begin
     if (rst) begin
         read <= WAIT; 
         audioSample <= 0;
         audioOutput <= 8'd128;
-        audioLocation <= 11'b0;
+        audioLocation <= 10'b0;
         readOld <= 0;
         sramOld <= 0;
         readDone <= 0;
@@ -147,7 +147,6 @@ always_ff @ (posedge clk, posedge rst) begin
         audioLocation <= audioLocation_n;
         audioOutput <= audioOutput_n;
         readOld <= read;
-        readOld2 <= readOld;
         sramOld <= busySRAM;
         readDone <= readDone_n;
     end

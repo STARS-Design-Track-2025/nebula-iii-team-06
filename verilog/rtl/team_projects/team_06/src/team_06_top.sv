@@ -16,7 +16,6 @@
     input logic [31:0] wdati,
     input logic wack,
     output logic [31:0] wadr,
-    output logic [31:0] wdat,
     output logic [3:0] wsel,
     output logic wwe,
     output logic wstb,
@@ -30,7 +29,7 @@
   logic past_i2sclk; 
   logic [7:0] i2s_parallel_out;
   logic finished; 
-  parameter OFFSET = 8180; // Cannot be less than 4 or more than 8180
+  logic [11:0] offset = 4088; // Cannot be less than 4 or more than 4088
 
   team_06_clkdivider #(.COUNT(24), .WIDTH(5)) div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
   .clkOut(i2sclk), .past_clkOut(past_i2sclk)); // Outputs
@@ -59,7 +58,6 @@ logic [2:0] current_effect;
   logic readEdge;
   logic busySRAM;
   logic [31:0] busAudioRead;
-  logic [7:0] effectAudioIn;
 
   // Instantiate DUT
   team_06_audio_effect audio (.clk(hwclk), .rst(reset),  // Inputs from top
@@ -72,7 +70,7 @@ logic [2:0] current_effect;
   team_06_readWrite sramRW (
   .clk(hwclk), .rst(reset), // Inputs from top
   .effect(current_effect),  // Input from FSM
-  .offset(OFFSET), .effectAudioIn(save_audio), .search(search), .record(record), // Input from audio_effect
+  .offset(offset), .effectAudioIn(save_audio), .search(search), .record(record), // Input from audio_effect
   .busAudioRead(busAudioRead), .busySRAM(busySRAM), // Input from manager
   .busAudioWrite(busAudioWrite), .addressOut(addressOut),   // Output to manager
   .select(select), .write(write), .readEdge(readEdge), // Output to manager
@@ -81,11 +79,8 @@ logic [2:0] current_effect;
 
   logic effect;
   logic mute;
-  logic state;
-  logic eff_en;
+  // logic state; // Eventually used for display
   logic vol_en;
-  logic mute_tog;
-  logic noise_gate_tog;
   logic audio_enable;
 
   // Instantiation of the FSM module
@@ -94,7 +89,8 @@ logic [2:0] current_effect;
   .mic_aud(i2s_parallel_out), // Input from ADC
   .spk_aud(spi_parallel_out), // Input from ESP -> SPI
   .ng_en(noise_gate), .ptt_en(ptt),  .mute(mute), .effect(effect), // Input from synckey
-  .state(state), .vol_en(vol_en), .current_effect(current_effect), .mute_tog(mute_tog), .effect_en(audio_enable) // Output from FSM
+  //.state(state), 
+  .vol_en(vol_en), .current_effect(current_effect), .effect_en(audio_enable) // Output from FSM
   );
 
   // logic clk;
@@ -108,8 +104,10 @@ logic [2:0] current_effect;
   .volume(volume), .ptt(ptt), .noise_gate(noise_gate), .effect(effect), .mute(mute) // Outputs from snyckey
   );
 
-  logic [7:0] parallel_in;
   logic past_spiclk;
+
+  team_06_clkdivider #(.COUNT(24), .WIDTH(5)) spi_clock (.clk(hwclk), .rst(reset), // Inputs from top
+  .clkOut(spiclk), .past_clkOut(past_spiclk)); // Outputs
 
   //Instantiation of the module
   team_06_spi_to_esp spiESP (
@@ -119,7 +117,7 @@ logic [2:0] current_effect;
   ); // clock signal!!
 
   logic [7:0] spi_parallel_out;
-  logic done;
+  logic done; // Need to add logic 
 
   //Instantiation of the module
   team_06_esp_to_spi espSPI (
@@ -144,7 +142,7 @@ logic [2:0] current_effect;
   .clk(hwclk), .rst(reset), // Inputs from top
   .audio_in(spi_parallel_out), // Input from esp to SPI
   .volume(volume), // Input from synckey
-  .enable_volume(!mute_tog), // Input from FSM
+  .enable_volume(vol_en), // Input from FSM
   .audio_out(audio_to_I2S), .en(en) // Output to i2c
   );
 

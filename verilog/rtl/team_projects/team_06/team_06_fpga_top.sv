@@ -16,26 +16,56 @@ input logic [7:0] rxdata,
 output logic txclk, rxclk,
 input logic txready, rxready
 );
-// GPIOs
-// Don't forget to assign these to the ports above as needed
-logic [33:0] gpio_in, gpio_out, gpio_oeb;
-wire [31:0] ADR_O;
-wire [31:0] DAT_O;
-wire [3:0] SEL_O;
-wire WE_O;
-wire STB_O;
-wire CYC_O;
-wire [31:0] DAT_I;
-wire ACK_I;
 
-wire wstb;
-wire wcyc;
-wire wwe;
-wire [3:0] wsel;
-wire [31:0] wdati;
-wire [31:0] wadr;
-wire wack;
-wire [31:0] wdato;
+assign green = reset;
+
+  
+
+  team_06_top t06top (
+    .hwclk(hwclk),
+    .reset(pb[14]),
+    .adc_serial_in(pb[0]),
+    .pbs(pb[4:1]),
+    .vol(pb[6:5]),
+    .miso(pb[7]),
+    .cs(pb[8]),
+    .wsADC(pb[9]),
+    .mosi(pb[10]),
+    .dac_out(pb[11]),
+    .i2sclk(pb[12]),
+    .spiclk(pb[13]),
+    .wdati(gpio_in[1]),
+    .wack(gpio_in[2]),
+    .wadr(gpio_out[3]),
+    .wdat(gpio_out[4]),
+    .wsel(gpio_out[5]),
+    .wwe(gpio_out[6]),
+    .wstb(gpio_out[7]),
+    .wcyc(gpio_out[8])
+  );
+
+  
+  // GPIOs
+  // Don't forget to assign these to the ports above as needed
+  logic [33:0] gpio_in, gpio_out, gpio_oeb;
+  wire [31:0] ADR_O;
+  wire [31:0] DAT_O;
+  wire [3:0]  SEL_O;
+  wire        WE_O;
+  wire        STB_O;
+  wire        CYC_O;
+  wire [31:0] DAT_I;
+  wire         ACK_I;
+
+  wire wstb;
+  wire wcyc;
+  wire wwe;
+  wire [3:0] wsel;
+  wire [31:0] wdati;
+  wire [31:0] wadr;
+  wire wack;
+  wire [31:0] wdato;
+  
 
 // Team 06 Design Instance
 team_06 team_06_inst (

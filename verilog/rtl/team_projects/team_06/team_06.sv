@@ -46,8 +46,13 @@ module team_06 (
     // You can also have input registers controlled by the Caravel Harness's on chip processor
 );
 
-    assign gpio_out[8:0] = '0;
-    assign gpio_oeb = '0;
+    // Assign OEBs for inputs and outputs
+    assign gpio_oeb[8:0] = '1;
+    assign gpio_oeb[14:9] = '0;
+    assign gpio_oeb[33:15] = '1;  // Unused pins are set as inputs
+
+    // Unused outputs are set to 0
+    assign gpio_out[33:15] = '0;
 
     team_06_top t06top (
     .hwclk(clk),
@@ -61,7 +66,8 @@ module team_06 (
     .mosi(gpio_out[10]),
     .dac_out(gpio_out[11]),
     .i2sclk(gpio_out[12]),
-    .spiclk(gpio_out[13]),
+    .i2sclk_out_chip(gpio_out[13]),
+    .spiclk(gpio_out[14]),
     .wdati(DAT_I),
     .wack(ACK_I),
     .wadr(ADR_O),

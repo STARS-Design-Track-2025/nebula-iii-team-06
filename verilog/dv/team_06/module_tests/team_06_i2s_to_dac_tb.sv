@@ -1,12 +1,10 @@
 module team_06_i2s_to_dac_tb;
     logic [7:0] parallel_in;
-    logic clk, clkdiv, rst, en;
+    logic clk, clkdiv, past_clkdiv, rst, en;
     logic serial_out;
-    
-    
-    
+
     team_06_i2s_to_dac DUT(.parallel_in(parallel_in), .clk(clk), .rst(rst), .serial_out(serial_out), .en(en));
-    team_06_i2sclkdivider div_i2sclk(.clk(clk), .rst(rst), .i2sclk(clkdiv));
+    team_06_clkdivider #(.COUNT(24), .WIDTH(5)) div_i2sclk(.clk(clk), .rst(rst), .clkOut(clkdiv), .past_clkOut(past_clkdiv));
 
 
     initial begin
@@ -34,8 +32,6 @@ module team_06_i2s_to_dac_tb;
         en = 0;
       #10000;
 
-        
-        
         //mid operation reset
         en = 1;
         rst = 1;
@@ -46,9 +42,6 @@ module team_06_i2s_to_dac_tb;
         #10000000;
         $finish;
 
-
     end
-
-
 
 endmodule

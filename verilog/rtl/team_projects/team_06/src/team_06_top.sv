@@ -20,19 +20,19 @@
     output logic [3:0] wsel,
     output logic wwe,
     output logic wstb,
-    output logic wcyc
+    output logic wcyc,
+    output logic [31:0] wdato,
+    output logic i2sclk_out_chip
   );
   
   // ADC, i2sclk, edge_detection section
   logic past_i2sclk; 
   logic [7:0] i2s_parallel_out;
   logic finished; 
+  parameter OFFSET = 8180; // Cannot be less than 4 or more than 8180
 
-  team_06_i2sclkdivider div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
-  .i2sclk(i2sclk)); // Outputs
-
-  team_06_edge_detection_i2s edgeDetector (.i2sclk(i2sclk), .clk(hwclk), .rst(reset), // Inputs from top
-  .past_i2sclk(past_i2sclk)); // Input from i2sclkdivider
+  team_06_clkdivider #(.COUNT(24), .WIDTH(5)) div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
+  .clkOut(i2sclk), .past_clkOut(past_i2sclk)); // Outputs
 
   // team_06_adc_to_i2s adc (.clk(hwclk), .rst(reset), .adc_serial_in(adc_serial_in), // Inputs from top
   // .i2sclk(i2sclk), .past_i2sclk(past_i2sclk), // Inputs from i2sclkdivider + edge_detection
@@ -42,42 +42,41 @@
 
   // logic [2:0] current_effect;
 
-  // // Between audio effect and readwrite
-  // logic [7:0] audio_effect_out;
-  // logic [7:0] past_output;
-  // logic [12:0] offset;
-  // logic search;
-  // logic record;
-  // logic [7:0] save_audio; 
+  // Between audio effect and readwrite
+  logic [7:0] audio_effect_out;
+  logic [7:0] past_output;
+  logic search;
+  logic record;
+  logic [7:0] save_audio; 
+  logic goodData;
   
-  // //read write to sram
-  // logic [31:0] busAudioWrite;
-  // logic [31:0] addressOut;
-  // logic [3:0] select;
-  // logic write;
-  // logic readEdge;
-  // logic busySRAM;
-  // logic [31:0] busAudioRead;
-  // logic [7:0] effectAudioIn;
-
+  //read write to sram
+  logic [31:0] busAudioWrite;
+  logic [31:0] addressOut;
+  logic [3:0] select;
+  logic write;
+  logic readEdge;
+  logic busySRAM;
+  logic [31:0] busAudioRead;
+  logic [7:0] effectAudioIn;
 
   // Instantiate DUT
-  // team_06_audio_effect audio (.clk(hwclk), .rst(reset),  // Inputs from top
-  // .audio_in(i2s_parallel_out), .finished(finished), // Inputs from adc
-  // .sel(current_effect), // Input from FSM
-  // .past_output(past_output), // Input from readWrite
-  // .offset(offset), .search(search), .record(record), .save_audio(save_audio), // Output to readWrite
-  // .audio_out(audio_effect_out), .audio_enable(audio_enable)); // Output to SPI to ESP
+  team_06_audio_effect audio (.clk(hwclk), .rst(reset),  // Inputs from top
+  .audio_in(i2s_parallel_out), .finished(finished), // Inputs from adc
+  .sel(current_effect), // Input from FSM
+  .past_output(past_output), // Input from readWrite
+  .search(search), .record(record), .save_audio(save_audio), // Output to readWrite
+  .audio_out(audio_effect_out), .audio_enable(audio_enable), .goodData(goodData)); // Output to SPI to ESP
     
-  // team_06_readWrite sramRW (
-  // .clk(hwclk), .rst(reset), // Inputs from top
-  // .effect(current_effect),  // Input from FSM
-  // .offset(offset), .effectAudioIn(save_audio), .search(search), .record(record), // Input from audio_effect
-  // .busAudioRead(busAudioRead), .busySRAM(busySRAM), // Input from manager
-  // .busAudioWrite(busAudioWrite), .addressOut(addressOut),   // Output to manager
-  // .select(select), .write(write), .readEdge(readEdge), // Output to manager
-  // .audioOutput(past_output) // Output to audio_effect
-  // );
+  team_06_readWrite sramRW (
+  .clk(hwclk), .rst(reset), // Inputs from top
+  .effect(current_effect),  // Input from FSM
+  .offset(OFFSET), .effectAudioIn(save_audio), .search(search), .record(record), // Input from audio_effect
+  .busAudioRead(busAudioRead), .busySRAM(busySRAM), // Input from manager
+  .busAudioWrite(busAudioWrite), .addressOut(addressOut),   // Output to manager
+  .select(select), .write(write), .readEdge(readEdge), // Output to manager
+  .audioOutput(past_output), .goodData(goodData) // Output to audio_effect
+  );
 
   logic effect;
   logic mute;
@@ -131,20 +130,31 @@
   logic [7:0] audio_to_I2S;
   logic en;
 
-  // team_06_volume_shifter volumeShifter (
-  // .clk(hwclk), .rst(reset), // Inputs from top
-  // .audio_in(spi_parallel_out), // Input from esp to SPI
-  // .volume(volume), // Input from synckey
-  // .enable_volume(!mute_tog), // Input from FSM
-  // .audio_out(audio_to_I2S), .en(en) // Output to i2c
-  // );
+  logic i2sclk_out;
+  logic past_i2sclk_out;
+  logic past_i2sclk_out_chip;
 
-  // team_06_i2s_to_dac i2sDAC (
-  // .clk(hwclk), .rst(reset), // Inputs from top
-  // .i2sclk (i2sclk), .past_i2sclk (past_i2sclk), // Input from i2sclk, edge detector 
-  // .parallel_in(audio_to_I2S), .en(en), // Input from volume shifter
-  // .serial_out(dac_out)); // Output to DAC
-  // // NEED ws + clock signal!!!
+  team_06_clkdivider #(.COUNT(24), .WIDTH(5)) div_i2sclk_out (.clk(hwclk), .rst(reset), // Inputs from top
+  .clkOut(i2sclk_out), .past_clkOut(past_i2sclk_out)); // Outputs
+  assign i2sclk_out_chip = i2sclk_out && en; // This is so that when we disable, we put the chip in standby mode
+  assign past_i2sclk_out_chip = past_i2sclk_out && en;
+
+  team_06_volume_shifter volumeShifter (
+  .clk(hwclk), .rst(reset), // Inputs from top
+  .audio_in(spi_parallel_out), // Input from esp to SPI
+  .volume(volume), // Input from synckey
+  .enable_volume(!mute_tog), // Input from FSM
+  .audio_out(audio_to_I2S), .en(en) // Output to i2c
+  );
+
+  team_06_i2s_to_dac i2sDAC (
+  .clk(hwclk), .rst(reset), // Inputs from top
+  .i2sclk (i2sclk_out_chip), .past_i2sclk (past_i2sclk_out_chip), // Input from i2sclk, edge detector 
+  .parallel_in(audio_to_I2S), // Input from volume shifter
+  .serial_out(dac_out)); // Output to DAC
+
+
+  // NEED ws + clock signal!!!
 
   // // // Instantiate SRAM model
   // wishbone_manager wishbone_manager(
@@ -170,18 +180,18 @@
   // .CYC_O(wcyc)
   // );
  
-//   sram_WB_Wrapper sram_wrapper(
-//       .wb_rst_i(reset),
-//       .wb_clk_i(hwclk),
-//       .wbs_stb_i(wstb),
-//       .wbs_cyc_i(wcyc),
-//       .wbs_we_i(wwe),
-//       .wbs_sel_i(wsel),
-//       .wbs_dat_i(wdato),
-//       .wbs_adr_i(wadr),
-//       .wbs_ack_o(wack),
-//       .wbs_dat_o(wdati)
-//   );
+  // sram_WB_Wrapper sram_wrapper(
+  //     .wb_rst_i(reset),
+  //     .wb_clk_i(hwclk),
+  //     .wbs_stb_i(wstb),
+  //     .wbs_cyc_i(wcyc),
+  //     .wbs_we_i(wwe),
+  //     .wbs_sel_i(wsel),
+  //     .wbs_dat_i(wdato),
+  //     .wbs_adr_i(wadr),
+  //     .wbs_ack_o(wack),
+  //     .wbs_dat_o(wdati)
+  // );
 // input logic [31:0] wdati,
 //     input logic wack,
 //     output logic [31:0] wadr,
@@ -190,4 +200,4 @@
 //     output logic wwe,
 //     output logic wstb,
 //     output logic wcyc
-  endmodule
+endmodule

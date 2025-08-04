@@ -10,14 +10,14 @@ module team_06_tremelo( //so tremelo works by combing the audio input with a tri
     
     logic curr_direction; //as I said, it can either go up and down, so we need direction
     logic nxt_direction; 
-    team_06_tremelo_clkdiv lebron(.clk(clk), .rst(rst), .clkdiv(clkdiv));
-    team_06_edge_detection_i2s james(.i2sclk(clkdiv), .clk(clk), .rst(rst), .past_i2sclk(past_clkdiv));
+  team_06_clkdivider #(.COUNT(24), .WIDTH(5)) div_i2sclk (.clk(clk), .rst(rst), // Inputs from top
+  .clkOut(clkdiv), .past_clkOut(past_clkdiv)); // Outputs
     
     always_ff @(posedge clk, posedge rst) begin
         if(rst) begin
             curr_depth <= '0;
             curr_direction <= 1;
-            dividerout <= 127;
+            dividerout <= 128;
         end
         else begin
             curr_depth <= nxt_depth;

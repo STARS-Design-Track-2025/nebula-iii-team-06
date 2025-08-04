@@ -9,12 +9,12 @@ module team_06_audio_effect_tb;
     logic [7:0] audio_in;
     logic [2:0] sel;
     logic finished;
+    logic audio_enable;
     // Outputs
     logic [7:0] audio_out;
     
     //audio_effect interacts with read write module
     logic [7:0] past_output; // What came from SRAM
-    logic [12:0] offset;// For readwrite, where in memory
     logic search; // To R/W
     logic record; // To R/W
     logic [7:0] save_audio; // To SRAM
@@ -41,14 +41,14 @@ module team_06_audio_effect_tb;
 
 
     // Instantiate DUT
-    team_06_audio_effect ae (.clk(clk), .rst(rst), .audio_in(audio_in), .finished(finished), .sel(sel), .audio_out(audio_out), 
-        .past_output(past_output), .offset(offset), .search(search), .record(record), .save_audio(save_audio)); // ADD PORTS OR ELSE!
+    team_06_audio_effect ae (.clk(clk), .rst(rst), .audio_in(audio_in), .finished(finished), .sel(sel), .audio_enable(audio_enable), .audio_out(audio_out), 
+        .past_output(past_output), .search(search), .record(record), .save_audio(save_audio)); // ADD PORTS OR ELSE!
     
     team_06_readWrite sahur (
     .clk(clk),
     .rst(rst),
     .busAudioRead(busAudioRead),
-    .offset(offset),
+    .offset(8000),
     .effectAudioIn(save_audio),
     .search(search),
     .record(record),
@@ -118,6 +118,7 @@ initial begin
 
     audio_in = 8'd64;
     finished = 1;
+    audio_enable = 1;
     sel = '0;
     //power on rst
     rst = 1;

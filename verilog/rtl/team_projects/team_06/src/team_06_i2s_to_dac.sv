@@ -2,9 +2,11 @@ module team_06_i2s_to_dac(
     input logic [7:0] parallel_in,
     input logic clk, rst,
     input logic i2sclk, past_i2sclk,
-    output logic serial_out
+    output logic serial_out,
+    output logic word_select
 );
     logic [4:0] counter, counter_n;
+    logic word_select_n;
     logic serial_out_n;
     logic [7:0] parallel_in_temp, parallel_in_temp_n;
       
@@ -13,10 +15,12 @@ module team_06_i2s_to_dac(
             counter <= '0;
             serial_out <= '0;
             parallel_in_temp <= '0;
+            word_select <= '0;
         end else begin
             serial_out <= serial_out_n;
             counter <= counter_n;
             parallel_in_temp <= parallel_in_temp_n;
+            word_select <= word_select_n;
         end
     end
 
@@ -30,6 +34,12 @@ module team_06_i2s_to_dac(
                 counter_n = 2;
                 parallel_in_temp_n = {parallel_in[6:0], 1'b0};
                 serial_out_n = parallel_in[7]; // NOT parallel_in_temp[7], since we reloaded
+            end else if (counter == 5'd8) begin
+                // Last bit about to be sent, toggle word_select
+                counter_n = counter + 1;
+                serial_out_n = parallel_in_temp[7];
+                parallel_in_temp_n = {parallel_in_temp[6:0], 1'b0};
+                word_select_n = ~word_select;
             end else begin 
                 counter_n = counter + 1;
                 serial_out_n = parallel_in_temp[7]; 

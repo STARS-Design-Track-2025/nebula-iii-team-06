@@ -113,7 +113,7 @@ logic [2:0] current_effect;
   //Instantiation of the module
   team_06_spi_to_esp spiESP (
   .clk(hwclk), .rst(reset), // Inputs from top
-  .parallel_in(1), // Input from audio effects
+  .parallel_in(audio_effect_out), // Input from audio effects
   .cs(cs), .serial_out(mosi) // Output to ESP32
   ); // clock signal!!
 

@@ -188,6 +188,7 @@ module team_06_top_tb;
         // misoVal = 0;
         // repeat (128) @(posedge hwclk);
         
+        testcase = -1;
         reset = 1;
         misoVal = 8'd0;
         micVal = 8'd0;
@@ -208,8 +209,8 @@ module team_06_top_tb;
         // Note: for misoVal, zero is 128 (because it is within our system and unsigned)
         // Wheras for mic val zero is actually zero as the mic val is signed, 128 is max, 255 is -1
 
-        // Test case 111: zero volume mic, zero volume speaker, no buttons, full volume
-        testcase = 111;
+        // Test case 0: zero volume mic, zero volume speaker, no buttons, full volume
+        testcase = 0;
         micVal = 128;
         misoVal = 251;
         repeat (6144) @(posedge hwclk);
@@ -350,7 +351,7 @@ module team_06_top_tb;
 
         // Test case 20: very low volume mic, zero volume speaker, tremelo, full volume
         testcase = 20;
-        micVal = 140; // Check if this is the case
+        micVal = 140; 
         misoVal = 128;
         repeat (6144) @(posedge hwclk);
 
@@ -370,6 +371,7 @@ module team_06_top_tb;
         reset = 1;
         repeat (6144) @(posedge hwclk);
         reset = 0;
+        repeat (4) increaseVolume();
 
         // Test case 23: full reverb test with varying volume from mic
         testcase = 23;
@@ -446,12 +448,18 @@ module team_06_top_tb;
 
         // Test case 33: max volume mic, zero volume speaker, tremelo, full volume, noise gate
         testcase = 33;
-        micVal = 255; // Check if this is the case
+        micVal = 255; 
         misoVal = 128;
         repeat (2) pressButton(MUTE);
         repeat (2) pressButton(EFFECTCHANGE);
         repeat (6144) @(posedge hwclk);
 
+        // Test case 34: sanity check that we can still get stuff from speaker
+        testcase = 34;
+        micVal = 128; 
+        misoVal = 255;
+        repeat (2) pressButton(NOISEGATE);
+        repeat (6144) @(posedge hwclk);
 
     $finish;
     end

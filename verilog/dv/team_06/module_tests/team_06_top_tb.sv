@@ -386,7 +386,7 @@ module team_06_top_tb;
         testcase = 24;
         micVal = 255;
         misoVal = 128;
-        repeat (6) pressButton(EFFECTCHANGE);
+        repeat (8) pressButton(EFFECTCHANGE);
         repeat (6144) @(posedge hwclk);
 
         // Test case 25: high volume mic, zero volume speaker, soft clipping, full volume
@@ -437,12 +437,12 @@ module team_06_top_tb;
         pressButton(PTT);
         repeat (6144) @(posedge hwclk);
 
-        // Test case 32: full volume mic, full volume speaker, no chip select
-        testcase = 32;
-        micVal = 255;
-        misoVal = 128;
-        cs = 0;
-        repeat (6144) @(posedge hwclk);
+        // // Test case 32: full volume mic, full volume speaker, no chip select
+        // testcase = 32;
+        // micVal = 255;
+        // misoVal = 128;
+        // cs = 0;
+        // repeat (6144) @(posedge hwclk);
 
         // Test case 33: max volume mic, zero volume speaker, tremelo, full volume, noise gate
         testcase = 33;

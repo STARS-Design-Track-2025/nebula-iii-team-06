@@ -38,79 +38,68 @@ module team_06_FSM (
       ECHO = 3'b001,
       TREMOLO = 3'b010,
       REVERB = 3'b011,
-      SOFT = 3'b100,
-      TRUNGTRUNGTRUNGSAHUR = 3'b101,
-      SENOSENOCAPPUICHINO = 3'b110
+      SOFT = 3'b100
   } current_effect_t;
 
 
-  logic current_state, next_state;   // Variables for controlling the state case-satatements
+  logic next_state;   // Variables for controlling the state case-satatements
   logic [7:0] threshold;                  // Threshold for which the mic_audio should pass in noise gate
   logic check, check_n;                // check logic for if we're above the threshold or not
   logic eff_en_temp;          // effect enable temporary variable
   logic spk_active;           // logic for if speaker is active
-  logic [2:0] curr_eff, next_eff;
+  logic [2:0] next_eff;
   logic effect_button_prev, effect_button_prev2;
   logic effect_button_rising;
   logic noise_gate_tog; // Whether or not noise gates has changed states
-  logic [19:0]time_count, time_count2;
+  logic [19:0] time_count, time_count2;
 
 
   assign threshold = 8'd64; // threshold is 64 decibels
 
-
   // Synchroning the state with the clock
   always_ff @(posedge clk, posedge rst) begin
       if (rst) begin
-          current_state <= LIST;
+          state <= LIST;
           check = 0;
       end else begin
-          current_state <= next_state;
+          state <= next_state;
           check = check_n;
       end
   end
 
-
   // Combinational: next state logic
-  always_comb begin
-      next_state = current_state;
-      check_n = check;
-      if (mic_aud >= 128) begin
-          check_n = (mic_aud >= threshold + 128);
-      end else begin
-          check_n  = (mic_aud <= 128 - threshold);
-      end
-      spk_active = (spk_aud != 128);    // speaker is active logic. Critical that the value is 128 because that is the midpoint between 0 and 255
+    always_comb begin
+        next_state = state;
+        check_n = check;
+        if (mic_aud >= 128) begin
+            check_n = (mic_aud >= threshold + 128);
+        end else begin
+            check_n  = (mic_aud <= 128 - threshold);
+        end
+        spk_active = (spk_aud != 128);    // speaker is active logic. Critical that the value is 128 because that is the midpoint between 0 and 255
 
-
-  /* Case statements for switching between states
-  based on the current state and certain conditions (MEALY)*/
-      case (current_state)
-      LIST: begin
-          if (spk_active) begin
-              next_state = LIST;
-          end else if ((noise_gate_tog && !ptt_en && check_n) || ptt_en) begin
-              next_state = TALK;
-          end
-          end
-
-
-      TALK: begin
-          if ((!ptt_en && !noise_gate_tog) || (noise_gate_tog && !ptt_en && !check_n)) begin
-              next_state = LIST;
-          end else if (spk_active) begin
-              next_state = LIST;
-          end else if ((ptt_en) || (noise_gate_tog && !ptt_en && check_n)) begin
-              next_state = TALK;
-          end
-          end
-      default: next_state = LIST;
-      endcase
-  end
-
-
-  assign state = current_state;
-
+        /* Case statements for switching between states
+        based on the current state and certain conditions (MEALY)*/
+        case (state)
+        LIST: begin
+            if (spk_active) begin
+                next_state = LIST;
+            end else if ((noise_gate_tog && !ptt_en && check_n) || ptt_en) begin
+                next_state = TALK;
+            end
+            end
+        TALK: begin
+            if ((!ptt_en && !noise_gate_tog) || (noise_gate_tog && !ptt_en && !check_n)) begin
+                next_state = LIST;
+            end else if (spk_active) begin
+                next_state = LIST;
+            end else if ((ptt_en) || (noise_gate_tog && !ptt_en && check_n)) begin
+                next_state = TALK;
+            end
+            end
+        default: next_state = LIST;
+        endcase
+    end
 
    always_ff @(posedge clk, posedge rst) begin
        if (rst) begin
@@ -120,19 +109,17 @@ module team_06_FSM (
        end
    end
 
-
-   always_comb begin
+    always_comb begin
        time_count2 = time_count;
 
-
-       case (current_state)
-       LIST: begin
+        case (state)
+        LIST: begin
            time_count2 = 0;
            if (ptt_en) begin
                time_count2 = 0;
            end
-       end
-       TALK: begin
+        end
+        TALK: begin
            time_count2 = time_count + 1;
            if (ptt_en) begin
                time_count2 = 0;
@@ -140,63 +127,44 @@ module team_06_FSM (
            if (ng_en && (mic_aud != 128)) begin
                for (int time_count2 = 1; time_count2 < 1048575; time_count2++) begin
                        time_count2++;
-                       // if () begin
-
-
-                       // end
                end
            end
-               // if ((time_count == 0) && ng_en && !ptt_en && check) begin
-               //     time_count2 = time_count + 1;
-               // end else if ((time_count == 1) && ng_en && !ptt_en) begin
-               //     time_count2 = time_count + 1;
-               // end else if ((time_count == 2) && ng_en && !ptt_en) begin
-               //     time_count2 = time_count + 1;
-               // end else if ((time_count == 3) && ng_en && !ptt_en) begin
-               //     time_count2 = time_count + 1;
-               // end
                if ((time_count == 1048575) && ng_en && !ptt_en && !check) begin
                    time_count2 = 0;                    
                end
                 else if((time_count == 1048575) && ng_en && !ptt_en && check) begin
                     time_count2 = 0;
            end
-       end
-       default: begin
+        end
+        default: begin
            time_count2 = 0;
-       end
+        end
+        endcase
+    end
 
 
-       endcase
-      
-   end
-
-
-  // Combinational logic for the output of the module
-  always_comb begin
-      vol_en = 0;
-       effect_en = 0;
-
-
-      case (current_state)
-          LIST: begin
-              if (!mute && !rst) begin
-                  vol_en = 1;
-              end
-              else if (ptt_en) begin
-                  vol_en = 0;
-              end
-          end
-          TALK: begin
-              vol_en = 0;
-               effect_en = 1;
-          end
-          default: begin
-              vol_en = 0;
-              end
-      endcase
-  end
-
+    // Combinational logic for the output of the module
+    always_comb begin
+        vol_en = 0;
+        effect_en = 0;
+        case (state)
+            LIST: begin
+                if (!mute && !rst) begin
+                    vol_en = 1;
+                end
+                else if (ptt_en) begin
+                    vol_en = 0;
+                end
+            end
+            TALK: begin
+                vol_en = 0;
+                effect_en = 1;
+            end
+            default: begin
+                vol_en = 0;
+                end
+        endcase
+    end
 
   // Detect rising edge of effect_button
   always_ff @(posedge clk or posedge rst) begin
@@ -209,23 +177,20 @@ module team_06_FSM (
       end
   end
 
-
   // Update current_effect on each rising edge
   always_ff @(posedge clk or posedge rst) begin
       if (rst) begin
-          curr_eff <= NORMAL;
+          current_effect <= NORMAL;
       end else begin
-          curr_eff <= next_eff;
+          current_effect <= next_eff;
       end
   end
 
-
   always_comb begin
-      next_eff = curr_eff;
+      next_eff = current_effect;
       effect_button_rising = (effect_button_prev && !effect_button_prev2);
 
-
-      case (curr_eff)
+      case (current_effect)
       NORMAL: begin
           if (effect_button_rising) begin
               next_eff = ECHO;
@@ -265,9 +230,6 @@ module team_06_FSM (
       endcase
   end
 
-
-  assign current_effect = curr_eff;
-// KKKKKKKKKKKKKKKKKKKKKKKAAAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIIIIIIIIIIIOOOOOOOOOOOOOOOOOKKKKKKKKKKKKKKKKKKEEEEEEEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNNNNNNNNN
   logic mute_prev, mute_prev2;
   logic mute_state, next_mute_state, mute_button_rising;
   always_ff @(posedge clk, posedge rst) begin
@@ -281,21 +243,19 @@ module team_06_FSM (
       end
   end
 
-
   always_ff @(posedge clk, posedge rst) begin
       if (rst) begin
-          mute_state <= MUTE_OFF;
+          mute_tog <= MUTE_OFF;
       end
       else begin
-          mute_state <= next_mute_state;
+          mute_tog <= next_mute_state;
       end
   end
 
-
   always_comb begin
-      next_mute_state = mute_state;
+      next_mute_state = mute_tog;
       mute_button_rising = (mute_prev & !mute_prev2);
-      case(mute_state)
+      case(mute_tog)
       MUTE_OFF: begin
           if(mute_button_rising)begin
               next_mute_state = MUTE;
@@ -313,10 +273,6 @@ module team_06_FSM (
       default: next_mute_state = MUTE_OFF;
       endcase
   end
-  assign mute_tog = mute_state;
-
-
-// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 
   logic noise_prev, noise_prev2;
@@ -332,7 +288,6 @@ module team_06_FSM (
       end
   end
 
-
   always_ff @(posedge clk, posedge rst) begin
       if (rst) begin
           noise_state <= NOISE_OFF;
@@ -341,7 +296,6 @@ module team_06_FSM (
           noise_state <= next_noise_state;
       end
   end
-
 
   always_comb begin
       next_noise_state = noise_state;

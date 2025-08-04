@@ -25,6 +25,10 @@ module team_06_i2s_to_dac(
     end
 
     always_comb begin
+        counter_n = counter;
+        serial_out_n = serial_out;
+        parallel_in_temp_n = parallel_in_temp;
+        word_select_n = word_select;
         if (!i2sclk && past_i2sclk) begin // On falling edge
             if (counter == 5'd0) begin // At count zero, we should not do anything
                 parallel_in_temp_n = parallel_in; 
@@ -45,11 +49,6 @@ module team_06_i2s_to_dac(
                 serial_out_n = parallel_in_temp[7]; 
                 parallel_in_temp_n = {parallel_in_temp[6:0], 1'b0}; 
             end
-        end
-        else begin
-            counter_n = counter;
-            serial_out_n = serial_out;
-            parallel_in_temp_n = parallel_in_temp;
         end
     end
 endmodule

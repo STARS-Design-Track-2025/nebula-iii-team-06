@@ -48,11 +48,11 @@ module team_06 (
 
     // Assign OEBs for inputs and outputs
     assign gpio_oeb[8:0] = '1;
-    assign gpio_oeb[15:9] = '0;
-    assign gpio_oeb[33:16] = '1;  // Unused pins are set as inputs
+    assign gpio_oeb[20:9] = '0;
+    assign gpio_oeb[33:21] = '1;  // Unused pins are set as inputs
 
     // Unused outputs are set to 0
-    assign gpio_out[33:16] = '0;
+    assign gpio_out[33:21] = '0;
 
     team_06_top t06top (
     .hwclk(clk),
@@ -76,7 +76,12 @@ module team_06 (
     .wsel(SEL_O),
     .wwe(WE_O),
     .wstb(STB_O),
-    .wcyc(CYC_O)
+    .wcyc(CYC_O),
+    .doneDisplay(gpio_out[16]), 
+    .sdoDisplay(gpio_out[17]), 
+    .sclkDisplay(gpio_out[18]), 
+    .cs_nDisplay(gpio_out[19]), 
+    .busyDisplay(gpio_out[20])   
   );
 
 endmodule

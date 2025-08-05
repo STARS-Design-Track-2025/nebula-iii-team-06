@@ -9,9 +9,10 @@ module team_06_FSM (
   input logic mute, // Mute enabled
   output logic vol_en, // Whether volume is enabled or not
   output logic [2:0] current_effect, // output logic for the current effect we're on
-  output logic effect_en // This is what actually mutes the audio effect module
+  output logic effect_en, // This is what actually mutes the audio effect module
+  output logic state // State we are currently in
 );
-  logic state; // State we are currently in
+
   logic mute_tog; // This is what actually mutes the volume shifter
 
   typedef enum logic {

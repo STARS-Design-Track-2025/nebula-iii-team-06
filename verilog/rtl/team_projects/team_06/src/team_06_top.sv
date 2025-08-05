@@ -22,7 +22,12 @@
     output logic wcyc,
     output logic [31:0] wdato,
     output logic i2sclk_out_chip,
-    output logic word_select
+    output logic word_select,
+    output logic sdoDisplay,   // Serial data out (MOSI)
+    output logic sclkDisplay,  // SPI clock
+    output logic cs_nDisplay,  // Chip select (active low)
+    output logic busyDisplay,  // Transmission in progress
+    output logic doneDisplay   // Transmission complete (pulse)
   );
   
   // ADC, i2sclk, edge_detection section
@@ -79,7 +84,7 @@ logic [2:0] current_effect;
 
   logic effect;
   logic mute;
-  // logic state; // Eventually used for display
+  logic state; // Eventually used for display
   logic vol_en;
   logic audio_enable;
 
@@ -89,13 +94,33 @@ logic [2:0] current_effect;
   .mic_aud(i2s_parallel_out), // Input from ADC
   .spk_aud(spi_parallel_out), // Input from ESP -> SPI
   .ng_en(noise_gate), .ptt_en(ptt),  .mute(mute), .effect(effect), // Input from synckey
-  //.state(state), 
+  .state(state), 
   .vol_en(vol_en), .current_effect(current_effect), .effect_en(audio_enable) // Output from FSM
   );
 
+  logic [127:0] row_1, row_2;
+  logic [9:0] out;
+  logic out_valid;
 
-  // logic clk;
-  // logic rst;
+  team_06_newDisplay Display(
+    .talkieState(state), .enable_volume(!mute), .current_effect(current_effect), // Inputs from FSM
+    .volume(volume), // Input from synckey
+    .row_1(row_1), .row_2(row_2)
+  );
+
+  team_06_driver_1602 #(.clk_div(24_000)) drive(
+    .clk(hwclk), .rst(!reset), // Inputs from top
+    .row_1(row_1), .row_2(row_2), // Inputs from newDisplay
+    .out(out), .out_valid(out_valid)
+  );
+
+  team_06_1602_spi #( .WIDTH(10), .CLK_DIV(40) ) spiDisplay(
+    .clk(hwclk), .rst_n(!reset),      
+    .start(out_valid), .data_in(out), // Inputs from driver
+    .done(doneDisplay), // Outputs to driver
+    .sdo(sdoDisplay), .sclk(sclkDisplay), .cs_n(cs_nDisplay), .busy(busyDisplay)   // Outputs to chip   
+  );
+
   logic [3:0] volume;
   logic ptt;
   logic noise_gate;

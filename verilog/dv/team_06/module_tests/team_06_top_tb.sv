@@ -20,6 +20,11 @@ module team_06_top_tb;
     logic wstb;
     logic wcyc;
     logic i2sclk_out_chip;
+    logic sdoDisplay;   // Serial data out (MOSI)
+    logic sclkDisplay;  // SPI clock
+    logic cs_nDisplay;  // Chip select (active low)
+    logic busyDisplay;  // Transmission in progress
+    logic doneDisplay;  // Transmission complete (pulse)
 
     typedef enum int {PTT = 0, MUTE = 1, EFFECTCHANGE = 2, NOISEGATE = 3} button_t;
 
@@ -49,7 +54,12 @@ module team_06_top_tb;
         .wstb(wstb),
         .wcyc(wcyc),
         .wdato(wdato),
-        .i2sclk_out_chip(i2sclk_out_chip)
+        .i2sclk_out_chip(i2sclk_out_chip),
+        .doneDisplay(doneDisplay), 
+        .sdoDisplay(sdoDisplay), 
+        .sclkDisplay(sclkDisplay), 
+        .cs_nDisplay(cs_nDisplay), 
+        .busyDisplay(busyDisplay)   
     );
 
       sram_WB_Wrapper sram_wrapper(

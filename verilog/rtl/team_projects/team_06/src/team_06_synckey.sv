@@ -22,7 +22,7 @@ module team_06_synckey (
    logic ptt_en;       // temporary variable for the push-to-talk
    logic effect_en;    // temporary variable for teh effect output
    logic [3:0][15:0] debounce_counters, next_counters; // temporary signals for the counter
-   logic [3:0] debouncedPBS, next_debounced_pbs; // temporary signals for the debouncer
+   logic [3:0] debouncedPBS; // temporary signals for the debouncer
 
 
    typedef enum logic [1:0] { 
@@ -51,8 +51,6 @@ module team_06_synckey (
 
    always_comb begin
        next_counters = debounce_counters;
-       next_debounced_pbs = debouncedPBS;
-
 
        for (int i = 0; i < 4; i++) begin
            if (pbs[i] == debouncedPBS[i]) begin
@@ -60,7 +58,6 @@ module team_06_synckey (
            end else begin
                next_counters[i] = debounce_counters[i] + 1;
                if (debounce_counters[i] >= 16'd5000) begin
-                   next_debounced_pbs[i] = pbs[i];
                    next_counters[i] = 16'd0;
                end
            end

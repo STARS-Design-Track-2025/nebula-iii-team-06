@@ -356,12 +356,12 @@ module team_06_top_tb;
         // Test case 21: full echo test with varying volume from mic
         testcase = 21;
         repeat (2) pressButton(EFFECTCHANGE);
-        repeat (170000) begin micVal = 200; @(posedge hwclk); end
-        repeat (170000) begin micVal = 250; @(posedge hwclk); end
-        repeat (170000) begin micVal = 160; @(posedge hwclk); end
-        repeat (170000) begin micVal = 210; @(posedge hwclk); end
-        repeat (170000) begin micVal = 190; @(posedge hwclk); end
-        repeat (170000) begin micVal = 180; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 200; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 250; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 160; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 210; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 190; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 180; @(posedge hwclk); end
         repeat (6144) @(posedge hwclk);
 
         // Test case 22: mid operation reset
@@ -374,12 +374,12 @@ module team_06_top_tb;
         // Test case 23: full reverb test with varying volume from mic
         testcase = 23;
         repeat (8) pressButton(EFFECTCHANGE);
-        repeat (170000) begin micVal = 200; @(posedge hwclk); end
-        repeat (170000) begin micVal = 250; @(posedge hwclk); end
-        repeat (170000) begin micVal = 160; @(posedge hwclk); end
-        repeat (170000) begin micVal = 210; @(posedge hwclk); end
-        repeat (170000) begin micVal = 190; @(posedge hwclk); end
-        repeat (170000) begin micVal = 180; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 200; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 250; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 160; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 210; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 190; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 180; @(posedge hwclk); end
         repeat (6144) @(posedge hwclk);
  
         // Test case 24: full volume mic, zero volume speaker, soft clipping, full volume

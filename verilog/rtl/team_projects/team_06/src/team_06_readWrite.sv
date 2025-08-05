@@ -21,7 +21,7 @@ module team_06_readWrite (
 
 typedef enum logic [1:0] {IDLE, READ, WRITE, BUSY} state_SRAM;
 state_SRAM sram, sram_n;
-logic sramOld;
+logic sramOld, recordOld, recordOlder;
 
 assign select = 4'b1111;
 
@@ -29,17 +29,21 @@ always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         sram <= IDLE;
         sramOld <= 0;
+        recordOld <= 0;
+        recordOlder <= 0;
     end else begin
         sram <= sram_n;
         sramOld <= busySRAM;
+        recordOld <= record;
+        recordOlder <= recordOld;
     end
 end
 
 always_comb begin
     if (sram == IDLE) begin
-        if (record) begin // record command from audio effects 
+        if (record && !recordOlder) begin // record command from audio effects 
         sram_n = WRITE;
-        end else if (search && goodData && (audioLocation != address)) begin // search command from audio effects. While in modeReset, you are unable to read as the data is not good
+        end else if (search && goodData && (audioLocation != address) && !record) begin // search command from audio effects. While in modeReset, you are unable to read as the data is not good
         sram_n = READ;
         end else begin
         sram_n = IDLE;
@@ -98,7 +102,7 @@ end
 
 // ADDRESS CALCULATION
 
-logic [9:0] address, address_n; // The address represents a word. 0 is 0x33000000, 1 is 0x33000001, ect.
+logic [9:0] address, address_n; // The address represents a byte. 0 is 0x33000000, 1 is 0x33000001, ect.
 logic [11:0] inter; // just some intermediate variable for bit addressing
 
 always_ff @(posedge clk, posedge rst) begin

@@ -28,6 +28,8 @@ module team_06_audio_effect (
     logic reverb_en;
     logic record_n;
     logic [7:0] echo_reverb_out;
+    logic finished_old;
+    logic finished_older; 
 
     // Add logic for finished, search, and record
 
@@ -44,16 +46,39 @@ module team_06_audio_effect (
         .goodData(goodData) // Whehter or not we are ready to read from memory
     );
 
+    logic [2:0] wait3, wait3_n;
+    logic active;
+
     always_ff @(posedge clk, posedge rst) begin
         if (rst) begin
             record <= 0;
+            // finished_old <= 0;
+            // finished_older <= 0;
+            // wait3 <= 0;
         end else begin
             record <= record_n;
+            // finished_old <= finished;
+            // finished_older <= finished_old;
+            // wait3 <= wait3_n;
         end
     end
 
+    // if echo xor reverb and ( finished  )
     always_comb begin
-        if( (echo_en ^ reverb_en) && finished) begin // If just echo or just reverb is on and we have recieved new data, record should be on
+
+        // if (finished && !finished_older) begin
+        //     wait3_n = 4;
+        //     active = 1;
+        // end else if (wait3 == 0) begin
+        //     active = 0;
+        //     wait3_n = 0;
+        // end else begin
+        //     wait3_n = wait3 - 1;
+        //     active = 1;
+        // end
+
+        if( (echo_en ^ reverb_en) && finished) begin 
+            // If just echo or just reverb is on and we have recieved new data, record should be on
             record_n = 1;
         end else begin
             record_n = 0;

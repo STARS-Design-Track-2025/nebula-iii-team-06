@@ -60,15 +60,15 @@ module team_06 (
     .adc_serial_in(gpio_in[0]),
     .pbs(gpio_in[4:1]),
     .vol(gpio_in[6:5]),
-    .miso(gpio_in[7]),
-    .cs(gpio_in[8]),
+    .miso(gpio_in[7]),  // ESP pin 19 / B5
+    .cs(gpio_in[8]), // ESP pin 5 / A5
     .wsADC(gpio_out[9]),
-    .mosi(gpio_out[10]),
+    .mosi(gpio_out[10]),  // ESP pin 23 / C6
     .dac_out(gpio_out[11]),
-    .i2sclk(gpio_out[12]),
+    .i2sclk(gpio_out[12]), // ESP pin 18 / C7
     .i2sclk_out_chip(gpio_out[13]),
     .spiclk(gpio_out[14]),
-    .word_select(gpio_out[15]),
+    .word_select(gpio_out[15]), 
     .wdati(DAT_I),
     .wack(ACK_I),
     .wadr(ADR_O),

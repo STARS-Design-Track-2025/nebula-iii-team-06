@@ -93,6 +93,7 @@ logic [2:0] current_effect;
   .vol_en(vol_en), .current_effect(current_effect), .effect_en(audio_enable) // Output from FSM
   );
 
+
   // logic clk;
   // logic rst;
   logic [3:0] volume;

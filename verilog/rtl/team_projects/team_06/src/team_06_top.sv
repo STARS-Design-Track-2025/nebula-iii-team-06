@@ -45,7 +45,7 @@
   .ws(wsADC)); // Output to GPIO adc
   // NEED clock signal!!!
 
-logic [2:0] current_effect;
+  logic [2:0] current_effect;
 
   // Between audio effect and readwrite
   logic [7:0] audio_effect_out;

@@ -57,18 +57,18 @@ module team_06 (
     team_06_top t06top (
     .hwclk(clk),
     .reset(~nrst | ~en),
-    .adc_serial_in(gpio_in[0]),
-    .pbs(gpio_in[4:1]),
-    .vol(gpio_in[6:5]),
+    .adc_serial_in(gpio_in[0]), // C3
+    .pbs(gpio_in[4:1]), // 1 - B3, 2 - C4, 3 - C5, 4- A1
+    .vol(gpio_in[6:5]), // 5 - A2, 6 - B4,
     .miso(gpio_in[7]),  // ESP pin 19 / B5
     .cs(gpio_in[8]), // ESP pin 5 / A5
-    .wsADC(gpio_out[9]),
+    .wsADC(gpio_out[9]), // B6
     .mosi(gpio_out[10]),  // ESP pin 23 / C6
-    .dac_out(gpio_out[11]),
+    .dac_out(gpio_out[11]), // A6
     .i2sclk(gpio_out[12]), // ESP pin 18 / C7
-    .i2sclk_out_chip(gpio_out[13]),
-    .spiclk(gpio_out[14]),
-    .word_select(gpio_out[15]), 
+    .i2sclk_out_chip(gpio_out[13]), // B7
+    .spiclk(gpio_out[14]), // A7
+    .word_select(gpio_out[15]), // B8
     .wdati(DAT_I),
     .wack(ACK_I),
     .wadr(ADR_O),
@@ -77,11 +77,11 @@ module team_06 (
     .wwe(WE_O),
     .wstb(STB_O),
     .wcyc(CYC_O),
-    .doneDisplay(gpio_out[16]), 
-    .sdoDisplay(gpio_out[17]), 
-    .sclkDisplay(gpio_out[18]), 
-    .cs_nDisplay(gpio_out[19]), 
-    .busyDisplay(gpio_out[20])   
+    .doneDisplay(gpio_out[16]), // B9
+    .sdoDisplay(gpio_out[17]), // A9
+    .sclkDisplay(gpio_out[18]), // C9
+    .cs_nDisplay(gpio_out[19]), // A10
+    .busyDisplay(gpio_out[20])  // A11
   );
 
 endmodule

@@ -61,14 +61,14 @@ module team_06 (
     .pbs(gpio_in[4:1]), // 1 - B3 (PTT), 2 - C4 (Mute), 3 - C5 (effect), 4 - A1 (noise gate)
     .vol(gpio_in[6:5]), // 5 - A2, 6 - B4, (HOW WE DO THIS??)
     .miso(gpio_in[7]),  //  B5 - ESP pin 19 - MISO
-    .cs(gpio_out[8]), //  A5 - ESP pin 5 - CS
-    .wsADC(gpio_out[9]), // B6 - ADC word select
-    .mosi(gpio_out[10]),  // C6 - ESP pin 23 - MOSI  
-    .dac_out(gpio_out[11]), // A6 - DAC DIN
-    .i2sclk(gpio_out[12]), // C7 - ADC I2s clock
-    .i2sclk_out_chip(gpio_out[13]), // B7 - DAC I2s clock
-    .spiclk(gpio_out[14]), // A7 - ESP pin 18 - SPI clock
-    .word_select(gpio_out[15]), // B8 - DAC LRclk 
+    .cs(gpio_out[8]), //  B2 - ESP pin 5 - CS
+    .wsADC(gpio_out[9]), // D1 - ADC word select
+    .mosi(gpio_out[10]),  // H1 - ESP pin 23 - MOSI  
+    .dac_out(gpio_out[11]), // K1 - DAC DIN
+    .i2sclk(gpio_out[12]), // M2 - ADC I2s clock
+    .i2sclk_out_chip(gpio_out[13]), // R1 - DAC I2s clock
+    .spiclk(gpio_out[14]), // T13 - ESP pin 18 - SPI clock
+    .word_select(gpio_out[15]), // P10 - DAC LRclk 
     .wdati(DAT_I),
     .wack(ACK_I),
     .wadr(ADR_O),
@@ -77,11 +77,11 @@ module team_06 (
     .wwe(WE_O),
     .wstb(STB_O),
     .wcyc(CYC_O),
-    .doneDisplay(gpio_out[16]), // B9
-    .sdoDisplay(gpio_out[17]), // A9
-    .sclkDisplay(gpio_out[18]), // C9
-    .cs_nDisplay(gpio_out[19]), // A10
-    .busyDisplay(gpio_out[20])  // A11
+    .doneDisplay(gpio_out[16]), // R5
+    .sdoDisplay(gpio_out[17]), // R2
+    .sclkDisplay(gpio_out[18]), // P15
+    .cs_nDisplay(gpio_out[19]), // M16
+    .busyDisplay(gpio_out[20])  // F14
   );
 
 endmodule

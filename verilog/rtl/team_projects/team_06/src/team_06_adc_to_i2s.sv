@@ -45,13 +45,13 @@ module team_06_adc_to_i2s
             counter_n = counter + 1;
             if (ws == 0) begin
             
-                if (counter >= 1 && counter <= 24) begin
-                    out_temp_n = {out_temp[22:0], adc_serial_in}; 
+                if (counter >= 1) begin
+                    out_temp_n = {out_temp[30:0], adc_serial_in}; 
                 end
 
            
                 if (counter == 31) begin
-                    temp_signed = out_temp[23:16]; 
+                    temp_signed = out_temp[30:23]; 
                     i2s_parallel_out_n = temp_signed + 8'd128;
                     finished_n = 1;
                 end

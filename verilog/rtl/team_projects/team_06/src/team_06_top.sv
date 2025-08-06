@@ -105,7 +105,7 @@ module team_06_top (
   team_06_newDisplay Display(
     .talkieState(state), .enable_volume(!mute), .current_effect(current_effect), // Inputs from FSM
     .volume(volume), // Input from synckey
-    .row_1(row_1), .row_2(row_2)
+    .row_1(row_1), .row_2(row_2), .audio_in(i2s_parallel_out)
   );
 
   team_06_driver_1602 #(.clk_div(24_000)) drive(

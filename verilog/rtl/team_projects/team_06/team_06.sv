@@ -57,18 +57,18 @@ module team_06 (
     team_06_top t06top (
     .hwclk(clk),
     .reset(~nrst | ~en),
-    .adc_serial_in(gpio_in[0]), // C3
-    .pbs(gpio_in[4:1]), // 1 - B3, 2 - C4, 3 - C5, 4- A1
-    .vol(gpio_in[6:5]), // 5 - A2, 6 - B4,
-    .miso(gpio_in[7]),  // ESP pin 19 / B5
-    .cs(gpio_in[8]), // ESP pin 5 / A5
-    .wsADC(gpio_out[9]), // B6
-    .mosi(gpio_out[10]),  // ESP pin 23 / C6
-    .dac_out(gpio_out[11]), // A6
-    .i2sclk(gpio_out[12]), // ESP pin 18 / C7
-    .i2sclk_out_chip(gpio_out[13]), // B7
-    .spiclk(gpio_out[14]), // A7
-    .word_select(gpio_out[15]), // B8
+    .adc_serial_in(gpio_in[0]), // C3 - ADC serial input - goes to serial data
+    .pbs(gpio_in[4:1]), // 1 - B3 (PTT), 2 - C4 (Mute), 3 - C5 (effect), 4 - A1 (noise gate)
+    .vol(gpio_in[6:5]), // 5 - A2, 6 - B4, (HOW WE DO THIS??)
+    .miso(gpio_in[7]),  //  B5 - ESP pin 19 - MISO
+    .cs(gpio_in[8]), //  A5 - ESP pin 5 - CS
+    .wsADC(gpio_out[9]), // B6 - ESP pin ??? - ADC word select
+    .mosi(gpio_out[10]),  // C6 - ESP pin 23 - MOSI  
+    .dac_out(gpio_out[11]), // A6 - ESP pin ??? - DAC DIN
+    .i2sclk(gpio_out[12]), // C7 - ESP pin 18 - ADC I2s clock
+    .i2sclk_out_chip(gpio_out[13]), // B7 - ESP pin ??? - DAC I2s clock
+    .spiclk(gpio_out[14]), // A7 - ESP pin ??? - SPI clock
+    .word_select(gpio_out[15]), // B8 - ESP pin ??? - DAC LRclk 
     .wdati(DAT_I),
     .wack(ACK_I),
     .wadr(ADR_O),

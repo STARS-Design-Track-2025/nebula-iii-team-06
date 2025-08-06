@@ -1,6 +1,7 @@
 module team_06_spi_to_esp(  // this module is to send  8-bit data from SPI serially to esp
+    input logic clk, rst,
     input logic [7:0] parallel_in, //input is 8 bits
-    input logic clk, rst, cs, //you know what clk and rst is. cs is basically an enable signal
+    output logic cs, //you know what clk and rst is. cs is basically an enable signal
     output logic serial_out // serial output
 );
     logic [4:0] counter, counter_n; // the counter is to cou if the spi has released all 8 bits. it counts from 1 to 8
@@ -9,16 +10,19 @@ module team_06_spi_to_esp(  // this module is to send  8-bit data from SPI seria
     logic [7:0] parallel_in_temp, parallel_in_temp_n;
     team_06_clkdivider #(.COUNT(24), .WIDTH(5) )div_clk(.clk(clk), .rst(rst), .clkOut(spiclk), .past_clkOut(past_spiclk)); // we get spiclk by dividing the system's clk
     // team_06_edge_detection_i2s ed(.i2sclk(spiclk), .clk(clk), .rst(rst), .past_i2sclk(past_spiclk)); //edge detection of spiclk
-    
+    logic cs_n;
+
     always_ff @(posedge clk or posedge rst) begin
         if(rst) begin
             counter <= '0;
             serial_out <= '0;
             parallel_in_temp <= '0;
+            cs <= 0;
         end else begin
             serial_out <= serial_out_n;
             counter <= counter_n;
             parallel_in_temp <= parallel_in_temp_n;
+            cs <= cs_n;
         end
     end
 
@@ -26,8 +30,9 @@ module team_06_spi_to_esp(  // this module is to send  8-bit data from SPI seria
         counter_n = counter;
         serial_out_n = serial_out;
         parallel_in_temp_n = parallel_in_temp;
+        cs_n = 1;
 
-        if (!spiclk && past_spiclk && cs) begin 
+        if (!spiclk && past_spiclk) begin 
             if (counter == 5'd0) begin // if counter is at 0
                 parallel_in_temp_n = {parallel_in[6:0], 1'b0}; // example: if we are at 0, and parallel in is 10100111. parallel_in_temp_n wil be 01001110. we put in a new 0 on the right 
                 serial_out_n = parallel_in[7];// as I said parallel_in is 10100111. serial_out_n will be the leftmost digit on parallel_in, which is 1

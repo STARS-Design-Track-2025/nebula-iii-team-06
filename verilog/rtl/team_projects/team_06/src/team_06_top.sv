@@ -5,7 +5,7 @@
     input logic [3:0] pbs,
     input logic [1:0] vol,
     input logic miso,
-    input logic cs,
+    output logic cs,
     output logic wsADC,
     output logic mosi,
     output logic dac_out,

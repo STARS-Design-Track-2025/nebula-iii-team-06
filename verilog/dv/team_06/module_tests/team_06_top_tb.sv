@@ -206,7 +206,6 @@ module team_06_top_tb;
         reset = 0;
         pbs = 0;
         vol = 0;
-        cs = 1;
 
         repeat (8) @(posedge hwclk); 
 

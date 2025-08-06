@@ -47,8 +47,8 @@ module team_06 (
 );
 
     // Assign OEBs for inputs and outputs
-    assign gpio_oeb[8:0] = '1;
-    assign gpio_oeb[20:9] = '0;
+    assign gpio_oeb[7:0] = '1;
+    assign gpio_oeb[20:8] = '0;
     assign gpio_oeb[33:21] = '1;  // Unused pins are set as inputs
 
     // Unused outputs are set to 0
@@ -61,7 +61,7 @@ module team_06 (
     .pbs(gpio_in[4:1]), // 1 - B3 (PTT), 2 - C4 (Mute), 3 - C5 (effect), 4 - A1 (noise gate)
     .vol(gpio_in[6:5]), // 5 - A2, 6 - B4, (HOW WE DO THIS??)
     .miso(gpio_in[7]),  //  B5 - ESP pin 19 - MISO
-    .cs(gpio_in[8]), //  A5 - ESP pin 5 - CS
+    .cs(gpio_out[8]), //  A5 - ESP pin 5 - CS
     .wsADC(gpio_out[9]), // B6 - ADC word select
     .mosi(gpio_out[10]),  // C6 - ESP pin 23 - MOSI  
     .dac_out(gpio_out[11]), // A6 - DAC DIN

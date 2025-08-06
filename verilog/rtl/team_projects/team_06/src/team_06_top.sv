@@ -34,7 +34,7 @@
   logic finished; 
   logic [11:0] offset = 4088; // Cannot be less than 4 or more than 4088
 
-  team_06_clkdivider #(.COUNT(1250), .WIDTH(11)) div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
+  team_06_clkdivider #(.COUNT(15), .WIDTH(4)) div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
   .clkOut(i2sclk), .past_clkOut(past_i2sclk)); // Outputs
 
   team_06_adc_to_i2s adc (.clk(hwclk), .rst(reset), .adc_serial_in(adc_serial_in), // Inputs from top
@@ -114,7 +114,7 @@
     .out(out), .out_valid(out_valid)
   );
 
-  team_06_1602_spi #( .WIDTH(10), .CLK_DIV(40) ) spiDisplay(
+  team_06_1602_spi #( .WIDTH(15), .CLK_DIV(4) ) spiDisplay(
     .clk(hwclk), .rst_n(!reset),      
     .start(out_valid), .data_in(out), // Inputs from driver
     .done(doneDisplay), // Outputs to driver
@@ -132,7 +132,7 @@
 
   logic past_spiclk;
 
-  team_06_clkdivider #(.COUNT(24), .WIDTH(5)) spi_clock (.clk(hwclk), .rst(reset), // Inputs from top
+  team_06_clkdivider #(.COUNT(15), .WIDTH(4)) spi_clock (.clk(hwclk), .rst(reset), // Inputs from top
   .clkOut(spiclk), .past_clkOut(past_spiclk)); // Outputs
 
   //Instantiation of the module

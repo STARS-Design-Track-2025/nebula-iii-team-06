@@ -21,7 +21,7 @@ input logic txready, rxready
   assign green = reset;
   assign gpio_in[7:0] = pb[7:0];
   assign right[7:0] = gpio_out[15:8];
-  assign left[4:0] = gpio_out[20:16];
+  assign left[2:0] = gpio_out[18:16];
   
   // GPIOs
   // Don't forget to assign these to the ports above as needed

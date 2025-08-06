@@ -25,9 +25,7 @@
     output logic word_select,
     output logic sdoDisplay,   // Serial data out (MOSI)
     output logic sclkDisplay,  // SPI clock
-    output logic cs_nDisplay,  // Chip select (active low)
-    output logic busyDisplay,  // Transmission in progress
-    output logic doneDisplay   // Transmission complete (pulse)
+    output logic cs_nDisplay  // Chip select (active low)
   );
   
   // ADC, i2sclk, edge_detection section
@@ -101,6 +99,8 @@
   logic [127:0] row_1, row_2;
   logic [9:0] out;
   logic out_valid;
+  logic busyDisplay;  // Transmission in progress
+  logic doneDisplay;   // Transmission complete (pulse)
 
   team_06_newDisplay Display(
     .talkieState(state), .enable_volume(!mute), .current_effect(current_effect), // Inputs from FSM

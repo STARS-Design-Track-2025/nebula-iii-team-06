@@ -34,7 +34,7 @@ module team_06_top (
   logic finished; 
   logic [11:0] offset = 4088; // Cannot be less than 4 or more than 4088
 
-  team_06_clkdivider #(.COUNT(1250), .WIDTH(11)) div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
+  team_06_clkdivider #(.COUNT(15), .WIDTH(4)) div_i2sclk (.clk(hwclk), .rst(reset), // Inputs from top
   .clkOut(i2sclk), .past_clkOut(past_i2sclk)); // Outputs
 
   team_06_adc_to_i2s adc (.clk(hwclk), .rst(reset), .adc_serial_in(adc_serial_in), // Inputs from top
@@ -159,7 +159,7 @@ module team_06_top (
   logic past_i2sclk_out;
   logic past_i2sclk_out_chip;
 
-  team_06_clkdivider #(.COUNT(1250), .WIDTH(11)) div_i2sclk_out (.clk(hwclk), .rst(reset), // Inputs from top
+  team_06_clkdivider #(.COUNT(15), .WIDTH(4)) div_i2sclk_out (.clk(hwclk), .rst(reset), // Inputs from top
   .clkOut(i2sclk_out), .past_clkOut(past_i2sclk_out)); // Outputs
   assign i2sclk_out_chip = i2sclk_out && en; // This is so that when we disable, we put the chip in standby mode
   assign past_i2sclk_out_chip = past_i2sclk_out && en;

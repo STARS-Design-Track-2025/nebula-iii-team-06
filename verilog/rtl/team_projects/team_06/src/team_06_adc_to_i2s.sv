@@ -10,7 +10,7 @@ module team_06_adc_to_i2s
 );
 
     logic [4:0] counter, counter_n; // counter is used to count how many bits we have right now. 
-    logic finished_n;
+    logic done, done_n;
     logic [31:0] out_temp, out_temp_n;
     logic [7:0] temp_signed, i2s_parallel_out_n; // Temp signed is the data before any conversions, raw ADC data
     logic ws_n;
@@ -19,31 +19,33 @@ module team_06_adc_to_i2s
         if(rst) begin
             counter <= '0;
             out_temp <= '0;
-            finished <= '0;
+            done <= '0;
             i2s_parallel_out <= 8'd128;
             ws <= 0;
         end else begin
             counter <= counter_n;
             out_temp <= out_temp_n;
-            finished <= finished_n;                                                  
+            done <= done_n;                                                  
             i2s_parallel_out <= i2s_parallel_out_n; 
             ws <= ws_n;
         end
     end
 
     always_comb begin
+        finished = 0;
         ws_n = ws;
         counter_n = counter;
         out_temp_n = out_temp;
-        finished_n = finished;
+        done_n = done;
         temp_signed = 0;
         i2s_parallel_out_n = i2s_parallel_out;
-        if (!i2sclk && past_i2sclk && finished) begin // If we are on a falling edge and we are at the end of our count, toggle word select
+        if (!i2sclk && past_i2sclk && done) begin // If we are on a falling edge and we are at the end of our count, toggle word select
             ws_n = !ws;
+            finished = (ws == 0) ? 1 : 0;
         end else if (i2sclk && !past_i2sclk) begin // On every rising edge
             out_temp_n = {out_temp[30:0], adc_serial_in}; // Add newest bit
             counter_n = counter + 1;
-            finished_n = (counter == 31); 
+            done_n = (counter == 31); 
             if (counter == 31) begin
                 temp_signed = out_temp[30:23]; // These are the only bits that we care about (8 MSBs)
                 i2s_parallel_out_n = temp_signed + 8'b10000000;   // -128 to 127  + 128 -> 0 to 255

@@ -30,7 +30,7 @@ module team_06_spi_to_esp(  // this module is to send  8-bit data from SPI seria
         counter_n = counter;
         serial_out_n = serial_out;
         parallel_in_temp_n = parallel_in_temp;
-        cs_n = 1;
+        cs_n = 0;
 
         if (!spiclk && past_spiclk) begin 
             if (counter == 5'd0) begin // if counter is at 0

@@ -32,52 +32,22 @@ module team_06_adc_to_i2s
     end
 
     always_comb begin
-    // Default assignments
         ws_n = ws;
         counter_n = counter;
         out_temp_n = out_temp;
-        finished_n = 0;
-        i2s_parallel_out_n = i2s_parallel_out;
+        finished_n = finished;
         temp_signed = 0;
-
-    
-        if (i2sclk && !past_i2sclk) begin
+        i2s_parallel_out_n = i2s_parallel_out;
+        if (!i2sclk && past_i2sclk && finished) begin // If we are on a falling edge and we are at the end of our count, toggle word select
+            ws_n = !ws;
+        end else if (i2sclk && !past_i2sclk) begin // On every rising edge
+            out_temp_n = {out_temp[30:0], adc_serial_in}; // Add newest bit
             counter_n = counter + 1;
-            if (ws == 0) begin
-            
-                if (counter >= 1) begin
-                    out_temp_n = {out_temp[30:0], adc_serial_in}; 
-                end
-
-           
-                if (counter == 31) begin
-                    temp_signed = out_temp[30:23]; 
-                    i2s_parallel_out_n = temp_signed + 8'd128;
-                    finished_n = 1;
-                end
-            end
+            finished_n = (counter == 31); 
             if (counter == 31) begin
-                ws_n = ~ws; // Switch to right or back to left
+                temp_signed = out_temp[30:23]; // These are the only bits that we care about (8 MSBs)
+                i2s_parallel_out_n = temp_signed + 8'b10000000;   // -128 to 127  + 128 -> 0 to 255
             end
         end
-    end
-    // always_comb begin
-    //     ws_n = ws;
-    //     counter_n = counter;
-    //     out_temp_n = out_temp;
-    //     finished_n = finished;
-    //     temp_signed = 0;
-    //     i2s_parallel_out_n = i2s_parallel_out;
-    //     if (!i2sclk && past_i2sclk && finished) begin // If we are on a falling edge and we are at the end of our count, toggle word select
-    //         ws_n = !ws;
-    //     end else if (i2sclk && !past_i2sclk && !finished && !ws) begin // On every rising edge
-    //         out_temp_n = {out_temp[30:0], adc_serial_in}; // Add newest bit
-    //         counter_n = counter + 1;
-    //         finished_n = (counter == 31); 
-    //         if (counter == 31) begin
-    //             temp_signed = out_temp[30:23]; // These are the only bits that we care about (8 MSBs)
-    //             i2s_parallel_out_n = temp_signed + 8'b10000000;   // -128 to 127  + 128 -> 0 to 255
-    //         end
-    //     end
-    // end 
+    end 
 endmodule

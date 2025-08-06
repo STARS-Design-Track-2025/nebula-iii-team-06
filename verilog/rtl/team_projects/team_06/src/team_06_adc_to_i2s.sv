@@ -5,12 +5,12 @@ module team_06_adc_to_i2s
     input logic i2sclk, // Comes from clkdivider, clock speed is 10MHZ / (2 * counter), must not exceed 3.2 MHZ
     input logic past_i2sclk, // Comes from clkdivider
     output logic [7:0] i2s_parallel_out,// i2s_parallel_out will always be 0 unitl it collects all 8 bits
-    output logic fifnished, // this is to know if our 8 bit register recieve 8bbits form ADC
+    output logic finished, // this is to know if our 8 bit register recieve 8bbits form ADC
     output logic ws // Indicates we are changing the word (set of data)
 );
 
     logic [4:0] counter, counter_n; // counter is used to count how many bits we have right now. 
-    logic done_n;
+    logic done, done_n;
     logic [31:0] out_temp, out_temp_n;
     logic [7:0] temp_signed, i2s_parallel_out_n; // Temp signed is the data before any conversions, raw ADC data
     logic ws_n;
@@ -32,6 +32,7 @@ module team_06_adc_to_i2s
     end
 
     always_comb begin
+        finished = 0;
         ws_n = ws;
         counter_n = counter;
         out_temp_n = out_temp;
@@ -40,8 +41,8 @@ module team_06_adc_to_i2s
         i2s_parallel_out_n = i2s_parallel_out;
         if (!i2sclk && past_i2sclk && done) begin // If we are on a falling edge and we are at the end of our count, toggle word select
             ws_n = !ws;
-            finished == (ws == 1) ? 1 : 0;
-        end else if (i2sclk && !past_i2sclk && !ws) begin // On every rising edge
+            finished = (ws == 0) ? 1 : 0;
+        end else if (i2sclk && !past_i2sclk) begin // On every rising edge
             out_temp_n = {out_temp[30:0], adc_serial_in}; // Add newest bit
             counter_n = counter + 1;
             done_n = (counter == 31); 

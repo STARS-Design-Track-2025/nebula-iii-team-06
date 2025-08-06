@@ -62,13 +62,13 @@ module team_06 (
     .vol(gpio_in[6:5]), // 5 - A2, 6 - B4, (HOW WE DO THIS??)
     .miso(gpio_in[7]),  //  B5 - ESP pin 19 - MISO
     .cs(gpio_in[8]), //  A5 - ESP pin 5 - CS
-    .wsADC(gpio_out[9]), // B6 - ESP pin ??? - ADC word select
+    .wsADC(gpio_out[9]), // B6 - ADC word select
     .mosi(gpio_out[10]),  // C6 - ESP pin 23 - MOSI  
-    .dac_out(gpio_out[11]), // A6 - ESP pin ??? - DAC DIN
+    .dac_out(gpio_out[11]), // A6 - DAC DIN
     .i2sclk(gpio_out[12]), // C7 - ESP pin 18 - ADC I2s clock
-    .i2sclk_out_chip(gpio_out[13]), // B7 - ESP pin ??? - DAC I2s clock
-    .spiclk(gpio_out[14]), // A7 - ESP pin ??? - SPI clock
-    .word_select(gpio_out[15]), // B8 - ESP pin ??? - DAC LRclk 
+    .i2sclk_out_chip(gpio_out[13]), // B7 - DAC I2s clock
+    .spiclk(gpio_out[14]), // A7  - SPI clock
+    .word_select(gpio_out[15]), // B8 - DAC LRclk 
     .wdati(DAT_I),
     .wack(ACK_I),
     .wadr(ADR_O),

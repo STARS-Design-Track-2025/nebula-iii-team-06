@@ -65,9 +65,9 @@ module team_06 (
     .wsADC(gpio_out[9]), // B6 - ADC word select
     .mosi(gpio_out[10]),  // C6 - ESP pin 23 - MOSI  
     .dac_out(gpio_out[11]), // A6 - DAC DIN
-    .i2sclk(gpio_out[12]), // C7 - ESP pin 18 - ADC I2s clock
+    .i2sclk(gpio_out[12]), // C7 - ADC I2s clock
     .i2sclk_out_chip(gpio_out[13]), // B7 - DAC I2s clock
-    .spiclk(gpio_out[14]), // A7  - SPI clock
+    .spiclk(gpio_out[14]), // A7 - ESP pin 18 - SPI clock
     .word_select(gpio_out[15]), // B8 - DAC LRclk 
     .wdati(DAT_I),
     .wack(ACK_I),

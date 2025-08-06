@@ -2,6 +2,7 @@ module team_06_newDisplay (
    input logic talkieState, // Is the walkie talkie in listen or talk state?
    input logic [2:0] current_effect, // What audio effect is the walkie talkie on?
    input logic [3:0] volume, // From 0 (min) to 15 (max)
+   input logic [7:0] audio_in,
    input logic enable_volume, // Whether or not we are muted
    output logic [127:0] row_1, 
    output logic [127:0] row_2
@@ -45,13 +46,18 @@ module team_06_newDisplay (
             LISTEN: row_1 = {L, I, S, T, E, N, {10{SPACE}}};
             default: row_1 = {{16{FILL}}};
         endcase
-            if (enable_volume) begin
-                for(int i = 0; i <= 15; i++) begin
-                    row_2[(127-8*i)-:8] = ({28'b0, volume} >= i) ? FILL : SPACE;
-                end 
-            end else begin
-                row_2 =  {{16{SPACE}}};
-            end
+        for(int i = 0; i <= 15; i++) begin
+            row_2[(127-8*i)-:8] = ({24'b0, audio_in} >= i*15) ? FILL : SPACE;
+        end 
+        // /*
+        //     if (enable_volume) begin
+        //         for(int i = 0; i <= 15; i++) begin
+        //             row_2[(127-8*i)-:8] = ({28'b0, volume} >= i) ? FILL : SPACE;
+        //         end 
+        //     end else begin
+        //         row_2 =  {{16{SPACE}}};
+        //     end
+        // */
     end
 
 

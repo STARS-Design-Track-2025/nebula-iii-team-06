@@ -114,7 +114,7 @@
     .out(out), .out_valid(out_valid)
   );
 
-  team_06_1602_spi #( .WIDTH(15), .CLK_DIV(4) ) spiDisplay(
+  team_06_1602_spi #( .WIDTH(10), .CLK_DIV(40) ) spiDisplay(
     .clk(hwclk), .rst_n(!reset),      
     .start(out_valid), .data_in(out), // Inputs from driver
     .done(doneDisplay), // Outputs to driver
@@ -159,7 +159,7 @@
   logic past_i2sclk_out;
   logic past_i2sclk_out_chip;
 
-  team_06_clkdivider #(.COUNT(1250), .WIDTH(11)) div_i2sclk_out (.clk(hwclk), .rst(reset), // Inputs from top
+  team_06_clkdivider #(.COUNT(15), .WIDTH(4)) div_i2sclk_out (.clk(hwclk), .rst(reset), // Inputs from top
   .clkOut(i2sclk_out), .past_clkOut(past_i2sclk_out)); // Outputs
   assign i2sclk_out_chip = i2sclk_out && en; // This is so that when we disable, we put the chip in standby mode
   assign past_i2sclk_out_chip = past_i2sclk_out && en;

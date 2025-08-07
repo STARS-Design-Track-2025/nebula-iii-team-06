@@ -51,7 +51,7 @@ module team_06_FSM (
   logic effect_button_prev, effect_button_prev2;
   logic effect_button_rising;
   logic noise_gate_tog; // Whether or not noise gates has changed states
-  logic [19:0] time_count, time_count2;
+  logic [22:0] time_count, time_count2;
 
 
   assign threshold = 8'd64; // threshold is 64 decibels
@@ -127,10 +127,10 @@ module team_06_FSM (
            if (ng_en && (mic_aud != 128)) begin
                 time_count2 = time_count + 1;
            end
-               if ((time_count == 1048575) && ng_en && !ptt_en && !check) begin
+               if ((time_count == 8388607) && ng_en && !ptt_en && !check) begin
                    time_count2 = 0;                    
                end
-                else if((time_count == 1048575) && ng_en && !ptt_en && check) begin
+                else if((time_count == 8388607) && ng_en && !ptt_en && check) begin
                     time_count2 = 0;
            end
         end

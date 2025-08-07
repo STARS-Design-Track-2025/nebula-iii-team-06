@@ -12,6 +12,7 @@ module team_06_top_tb;
     logic mosi;
     logic dac_out;
     logic i2sclk;
+    logic spiclk;
     logic [31:0] wdati, wdato;
     logic wack;
     logic [31:0] wadr;
@@ -25,6 +26,7 @@ module team_06_top_tb;
     logic cs_nDisplay;  // Chip select (active low)
     logic busyDisplay;  // Transmission in progress
     logic doneDisplay;  // Transmission complete (pulse)
+    logic word_select;
 
     typedef enum int {PTT = 0, MUTE = 1, EFFECTCHANGE = 2, NOISEGATE = 3} button_t;
 
@@ -46,6 +48,7 @@ module team_06_top_tb;
         .mosi(mosi),
         .dac_out(dac_out),
         .i2sclk(i2sclk),
+        .spiclk(spiclk),
         .wdati(wdati),
         .wack(wack),
         .wadr(wadr),
@@ -55,6 +58,7 @@ module team_06_top_tb;
         .wcyc(wcyc),
         .wdato(wdato),
         .i2sclk_out_chip(i2sclk_out_chip),
+        .word_select(word_select),
         .sdoDisplay(sdoDisplay), 
         .sclkDisplay(sclkDisplay), 
         .cs_nDisplay(cs_nDisplay)
@@ -128,7 +132,7 @@ module team_06_top_tb;
             counter = 0;
         end else begin
             while(!reset && !done) begin
-                @(posedge i2sclk, posedge reset);
+                @(posedge spiclk, posedge reset);
                 miso = i[7-counter];
                 temp = miso;
                 counter = counter + 1;
@@ -363,12 +367,12 @@ module team_06_top_tb;
         // Test case 21: full echo test with varying volume from mic
         testcase = 21;
         repeat (2) pressButton(EFFECTCHANGE);
-        // repeat (1200000) begin micVal = 200; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 250; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 160; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 210; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 190; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 180; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 200; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 250; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 160; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 210; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 190; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 180; @(posedge hwclk); end
         repeat (6144) @(posedge hwclk);
 
         // Test case 22: mid operation reset
@@ -381,12 +385,12 @@ module team_06_top_tb;
         // Test case 23: full reverb test with varying volume from mic
         testcase = 23;
         repeat (8) pressButton(EFFECTCHANGE);
-        // repeat (1200000) begin micVal = 200; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 250; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 160; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 210; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 190; @(posedge hwclk); end
-        // repeat (1200000) begin micVal = 180; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 200; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 250; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 160; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 210; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 190; @(posedge hwclk); end
+        repeat (1200000) begin micVal = 180; @(posedge hwclk); end
         repeat (6144) @(posedge hwclk);
  
         // Test case 24: full volume mic, zero volume speaker, soft clipping, full volume
@@ -443,13 +447,6 @@ module team_06_top_tb;
         repeat (2) pressButton(NOISEGATE);
         pressButton(PTT);
         repeat (6144) @(posedge hwclk);
-
-        // // Test case 32: full volume mic, full volume speaker, no chip select
-        // testcase = 32;
-        // micVal = 255;
-        // misoVal = 128;
-        // cs = 0;
-        // repeat (6144) @(posedge hwclk);
 
         // Test case 33: max volume mic, zero volume speaker, tremelo, full volume, noise gate
         testcase = 33;

@@ -91,8 +91,8 @@ module team_06_top (
   // Instantiation of the FSM module
   team_06_FSM FSMmain(
   .clk(hwclk), .rst(reset), // Inputs from top
-  .mic_aud(8'd255), // Input from ADC
-  .spk_aud(8'd128), // Input from ESP -> SPI
+  .mic_aud(audio_effect_out), // Input from ADC
+  .spk_aud(spi_parallel_out), // Input from ESP -> SPI
   .ng_en(noise_gate), .ptt_en(ptt),  .mute(mute), .effect(effect), // Input from synckey
   .state(state), 
   .vol_en(vol_en), .current_effect(current_effect), .effect_en(audio_enable) // Output from FSM
@@ -140,7 +140,7 @@ module team_06_top (
   //Instantiation of the module
   team_06_spi_to_esp spiESP (
   .clk(hwclk), .rst(reset), // Inputs from top
-  .parallel_in(8'hAB), // Input from audio  // audio_effect_out
+  .parallel_in(audio_effect_out), // Input from audio  // audio_effect_out
   .cs(cs), .serial_out(mosi), // Output to ESP32
   .spiclk(spiclk), .past_spiclk(past_spiclk)
   ); // clock signal!!

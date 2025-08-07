@@ -59,7 +59,7 @@ module team_06 (
     .reset(~nrst | ~en),
     .adc_serial_in(gpio_in[0]), // C3 - ADC serial input - goes to serial data
     .pbs(gpio_in[4:1]), // 1 - B3 (PTT), 2 - C4 (Mute), 3 - C5 (effect), 4 - A1 (noise gate)
-    .vol(gpio_in[6:5]), // 5 - A2, 6 - B4, (HOW WE DO THIS??)
+    .vol(gpio_in[6:5]), // 5 - A2, 6 - B4, 
     .miso(gpio_in[7]),  //  B5 - ESP pin 19 - MISO
     .cs(gpio_out[8]), //  B2 - ESP pin 5 - CS
     .wsADC(gpio_out[9]), // D1 - ADC word select

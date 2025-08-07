@@ -46,18 +46,18 @@ module team_06_newDisplay (
             LISTEN: row_1 = {L, I, S, T, E, N, {10{SPACE}}};
             default: row_1 = {{16{FILL}}};
         endcase
-        for(int i = 0; i <= 15; i++) begin
-            row_2[(127-8*i)-:8] = ({24'b0, audio_in} >= i*15) ? FILL : SPACE;
-        end 
-        // /*
-        //     if (enable_volume) begin
-        //         for(int i = 0; i <= 15; i++) begin
-        //             row_2[(127-8*i)-:8] = ({28'b0, volume} >= i) ? FILL : SPACE;
-        //         end 
-        //     end else begin
-        //         row_2 =  {{16{SPACE}}};
-        //     end
-        // */
+        // for(int i = 0; i <= 15; i++) begin
+        //     row_2[(127-8*i)-:8] = ({24'b0, audio_in} >= i*15) ? FILL : SPACE;
+        // end 
+
+        if (enable_volume) begin
+            for(int i = 0; i <= 15; i++) begin
+                row_2[(127-8*i)-:8] = ({28'b0, volume} >= i) ? FILL : SPACE;
+            end 
+        end else begin
+            row_2 =  {{16{SPACE}}};
+        end
+
     end
 
 

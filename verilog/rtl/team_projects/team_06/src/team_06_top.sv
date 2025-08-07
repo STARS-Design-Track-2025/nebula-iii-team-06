@@ -178,7 +178,7 @@ module team_06_top (
   team_06_i2s_to_dac i2sDAC (
   .clk(hwclk), .rst(reset), // Inputs from top
   .i2sclk (i2sclk_out_chip), .past_i2sclk (past_i2sclk_out_chip), // Input from i2sclk, edge detector 
-  .parallel_in({8{spiclk}}), // Input from volume shifter
+  .parallel_in(audio_to_I2S+8'd128), // Input from volume shifter
   .serial_out(dac_out), .word_select(word_select)); // Output to DAC
 
 

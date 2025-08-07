@@ -91,7 +91,7 @@ module team_06_top (
   // Instantiation of the FSM module
   team_06_FSM FSMmain(
   .clk(hwclk), .rst(reset), // Inputs from top
-  .mic_aud(audio_effect_out), // Input from ADC
+  .mic_aud(i2s_parallel_out), // Input from ADC
   .spk_aud(spi_parallel_out), // Input from ESP -> SPI
   .ng_en(noise_gate), .ptt_en(ptt),  .mute(mute), .effect(effect), // Input from synckey
   .state(state), 

@@ -139,7 +139,8 @@ module team_06_top (
   team_06_spi_to_esp spiESP (
   .clk(hwclk), .rst(reset), // Inputs from top
   .parallel_in(audio_effect_out), // Input from audio effects
-  .cs(cs), .serial_out(mosi) // Output to ESP32
+  .cs(cs), .serial_out(mosi), // Output to ESP32
+  .spiclk(spiclk), .past_spiclk(past_spiclk)
   ); // clock signal!!
 
   logic [7:0] spi_parallel_out;
@@ -148,7 +149,7 @@ module team_06_top (
   //Instantiation of the module
   team_06_esp_to_spi espSPI (
     .clk(hwclk), .rst(reset), .esp_serial_in(miso), // Inputs from top
-    .spiclk (i2sclk), .past_spiclk (past_i2sclk), // Input from i2sclk, edge detector 
+    .spiclk (spiclk), .past_spiclk (past_spiclk), // Input from i2sclk, edge detector 
     .spi_parallel_out(spi_parallel_out), .finished(done) // Output from esp to SPI
   );
 

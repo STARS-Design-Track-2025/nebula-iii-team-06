@@ -1,15 +1,13 @@
 module team_06_spi_to_esp(  // this module is to send  8-bit data from SPI serially to esp
     input logic clk, rst,
     input logic [7:0] parallel_in, //input is 8 bits
+    input logic spiclk, past_spiclk,
     output logic cs, //you know what clk and rst is. cs is basically an enable signal
     output logic serial_out // serial output
 );
     logic [4:0] counter, counter_n; // the counter is to cou if the spi has released all 8 bits. it counts from 1 to 8
-    logic spiclk, past_spiclk; // this is used for edge detection of spiclk. we only increments counter and shift parallel_in_temp on rising edge of spiclk
     logic serial_out_n; // sequential value of serial_out
     logic [7:0] parallel_in_temp, parallel_in_temp_n;
-    team_06_clkdivider #(.COUNT(24), .WIDTH(5) )div_clk(.clk(clk), .rst(rst), .clkOut(spiclk), .past_clkOut(past_spiclk)); // we get spiclk by dividing the system's clk
-    // team_06_edge_detection_i2s ed(.i2sclk(spiclk), .clk(clk), .rst(rst), .past_i2sclk(past_spiclk)); //edge detection of spiclk
     logic cs_n;
 
     always_ff @(posedge clk or posedge rst) begin
@@ -30,7 +28,7 @@ module team_06_spi_to_esp(  // this module is to send  8-bit data from SPI seria
         counter_n = counter;
         serial_out_n = serial_out;
         parallel_in_temp_n = parallel_in_temp;
-        cs_n = 0;
+        cs_n = 1;
 
         if (!spiclk && past_spiclk) begin 
             if (counter == 5'd0) begin // if counter is at 0

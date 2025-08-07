@@ -140,7 +140,7 @@ module team_06_top (
   //Instantiation of the module
   team_06_spi_to_esp spiESP (
   .clk(hwclk), .rst(reset), // Inputs from top
-  .parallel_in(audio_effect_out), // Input from audio effects
+  .parallel_in(8'hAB), // Input from audio  // audio_effect_out
   .cs(cs), .serial_out(mosi), // Output to ESP32
   .spiclk(spiclk), .past_spiclk(past_spiclk)
   ); // clock signal!!

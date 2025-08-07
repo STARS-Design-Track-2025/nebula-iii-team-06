@@ -5,7 +5,7 @@ module team_06_i2s_to_dac(
     output logic serial_out,
     output logic word_select
 );
-    logic [4:0] counter, counter_n;
+    logic [5:0] counter, counter_n;
     logic word_select_n;
     logic serial_out_n;
     logic [7:0] parallel_in_temp, parallel_in_temp_n;
@@ -24,21 +24,49 @@ module team_06_i2s_to_dac(
         end
     end
 
+        always_comb begin
+        counter_n = counter;
+        serial_out_n = serial_out;
+        parallel_in_temp_n = parallel_in_temp;
+        word_select_n = word_select;
+        if (!i2sclk && past_i2sclk) begin // On falling edge
+            if (counter == 6'd0) begin // At count zero, we should not do anything
+                parallel_in_temp_n = parallel_in; 
+                serial_out_n = 0; 
+                counter_n = counter + 1; 
+            end else if (counter == 6'd16) begin
+                counter_n = counter + 1; 
+                word_select_n = ~word_select;
+            end else if (counter == 6'd17 || counter == 6'd1) begin // At count 1 or 9, we are getting ready for transmission, add first bit
+                counter_n = 2;
+                parallel_in_temp_n = {parallel_in[6:0], 1'b0};
+                serial_out_n = parallel_in[7]; // NOT parallel_in_temp[7], since we reloaded
+            end else if (counter >= 6'd9) begin
+                counter_n = counter + 1;
+                serial_out_n = 0;
+            end else if (counter >= 6'd2) begin 
+                counter_n = counter + 1;
+                serial_out_n = parallel_in_temp[7]; 
+                parallel_in_temp_n = {parallel_in_temp[6:0], 1'b0}; 
+            end
+        end
+    end
+/*
     always_comb begin
         counter_n = counter;
         serial_out_n = serial_out;
         parallel_in_temp_n = parallel_in_temp;
         word_select_n = word_select;
         if (!i2sclk && past_i2sclk) begin // On falling edge
-            if (counter == 5'd0) begin // At count zero, we should not do anything
+            if (counter == 6'd0) begin // At count zero, we should not do anything
                 parallel_in_temp_n = parallel_in; 
                 serial_out_n = 0; 
                 counter_n = counter + 1; 
-            end else if (counter == 5'd9 || counter == 5'd1) begin // At count 1 or 9, we are getting ready for transmission, add first bit
+            end else if (counter == 6'd9 || counter == 6'd1) begin // At count 1 or 9, we are getting ready for transmission, add first bit
                 counter_n = 2;
                 parallel_in_temp_n = {parallel_in[6:0], 1'b0};
                 serial_out_n = parallel_in[7]; // NOT parallel_in_temp[7], since we reloaded
-            end else if (counter == 5'd8) begin
+            end else if (counter == 6'd8) begin
                 // Last bit about to be sent, toggle word_select
                 counter_n = counter + 1;
                 serial_out_n = parallel_in_temp[7];
@@ -51,4 +79,5 @@ module team_06_i2s_to_dac(
             end
         end
     end
+    */
 endmodule

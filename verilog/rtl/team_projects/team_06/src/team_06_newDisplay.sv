@@ -46,9 +46,11 @@ module team_06_newDisplay (
             LISTEN: row_1 = {L, I, S, T, E, N, {10{SPACE}}};
             default: row_1 = {{16{FILL}}};
         endcase
-        // for(int i = 0; i <= 15; i++) begin
-        //     row_2[(127-8*i)-:8] = ({24'b0, audio_in} >= i*15) ? FILL : SPACE;
-        // end 
+        // if (audio_in >= 140 || audio_in <= 116) begin
+        //     row_2 = {{8{FILL}}, {8{SPACE}}};
+        // end else begin
+        //     row_2 = {{8{SPACE}}, {8{FILL}}};
+        // end
 
         if (enable_volume) begin
             for(int i = 0; i <= 15; i++) begin

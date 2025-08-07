@@ -47,7 +47,7 @@ module team_06_adc_to_i2s
             counter_n = counter + 1;
             done_n = (counter == 31); 
             if (counter == 31) begin
-                temp_signed = out_temp[30:23]; // These are the only bits that we care about (8 MSBs)
+                temp_signed = out_temp[29:22]; // These are the only bits that we care about (8 MSBs)
                 i2s_parallel_out_n = temp_signed + 8'b10000000;   // -128 to 127  + 128 -> 0 to 255
             end
         end

@@ -1,16 +1,18 @@
 module team_06_top (
     input logic hwclk,
     input logic reset,
-    input logic adc_serial_in,
-    input logic [3:0] pbs,
-    input logic [1:0] vol,
-    input logic miso,
-    output logic cs,
-    output logic wsADC,
-    output logic mosi,
-    output logic dac_out,
-    output logic i2sclk,
-    output logic spiclk,
+    input logic adc_serial_in, //from mic
+    input logic [3:0] pbs, //fpga
+    input logic [1:0] vol, //fpga
+    input logic miso, //from mic to mic
+    output logic cs, //from fpg
+    output logic wsADC, //from fpga to mic
+    output logic mosi,// from fpga to esp32
+    output logic dac_out,//from fpga to esp32
+    output logic i2sclk, //fpga to mic
+    output logic spiclk, // fpga to speaker
+    
+    
     // output logic busAudioWrite,
     //wishbone's stuff
     input logic [31:0] wdati,
@@ -89,7 +91,7 @@ module team_06_top (
   // Instantiation of the FSM module
   team_06_FSM FSMmain(
   .clk(hwclk), .rst(reset), // Inputs from top
-  .mic_aud(i2s_parallel_out), // Input from ADC
+  .mic_aud(8'd255), // Input from ADC
   .spk_aud(8'd128), // Input from ESP -> SPI
   .ng_en(noise_gate), .ptt_en(ptt),  .mute(mute), .effect(effect), // Input from synckey
   .state(state), 
@@ -176,7 +178,7 @@ module team_06_top (
   team_06_i2s_to_dac i2sDAC (
   .clk(hwclk), .rst(reset), // Inputs from top
   .i2sclk (i2sclk_out_chip), .past_i2sclk (past_i2sclk_out_chip), // Input from i2sclk, edge detector 
-  .parallel_in(audio_to_I2S), // Input from volume shifter
+  .parallel_in({8{spiclk}}), // Input from volume shifter
   .serial_out(dac_out), .word_select(word_select)); // Output to DAC
 
 

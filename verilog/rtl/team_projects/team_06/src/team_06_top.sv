@@ -152,7 +152,8 @@ module team_06_top (
   team_06_esp_to_spi espSPI (
     .clk(hwclk), .rst(reset), .esp_serial_in(miso), // Inputs from top
     .spiclk (spiclk), .past_spiclk (past_spiclk), // Input from i2sclk, edge detector 
-    .spi_parallel_out(spi_parallel_out), .finished(done) // Output from esp to SPI
+    .spi_parallel_out(spi_parallel_out), .finished(done), // Output from esp to SPI
+    .cs(cs)
   );
 
   logic [7:0] audio_to_I2S;

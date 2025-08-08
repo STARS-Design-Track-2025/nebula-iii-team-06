@@ -92,7 +92,7 @@ module team_06_top (
   team_06_FSM FSMmain(
   .clk(hwclk), .rst(reset), // Inputs from top
   .mic_aud(i2s_parallel_out), // Input from ADC
-  .spk_aud(spi_parallel_out), // Input from ESP -> SPI
+  .spk_aud(8'd128), // Input from ESP -> SPI
   .ng_en(noise_gate), .ptt_en(ptt),  .mute(mute), .effect(effect), // Input from synckey
   .state(state), 
   .vol_en(vol_en), .current_effect(current_effect), .effect_en(audio_enable) // Output from FSM

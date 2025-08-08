@@ -4,6 +4,7 @@ module team_06_esp_to_spi
    input logic esp_serial_in, //adc sends msb first, so we shift right
    input logic spiclk,  // clock signal for the divider clock from div_clk
    input logic past_spiclk,  // We use this clock in tandem with the spiclk to detect edges for the parallel output
+   input logic cs,
    output logic [7:0] spi_parallel_out,// i2s_parallel_out will always be 0 unitl it collects all 8 bits
    output logic finished // this is to know if our 8 bit register recieve 8bbits form ADC
 );
@@ -37,7 +38,7 @@ module team_06_esp_to_spi
        out_temp_n = out_temp;
        spi_parallel_out_n =  spi_parallel_out;
 
-       if (!spiclk && past_spiclk) begin // On the falling edge of the clock
+       if (!spiclk && past_spiclk && !cs) begin // On the falling edge of the clock
             out_temp_n = {out_temp[6:0], esp_serial_in};
             if (counter == 8) begin // If we are at the end of our transmission
                 spi_parallel_out_n = out_temp;
@@ -47,6 +48,10 @@ module team_06_esp_to_spi
                 counter_n = counter + 1;
                 finished_n = 0;
             end
+       end else if (cs) begin
+            out_temp_n = 0;
+            counter_n = 0;
+            finished_n = 0;
        end
        
    end

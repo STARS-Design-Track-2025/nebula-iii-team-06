@@ -134,12 +134,12 @@ ifeq ($(OPENLANE2_ROOT),)
 	@exit 1
 endif
 
-# Add quotations to command if NOT running in nanoHUB
+# Add quotations to command if not running in nanoHUB
 openlane_cmd = \
-	openlane \
+	"openlane \
 	--run-tag $(OPENLANE_RUN_TAG) \
 	--pdk-root $(PDK_ROOT) \
-	$*/config.json
+	$*/config.json"
 openlane_cmd_interactive = "flow.tcl -it -file $$(realpath ./$*/interactive.tcl)"
 
 list:
@@ -151,11 +151,12 @@ enable-openlane-pdk:
 
 .PHONY: $(designs)
 $(designs) : export current_design=$@
-$(designs) : % : ./%/config.json # Add enable-openlane-pdk as a rule if NOT in nanoHUB
+$(designs) : % : ./%/config.json enable-openlane-pdk
 	mkdir -p ./$*/runs/$(OPENLANE_RUN_TAG) 
 	rm -rf ./$*/runs/$*
 	ln -s $$(realpath ./$*/runs/$(OPENLANE_RUN_TAG)) ./$*/runs/$*
-	$(openlane_cmd)
+# $(openlane_cmd)
+	nix-shell --run $(openlane_cmd) --pure $(OPENLANE2_ROOT)/shell.nix
 #If not in nanoHUB, run this instead: nix-shell --run $(openlane_cmd) --pure $(OPENLANE2_ROOT)/shell.nix
 #https://github.com/efabless/caravel_user_project_ol2/blob/main/openlane/Makefile
 	@mkdir -p $(PROJECT_ROOT)/signoff/$*/
@@ -174,8 +175,8 @@ $(designs) : % : ./%/config.json # Add enable-openlane-pdk as a rule if NOT in n
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/final/lib/nom*tt*/* $(PROJECT_ROOT)/lib/$*.lib
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/resolved.json $(PROJECT_ROOT)/signoff/$*/
 	@mkdir -p $(PROJECT_ROOT)/signoff/$*/openlane-signoff/timing-reports
+	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*openroad-checkantennas-*/reports/antenna_summary.rpt $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*magic-drc/reports/* $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
-	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*netgen-lvs/reports/lvs.netgen.rpt $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*netgen-lvs/reports/lvs.netgen.rpt $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*netgen-lvs/netgen-lvs.log $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp -r $(PROJECT_ROOT)/openlane/$*/runs/$*/*openroad-stapostpnr/summary.rpt $(PROJECT_ROOT)/signoff/$*/openlane-signoff/timing-reports

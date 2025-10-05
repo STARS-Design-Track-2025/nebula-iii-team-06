@@ -79,7 +79,7 @@ module team_06_top_tb;
 
     initial hwclk = 0;
     always #10 hwclk = ~hwclk;
-
+    
     // task toggleSerial ();
     //     begin
     //         repeat(32) @(posedge hwclk);
@@ -202,6 +202,7 @@ module team_06_top_tb;
         reset = 1;
         misoVal = 8'd0;
         micVal = 8'd0;
+        adc_serial_in = 0;
 
         repeat (6144) @(posedge hwclk);
 

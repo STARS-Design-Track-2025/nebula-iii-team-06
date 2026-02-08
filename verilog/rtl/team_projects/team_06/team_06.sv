@@ -95,7 +95,7 @@ module team_06 (
     .dac_out(gpio_out[11]), // K1 - DAC DIN
     .i2sclk(gpio_out[12]), // M2 - ADC I2s clock
     .i2sclk_out_chip(gpio_out[13]), // R1 - DAC I2s clock
-    .spiclk(gpio_out[14]), // T13 - ESP pin 18 - SPI clock
+        .spiclk(gpio_out[14]), // T11 - ESP pin 18 - SPI clock REMEMBER TO UPDATE GPIO PINOUT
     .word_select(gpio_out[15]), // P10 - DAC LRclk 
     .wdati(DAT_I),
     .wack(ACK_I),
@@ -109,5 +109,6 @@ module team_06 (
     .sclkDisplay(gpio_out[17]), // R2 - Pin 12
     .cs_nDisplay(gpio_out[18]) // P15 - Pin 16  
     );
+
 
 endmodule
